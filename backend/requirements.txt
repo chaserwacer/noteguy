@@ -10,3 +10,19 @@ python-docx>=1.1.0
 tiktoken>=0.7.0
 python-multipart>=0.0.9
 gitpython>=3.1.40
+
+# AI Framework Integrations
+langchain>=0.3.0
+langchain-anthropic>=0.3.0
+langchain-openai>=0.3.0
+langchain-community>=0.3.0
+llama-index>=0.12.0
+llama-index-llms-anthropic>=0.6.0
+llama-index-llms-openai>=0.3.0
+llama-index-embeddings-openai>=0.3.0
+llama-index-vector-stores-chroma>=0.4.0
+crewai>=0.100.0
+dspy>=2.6.0
+instructor>=1.7.0
+mem0ai>=0.1.30
+pydantic-ai>=0.1.0
