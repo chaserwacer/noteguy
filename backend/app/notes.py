@@ -15,6 +15,7 @@ from sqlmodel import Session, select
 
 from app.config import get_settings
 from app.database import get_session
+from app.git_service import get_git_service
 from app.models import Note, Folder
 
 router = APIRouter(prefix="/api", tags=["notes"])
@@ -164,6 +165,14 @@ def create_note(
     session.refresh(note)
     _write_note_file(note, session)
     _schedule_ingest(background_tasks, note.id)
+
+    # Git: commit the new note
+    gs = get_git_service()
+    gs.commit_note(
+        _note_disk_path(note, session),
+        f"[create] {note.title}",
+    )
+
     return note
 
 
@@ -191,7 +200,10 @@ def _do_update_note(
     updates = body.model_dump(exclude_unset=True)
 
     # If the folder changed, remove the old .md file first
-    if "folder_id" in updates and updates["folder_id"] != old_folder_id:
+    moved = "folder_id" in updates and updates["folder_id"] != old_folder_id
+    old_disk_path = _note_disk_path(note, session) if moved else None
+
+    if moved:
         _delete_note_file(note, session)
 
     for field, value in updates.items():
@@ -203,6 +215,15 @@ def _do_update_note(
     session.refresh(note)
     _write_note_file(note, session)
     _schedule_ingest(background_tasks, note.id)
+
+    # Git: commit the update (or move)
+    gs = get_git_service()
+    new_disk_path = _note_disk_path(note, session)
+    if moved and old_disk_path:
+        gs.commit_move(old_disk_path, new_disk_path, f"[move] {note.title}")
+    else:
+        gs.commit_note(new_disk_path, f"[update] {note.title}")
+
     return note
 
 
@@ -238,10 +259,17 @@ def delete_note(
     note = session.get(Note, note_id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
+
+    disk_path = _note_disk_path(note, session)
+    title = note.title
     _delete_note_file(note, session)
     session.delete(note)
     session.commit()
     background_tasks.add_task(_bg_remove_chunks, note_id)
+
+    # Git: commit the deletion
+    gs = get_git_service()
+    gs.commit_delete(disk_path, f"[delete] {title}")
 
 
 # ── Folder Endpoints ────────────────────────────────────────────────────────
@@ -346,7 +374,25 @@ def delete_folder(folder_id: str, session: Session = Depends(get_session)):
 
     session.commit()
 
+    # Collect paths for git before removing from disk
+    deleted_note_paths = []
+    for fid in all_folder_ids:
+        fld = session.get(Folder, fid)  # already deleted above, skip
+        folder_dir = _vault_path() / folder.path
+        if folder_dir.exists():
+            deleted_note_paths.extend(folder_dir.rglob("*.md"))
+
     # Remove the entire directory tree from disk
     disk_path = _vault_path() / folder.path
     if disk_path.exists():
         shutil.rmtree(disk_path)
+
+    # Git: commit all deleted files
+    gs = get_git_service()
+    if gs.repo and deleted_note_paths:
+        try:
+            rels = [gs._rel(p) for p in deleted_note_paths]
+            gs.repo.index.remove(rels, working_tree=False, ignore_unmatch=True)
+            gs.repo.index.commit(f"[delete-folder] {folder.name}")
+        except Exception:
+            pass

@@ -3,6 +3,8 @@ interface ToolbarProps {
   onCommand: (before: string, after: string) => void;
   previewActive: boolean;
   onTogglePreview: () => void;
+  historyActive: boolean;
+  onToggleHistory: () => void;
 }
 
 interface ToolbarButton {
@@ -26,6 +28,8 @@ export default function EditorToolbar({
   onCommand,
   previewActive,
   onTogglePreview,
+  historyActive,
+  onToggleHistory,
 }: ToolbarProps) {
   return (
     <div
@@ -62,6 +66,21 @@ export default function EditorToolbar({
         }`}
       >
         Preview
+      </button>
+
+      <button
+        title="Toggle History (Ctrl+Shift+H)"
+        onMouseDown={(e) => {
+          e.preventDefault();
+          onToggleHistory();
+        }}
+        className={`px-2 py-0.5 text-xs font-mono rounded transition-colors duration-150 ${
+          historyActive
+            ? "text-vault-accent bg-vault-accent/10"
+            : "text-vault-muted hover:text-vault-text hover:bg-vault-border/40"
+        }`}
+      >
+        History
       </button>
     </div>
   );

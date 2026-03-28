@@ -141,7 +141,7 @@ def ask(
     )
 
     system_prompt = (
-        "You are NoteVault Assistant, a helpful AI that answers questions "
+        "You are NoteGuy Assistant, a helpful AI that answers questions "
         "based on the user's notes. Use ONLY the provided context to answer. "
         "If the context does not contain enough information, say so."
     )
@@ -188,7 +188,7 @@ def ask_stream(
     )
 
     system_prompt = (
-        "You are NoteVault Assistant, a helpful AI with access to the user's notes. "
+        "You are NoteGuy Assistant, a helpful AI with access to the user's notes. "
         "Here are relevant excerpts from their notes:\n\n"
         f"{context_block}\n\n"
         "Answer based on this information, citing which note the info came from. "

@@ -7,7 +7,7 @@ import {
   useMessage,
 } from "@assistant-ui/react";
 import { useNoteStore } from "@/store/useNoteStore";
-import { useNoteVaultRuntime, type SourceNote } from "./useNoteVaultRuntime";
+import { useNoteGuyRuntime, type SourceNote } from "./useNoteGuyRuntime";
 
 // ── Source pills shown below assistant messages ──────────────────────────
 
@@ -130,7 +130,7 @@ const AttachButton: FC = () => {
 // ── Main Chat component ──────────────────────────────────────────────────
 
 export default function Chat() {
-  const { runtime } = useNoteVaultRuntime();
+  const { runtime } = useNoteGuyRuntime();
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>

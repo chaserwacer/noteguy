@@ -5,7 +5,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
-echo "Starting NoteVault development servers..."
+echo "Starting NoteGuy development servers..."
 
 # Backend
 (

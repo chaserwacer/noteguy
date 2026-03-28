@@ -7,7 +7,7 @@ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 from app.config import get_settings
 
-COLLECTION_NAME = "notevault_notes"
+COLLECTION_NAME = "noteguy_notes"
 
 
 def _build_embedding_function():

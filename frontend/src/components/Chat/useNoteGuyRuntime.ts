@@ -1,5 +1,5 @@
 /**
- * Custom assistant-ui runtime adapter that connects to the NoteVault
+ * Custom assistant-ui runtime adapter that connects to the NoteGuy
  * /api/chat/stream SSE endpoint.
  */
 
@@ -19,7 +19,7 @@ export interface SourceNote {
  */
 export type SourceNotesMap = Map<string, SourceNote[]>;
 
-export function useNoteVaultRuntime() {
+export function useNoteGuyRuntime() {
   const sourceNotesRef = useRef<SourceNotesMap>(new Map());
   // Track a version counter to notify consumers of changes
   const versionRef = useRef(0);

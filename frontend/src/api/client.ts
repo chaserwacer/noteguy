@@ -1,5 +1,5 @@
 /**
- * Typed HTTP client for the NoteVault backend API.
+ * Typed HTTP client for the NoteGuy backend API.
  *
  * All fetch calls go through the Vite dev-server proxy so no absolute
  * URLs are needed — just prefix paths with `/api`.
@@ -94,6 +94,54 @@ export function updateFolder(
 
 export function deleteFolder(id: string): Promise<void> {
   return request(`/api/folders/${id}`, { method: "DELETE" });
+}
+
+// ── History ──────────────────────────────────────────────────────────────────
+
+export interface VersionEntry {
+  sha: string;
+  short_sha: string;
+  message: string;
+  author: string;
+  timestamp: string;
+}
+
+export interface VersionContent {
+  sha: string;
+  content: string;
+}
+
+export interface DiffResponse {
+  sha: string;
+  diff: string;
+}
+
+export function fetchNoteHistory(noteId: string): Promise<VersionEntry[]> {
+  return request(`/api/notes/${noteId}/history`);
+}
+
+export function fetchNoteVersion(
+  noteId: string,
+  sha: string,
+): Promise<VersionContent> {
+  return request(`/api/notes/${noteId}/versions/${sha}`);
+}
+
+export function fetchNoteDiff(
+  noteId: string,
+  sha: string,
+): Promise<DiffResponse> {
+  return request(`/api/notes/${noteId}/diff/${sha}`);
+}
+
+export function restoreNoteVersion(
+  noteId: string,
+  sha: string,
+): Promise<NoteData> {
+  return request(`/api/notes/${noteId}/restore`, {
+    method: "POST",
+    body: JSON.stringify({ sha }),
+  });
 }
 
 // ── Chat ────────────────────────────────────────────────────────────────────

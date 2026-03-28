@@ -8,8 +8,12 @@ import {
   createFolder,
   updateFolder,
   deleteFolder,
+  fetchNoteHistory,
+  fetchNoteVersion,
+  restoreNoteVersion,
   type NoteData,
   type FolderData,
+  type VersionEntry,
 } from "@/api/client";
 
 interface NoteStore {
@@ -19,6 +23,12 @@ interface NoteStore {
   activeFolderId: string | null;
   /** IDs of folders that are expanded in the tree. */
   openFolderIds: string[];
+
+  // ── History panel state ───────────────────────────────────────────
+  historyPanelOpen: boolean;
+  versionHistory: VersionEntry[];
+  selectedVersionSha: string | null;
+  previewContent: string | null;
 
   /** Fetch all notes and folders from the API. */
   load: () => Promise<void>;
@@ -37,6 +47,12 @@ interface NoteStore {
   addFolder: (name: string, parentId?: string) => Promise<FolderData>;
   renameFolder: (id: string, name: string) => Promise<void>;
   removeFolder: (id: string) => Promise<void>;
+
+  // ── History actions ───────────────────────────────────────────────
+  toggleHistoryPanel: () => void;
+  loadHistory: (noteId: string) => Promise<void>;
+  selectVersion: (sha: string | null) => Promise<void>;
+  restoreVersion: (noteId: string, sha: string) => Promise<void>;
 }
 
 export const useNoteStore = create<NoteStore>((set, get) => ({
@@ -45,6 +61,12 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
   activeNoteId: null,
   activeFolderId: null,
   openFolderIds: [],
+
+  // History panel
+  historyPanelOpen: false,
+  versionHistory: [],
+  selectedVersionSha: null,
+  previewContent: null,
 
   async load() {
     const [notes, folders] = await Promise.all([
@@ -152,5 +174,54 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
         openFolderIds: s.openFolderIds.filter((fid) => !removedIds.has(fid)),
       };
     });
+  },
+
+  // ── History actions ─────────────────────────────────────────────────
+
+  toggleHistoryPanel() {
+    const opening = !get().historyPanelOpen;
+    set({
+      historyPanelOpen: opening,
+      selectedVersionSha: null,
+      previewContent: null,
+    });
+    if (opening && get().activeNoteId) {
+      get().loadHistory(get().activeNoteId!);
+    }
+  },
+
+  async loadHistory(noteId) {
+    try {
+      const history = await fetchNoteHistory(noteId);
+      set({ versionHistory: history });
+    } catch {
+      set({ versionHistory: [] });
+    }
+  },
+
+  async selectVersion(sha) {
+    if (!sha) {
+      set({ selectedVersionSha: null, previewContent: null });
+      return;
+    }
+    const noteId = get().activeNoteId;
+    if (!noteId) return;
+    try {
+      const version = await fetchNoteVersion(noteId, sha);
+      set({ selectedVersionSha: sha, previewContent: version.content });
+    } catch {
+      set({ selectedVersionSha: sha, previewContent: null });
+    }
+  },
+
+  async restoreVersion(noteId, sha) {
+    const restored = await restoreNoteVersion(noteId, sha);
+    set((s) => ({
+      notes: s.notes.map((n) => (n.id === noteId ? restored : n)),
+      selectedVersionSha: null,
+      previewContent: null,
+    }));
+    // Refresh history to include the restore commit
+    get().loadHistory(noteId);
   },
 }));

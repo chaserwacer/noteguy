@@ -11,6 +11,7 @@ import { tags } from "@lezer/highlight";
 import { useNoteStore } from "@/store/useNoteStore";
 import EditorToolbar from "./EditorToolbar";
 import MarkdownPreview from "./MarkdownPreview";
+import HistoryPanel from "./HistoryPanel";
 
 const SAVE_DEBOUNCE_MS = 800;
 
@@ -88,6 +89,11 @@ export default function Editor() {
   const notes = useNoteStore((s) => s.notes);
   const saveNote = useNoteStore((s) => s.saveNote);
 
+  const historyPanelOpen = useNoteStore((s) => s.historyPanelOpen);
+  const previewContent = useNoteStore((s) => s.previewContent);
+  const selectedVersionSha = useNoteStore((s) => s.selectedVersionSha);
+  const toggleHistoryPanel = useNoteStore((s) => s.toggleHistoryPanel);
+
   const activeNote = notes.find((n) => n.id === activeNoteId);
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
@@ -161,18 +167,23 @@ export default function Editor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNoteId]);
 
-  /* ── Keyboard shortcut: Cmd/Ctrl+Shift+P → toggle preview ─────────────── */
+  /* ── Keyboard shortcuts ──────────────────────────────────────────────── */
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "p") {
-        e.preventDefault();
-        setShowPreview((v) => !v);
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+        if (e.key === "p") {
+          e.preventDefault();
+          setShowPreview((v) => !v);
+        } else if (e.key === "h" || e.key === "H") {
+          e.preventDefault();
+          toggleHistoryPanel();
+        }
       }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, []);
+  }, [toggleHistoryPanel]);
 
   /* ── Toolbar command helper ────────────────────────────────────────────── */
 
@@ -202,54 +213,81 @@ export default function Editor() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#16161e] relative">
-      {/* Title field */}
-      <div className="px-8 pt-6 pb-2 max-w-[72ch] mx-auto w-full">
-        <input
-          type="text"
-          value={activeNote.title}
-          onChange={(e) => handleTitleChange(e.target.value)}
-          placeholder="Untitled"
-          className="w-full bg-transparent text-vault-text text-2xl font-semibold outline-none placeholder:text-vault-border font-mono"
-        />
-      </div>
-
-      {/* Editor + Preview area */}
-      <div className="flex-1 flex min-h-0 relative">
-        {/* Toolbar hover zone */}
-        <div
-          className="absolute top-0 left-0 right-0 h-12 z-20"
-          onMouseEnter={() => setToolbarVisible(true)}
-          onMouseLeave={() => setToolbarVisible(false)}
-        >
-          <EditorToolbar
-            visible={toolbarVisible}
-            onCommand={insertMarkdown}
-            previewActive={showPreview}
-            onTogglePreview={() => setShowPreview((v) => !v)}
+    <div className="flex h-full bg-[#16161e] relative">
+      {/* Editor content area */}
+      <div className="flex flex-col flex-1 min-w-0">
+        {/* Title field */}
+        <div className="px-8 pt-6 pb-2 max-w-[72ch] mx-auto w-full">
+          <input
+            type="text"
+            value={activeNote.title}
+            onChange={(e) => handleTitleChange(e.target.value)}
+            placeholder="Untitled"
+            className="w-full bg-transparent text-vault-text text-2xl font-semibold outline-none placeholder:text-vault-border font-mono"
           />
         </div>
 
-        {/* CodeMirror container */}
-        <div
-          ref={containerRef}
-          className={`flex-1 overflow-auto ${showPreview ? "border-r border-vault-border" : ""}`}
-        />
+        {/* Editor + Preview area */}
+        <div className="flex-1 flex min-h-0 relative">
+          {/* Toolbar hover zone */}
+          <div
+            className="absolute top-0 left-0 right-0 h-12 z-20"
+            onMouseEnter={() => setToolbarVisible(true)}
+            onMouseLeave={() => setToolbarVisible(false)}
+          >
+            <EditorToolbar
+              visible={toolbarVisible}
+              onCommand={insertMarkdown}
+              previewActive={showPreview}
+              onTogglePreview={() => setShowPreview((v) => !v)}
+              historyActive={historyPanelOpen}
+              onToggleHistory={toggleHistoryPanel}
+            />
+          </div>
 
-        {/* Live preview panel */}
-        {showPreview && (
-          <div className="flex-1 overflow-auto">
-            <MarkdownPreview content={activeNote.content} />
+          {/* CodeMirror container */}
+          <div
+            ref={containerRef}
+            className={`flex-1 overflow-auto ${showPreview ? "border-r border-vault-border" : ""}`}
+          />
+
+          {/* Live preview panel */}
+          {showPreview && (
+            <div className="flex-1 overflow-auto">
+              <MarkdownPreview content={activeNote.content} />
+            </div>
+          )}
+
+          {/* Version preview overlay */}
+          {selectedVersionSha && previewContent !== null && (
+            <div className="absolute inset-0 z-10 bg-[#16161e] overflow-auto">
+              <div className="px-8 pt-6 pb-2 max-w-[72ch] mx-auto">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xs font-mono text-vault-muted bg-vault-border/40 px-2 py-0.5 rounded">
+                    {selectedVersionSha.slice(0, 7)}
+                  </span>
+                  <span className="text-xs text-vault-muted">
+                    Read-only preview
+                  </span>
+                </div>
+              </div>
+              <div className="px-8 max-w-[72ch] mx-auto">
+                <MarkdownPreview content={previewContent} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Save status indicator */}
+        {saveStatus !== "idle" && (
+          <div className="absolute bottom-3 right-3 text-xs text-vault-muted">
+            {saveStatus === "saving" ? "Saving..." : "Saved"}
           </div>
         )}
       </div>
 
-      {/* Save status indicator */}
-      {saveStatus !== "idle" && (
-        <div className="absolute bottom-3 right-3 text-xs text-vault-muted">
-          {saveStatus === "saving" ? "Saving..." : "Saved"}
-        </div>
-      )}
+      {/* History panel — right side */}
+      {historyPanelOpen && <HistoryPanel />}
     </div>
   );
 }

@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicegui/nicegui/main/.github/tauri/tauri.conf.json",
-  "productName": "NoteVault",
+  "productName": "NoteGuy",
   "version": "0.1.0",
-  "identifier": "com.notevault.app",
+  "identifier": "com.noteguy.app",
   "build": {
     "frontendDist": "../frontend/dist",
     "devUrl": "http://localhost:5173",
@@ -10,10 +10,10 @@
     "beforeBuildCommand": "cd ../frontend && npm run build"
   },
   "app": {
-    "title": "NoteVault",
+    "title": "NoteGuy",
     "windows": [
       {
-        "title": "NoteVault",
+        "title": "NoteGuy",
         "width": 1280,
         "height": 800,
         "resizable": true,

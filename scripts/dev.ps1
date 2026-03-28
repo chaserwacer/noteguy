@@ -2,7 +2,7 @@
 $ErrorActionPreference = "Stop"
 $RootDir = Split-Path -Parent $PSScriptRoot
 
-Write-Host "Starting NoteVault development servers..." -ForegroundColor Cyan
+Write-Host "Starting NoteGuy development servers..." -ForegroundColor Cyan
 
 # Backend
 $backend = Start-Process -NoNewWindow -PassThru -FilePath "python" `

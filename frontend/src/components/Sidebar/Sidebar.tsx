@@ -195,7 +195,7 @@ export default function Sidebar() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-vault-border">
         <h1 className="text-sm font-semibold tracking-wide uppercase text-vault-accent">
-          NoteVault
+          NoteGuy
         </h1>
         <div className="flex gap-1">
           <button

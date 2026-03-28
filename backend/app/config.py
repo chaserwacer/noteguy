@@ -11,11 +11,11 @@ class Settings(BaseSettings):
 
     anthropic_api_key: str = ""
     openai_api_key: str = ""
-    database_url: str = "sqlite:///./notevault.db"
+    database_url: str = "sqlite:///./noteguy.db"
     chroma_persist_dir: str = "./chroma_data"
     backend_host: str = "127.0.0.1"
     backend_port: int = 8000
-    vault_path: str = str(Path.home() / "NoteVault")
+    vault_path: str = str(Path.home() / "NoteGuy")
 
     model_config = {"env_file": "../.env", "env_file_encoding": "utf-8"}
 
