@@ -1,10 +1,14 @@
-import { useRef, useCallback, type FC } from "react";
+import { useRef, useCallback, useMemo, type FC } from "react";
+import "@assistant-ui/react/styles/index.css";
 import {
   AssistantRuntimeProvider,
-  ThreadPrimitive,
-  ComposerPrimitive,
-  MessagePrimitive,
+  Thread,
+  Composer,
+  AssistantMessage as AssistantMessageUI,
+  UserMessage as UserMessageUI,
+  ThreadWelcome,
   useMessage,
+  type ThreadConfig,
 } from "@assistant-ui/react";
 import { useNoteStore } from "@/store/useNoteStore";
 import { useNoteGuyRuntime, type SourceNote } from "./useNoteGuyRuntime";
@@ -115,7 +119,7 @@ const AttachButton: FC = () => {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="p-1.5 rounded-md text-vault-muted hover:text-vault-accent hover:bg-vault-accent-subtle transition-colors"
+        className="aui-composer-attach flex h-9 w-9 items-center justify-center rounded-lg bg-transparent text-vault-muted hover:text-vault-text hover:bg-vault-accent-subtle transition-colors"
         title="Upload file (.md, .docx)"
       >
         <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
@@ -168,14 +172,62 @@ interface ChatContentProps {
 function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentProps) {
   const { runtime } = useNoteGuyRuntime();
 
+  const threadConfig = useMemo<ThreadConfig>(
+    () => ({
+      assistantAvatar: { fallback: "C", alt: "Claude-style assistant" },
+      welcome: {
+        message: "Hi! I’m a Claude-inspired assistant for your notes.",
+        suggestions: [
+          {
+            text: "Summarize the open note",
+            prompt: "Summarize the active note succinctly.",
+          },
+          {
+            text: "Find related notes",
+            prompt: "Find notes that are related to this topic.",
+          },
+          {
+            text: "Draft an outline",
+            prompt: "Draft a concise outline I can expand on.",
+          },
+        ],
+      },
+      assistantMessage: {
+        allowCopy: true,
+        allowReload: true,
+        components: { Footer: SourcePills },
+      },
+      composer: { allowAttachments: false },
+      strings: {
+        composer: { input: { placeholder: "Message Claude about your notes..." } },
+        assistantMessage: {
+          copy: { tooltip: "Copy answer" },
+          reload: { tooltip: "Regenerate" },
+        },
+      },
+    }),
+    [runtime],
+  );
+
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <div className="flex flex-col h-full">
+      <div className="flex h-full flex-col bg-vault-surface">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-vault-border shrink-0">
-          <h2 className="text-[13px] font-medium text-vault-text-secondary">
-            AI Assistant
-          </h2>
+        <div className="flex items-start justify-between px-4 py-3 border-b border-vault-border/70 bg-gradient-to-r from-vault-surface to-vault-bg/60">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-vault-accent-subtle text-vault-accent font-semibold shadow-inner">
+              C
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-vault-muted">
+                Claude-style assistant
+              </p>
+              <p className="text-sm font-semibold text-vault-text">Assistant UI chat</p>
+              <p className="text-[11px] text-vault-text-secondary">
+                Powered by assistant-ui • Streaming responses
+              </p>
+            </div>
+          </div>
           <div className="flex items-center gap-1">
             <button
               onClick={isExpanded ? onCollapse : onExpand}
@@ -194,36 +246,26 @@ function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentP
           </div>
         </div>
 
-        <FolderScopeChip />
-
-        {/* Thread */}
-        <ThreadPrimitive.Root className="flex-1 flex flex-col min-h-0">
-          <ThreadPrimitive.Viewport className="flex-1 overflow-y-auto p-4 space-y-3">
-            <ThreadPrimitive.Empty>
-              <p className="text-sm text-vault-muted text-center mt-6">
-                Ask a question about your notes
-              </p>
-            </ThreadPrimitive.Empty>
-            <ThreadPrimitive.Messages
-              components={{ UserMessage, AssistantMessage }}
+        <Thread.Root config={threadConfig} className="flex flex-1 flex-col min-h-0">
+          <Thread.Viewport className="aui-thread-viewport px-3 md:px-4">
+            <ThreadWelcome />
+            <Thread.Messages
+              components={{ UserMessage: UserMessageUI, AssistantMessage: AssistantMessageUI }}
             />
-          </ThreadPrimitive.Viewport>
-
-          {/* Composer */}
-          <div className="border-t border-vault-border p-3 shrink-0">
-            <ComposerPrimitive.Root className="flex items-end gap-2">
-              <AttachButton />
-              <ComposerPrimitive.Input
-                placeholder="Ask about your notes..."
-                className="flex-1 bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-vault-text placeholder:text-vault-muted focus:outline-none focus:border-vault-accent resize-none max-h-32"
-                autoFocus
-              />
-              <ComposerPrimitive.Send className="px-3.5 py-2 rounded-lg bg-vault-accent text-vault-bg text-sm font-medium hover:bg-vault-accent-hover disabled:opacity-30 transition-colors">
-                Send
-              </ComposerPrimitive.Send>
-            </ComposerPrimitive.Root>
-          </div>
-        </ThreadPrimitive.Root>
+            <Thread.FollowupSuggestions />
+          </Thread.Viewport>
+          <Thread.ViewportFooter className="aui-thread-viewport-footer border-t border-vault-border bg-vault-bg/60">
+            <Thread.ScrollToBottom />
+            <div className="w-full">
+              <FolderScopeChip />
+              <Composer.Root className="aui-composer-root mt-2">
+                <AttachButton />
+                <Composer.Input />
+                <Composer.Action />
+              </Composer.Root>
+            </div>
+          </Thread.ViewportFooter>
+        </Thread.Root>
       </div>
     </AssistantRuntimeProvider>
   );
@@ -280,26 +322,3 @@ export default function Chat({
     </div>
   );
 }
-
-// ── Message components ───────────────────────────────────────────────────
-
-const UserMessage: FC = () => {
-  return (
-    <MessagePrimitive.Root className="flex justify-end">
-      <div className="text-sm rounded-lg px-3 py-2 max-w-[85%] bg-vault-accent-subtle text-vault-text">
-        <MessagePrimitive.Content />
-      </div>
-    </MessagePrimitive.Root>
-  );
-};
-
-const AssistantMessage: FC = () => {
-  return (
-    <MessagePrimitive.Root className="flex flex-col items-start">
-      <div className="text-sm rounded-lg px-3 py-2 max-w-[85%] bg-vault-surface-hover text-vault-text">
-        <MessagePrimitive.Content />
-      </div>
-      <SourcePills />
-    </MessagePrimitive.Root>
-  );
-};
