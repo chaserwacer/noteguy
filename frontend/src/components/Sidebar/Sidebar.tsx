@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useNoteStore } from "@/store/useNoteStore";
 import SidebarFolder from "./SidebarFolder";
 import SidebarNote from "./SidebarNote";
@@ -40,6 +40,25 @@ function FolderPlusIcon() {
   );
 }
 
+function SearchIcon() {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="shrink-0"
+    >
+      <circle cx="7" cy="7" r="5" />
+      <path d="M10.5 10.5L14 14" />
+    </svg>
+  );
+}
+
 /* ── Component ──────────────────────────────────────────────────────────── */
 
 export default function Sidebar() {
@@ -68,6 +87,29 @@ export default function Sidebar() {
     items: MenuItem[];
   } | null>(null);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const filteredNotes = useMemo(() => {
+    if (!searchQuery.trim()) return notes;
+    const q = searchQuery.toLowerCase();
+    return notes.filter((n) => n.title.toLowerCase().includes(q));
+  }, [notes, searchQuery]);
+
+  const matchingFolderIds = useMemo(() => {
+    if (!searchQuery.trim()) return null;
+    const ids = new Set<string>();
+    for (const note of filteredNotes) {
+      let fid = note.folder_id;
+      while (fid) {
+        ids.add(fid);
+        const parent = folders.find((f) => f.id === fid);
+        fid = parent?.parent_id ?? null;
+      }
+    }
+    return ids;
+  }, [filteredNotes, folders, searchQuery]);
+
   useEffect(() => {
     load();
   }, [load]);
@@ -79,6 +121,10 @@ export default function Sidebar() {
       if ((e.ctrlKey || e.metaKey) && e.key === "n") {
         e.preventDefault();
         handleNewNote();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "/") {
+        e.preventDefault();
+        searchRef.current?.focus();
       }
     };
     document.addEventListener("keydown", handler);
@@ -133,6 +179,20 @@ export default function Sidebar() {
     });
   };
 
+  const handleDuplicateNote = useCallback(
+    async (noteId: string) => {
+      const original = notes.find((n) => n.id === noteId);
+      if (!original) return;
+      // Temporarily set active folder to the original's folder so addNote places it there
+      const prev = useNoteStore.getState().activeFolderId;
+      if (original.folder_id !== prev) setActiveFolder(original.folder_id);
+      const dup = await addNote(original.title + " (copy)");
+      await saveNote(dup.id, { content: original.content });
+      if (original.folder_id !== prev) setActiveFolder(prev);
+    },
+    [notes, addNote, saveNote, setActiveFolder],
+  );
+
   const handleNoteContextMenu = (e: React.MouseEvent, noteId: string) => {
     e.preventDefault();
     setContextMenu({
@@ -146,6 +206,10 @@ export default function Sidebar() {
             const title = prompt("Rename note:", note?.title);
             if (title?.trim()) saveNote(noteId, { title: title.trim() });
           },
+        },
+        {
+          label: "Duplicate",
+          onClick: () => handleDuplicateNote(noteId),
         },
         {
           label: "Delete",
@@ -176,8 +240,11 @@ export default function Sidebar() {
     if (noteId) moveNote(noteId, null);
   };
 
+  const isSearching = searchQuery.trim().length > 0;
   const rootFolders = folders.filter((f) => !f.parent_id);
-  const rootNotes = notes.filter((n) => !n.folder_id);
+  const rootNotes = isSearching
+    ? filteredNotes.filter((n) => !n.folder_id)
+    : notes.filter((n) => !n.folder_id);
 
   return (
     <aside className="flex flex-col h-full w-60 border-r border-vault-border bg-vault-surface select-none">
@@ -204,6 +271,27 @@ export default function Sidebar() {
         </div>
       </div>
 
+      {/* Search */}
+      <div className="mx-2 mb-1 relative">
+        <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-vault-muted pointer-events-none">
+          <SearchIcon />
+        </div>
+        <input
+          ref={searchRef}
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setSearchQuery("");
+              searchRef.current?.blur();
+            }
+          }}
+          placeholder="Filter notes..."
+          className="w-full bg-vault-surface-hover text-vault-text text-[12px] pl-7 pr-2 py-1.5 rounded-md outline-none placeholder:text-vault-muted focus:ring-1 focus:ring-vault-border-strong transition-all"
+        />
+      </div>
+
       {/* All Notes shortcut */}
       <button
         onClick={() => setActiveFolder(null)}
@@ -223,16 +311,19 @@ export default function Sidebar() {
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleBackgroundDrop}
       >
-        {rootFolders.map((folder) => (
+        {rootFolders
+          .filter((f) => !matchingFolderIds || matchingFolderIds.has(f.id))
+          .map((folder) => (
           <SidebarFolder
             key={folder.id}
             folder={folder}
             folders={folders}
-            notes={notes}
+            notes={isSearching ? filteredNotes : notes}
             activeFolderId={activeFolderId}
             activeNoteId={activeNoteId}
-            isOpen={openFolderIds.includes(folder.id)}
+            isOpen={isSearching || openFolderIds.includes(folder.id)}
             openFolderIds={openFolderIds}
+            matchingFolderIds={matchingFolderIds}
             onToggle={toggleFolder}
             onSelectFolder={setActiveFolder}
             onSelectNote={setActiveNote}

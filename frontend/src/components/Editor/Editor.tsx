@@ -167,10 +167,29 @@ export default function Editor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNoteId]);
 
+  /* ── Force save (Ctrl+S) ──────────────────────────────────────────────── */
+
+  const forceSave = useCallback(() => {
+    if (!activeNoteId || !viewRef.current) return;
+    clearTimeout(saveTimerRef.current);
+    clearTimeout(titleTimerRef.current);
+    setSaveStatus("saving");
+    const content = viewRef.current.state.doc.toString();
+    saveNote(activeNoteId, { content, title: activeNote?.title }).then(() => {
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 1500);
+    });
+  }, [activeNoteId, activeNote?.title, saveNote]);
+
   /* ── Keyboard shortcuts ──────────────────────────────────────────────── */
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "s") {
+        e.preventDefault();
+        forceSave();
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
         if (e.key === "p") {
           e.preventDefault();
@@ -183,7 +202,7 @@ export default function Editor() {
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [toggleHistoryPanel]);
+  }, [toggleHistoryPanel, forceSave]);
 
   /* ── Toolbar command helper ────────────────────────────────────────────── */
 
@@ -280,12 +299,25 @@ export default function Editor() {
           )}
         </div>
 
-        {/* Save status indicator */}
-        {saveStatus !== "idle" && (
-          <div className="absolute bottom-3 right-3 text-xs text-vault-muted animate-fade-in">
-            {saveStatus === "saving" ? "Saving..." : "Saved"}
+        {/* Status bar */}
+        <div className="flex items-center justify-between px-4 py-1 border-t border-vault-border text-[11px] text-vault-muted tabular-nums select-none">
+          <div className="flex gap-3">
+            {(() => {
+              const text = activeNote.content || "";
+              const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+              const chars = text.length;
+              return (
+                <>
+                  <span>{words} {words === 1 ? "word" : "words"}</span>
+                  <span>{chars} {chars === 1 ? "char" : "chars"}</span>
+                </>
+              );
+            })()}
           </div>
-        )}
+          <div className="animate-fade-in">
+            {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved" : ""}
+          </div>
+        </div>
       </div>
 
       {/* History panel */}

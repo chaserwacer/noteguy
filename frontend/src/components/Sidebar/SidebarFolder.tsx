@@ -47,6 +47,7 @@ interface SidebarFolderProps {
   activeNoteId: string | null;
   isOpen: boolean;
   openFolderIds: string[];
+  matchingFolderIds?: Set<string> | null;
   depth?: number;
   onToggle: (id: string) => void;
   onSelectFolder: (id: string) => void;
@@ -64,6 +65,7 @@ export default function SidebarFolder({
   activeNoteId,
   isOpen,
   openFolderIds,
+  matchingFolderIds,
   depth = 0,
   onToggle,
   onSelectFolder,
@@ -74,9 +76,19 @@ export default function SidebarFolder({
 }: SidebarFolderProps) {
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const children = folders.filter((f) => f.parent_id === folder.id);
+  const children = folders
+    .filter((f) => f.parent_id === folder.id)
+    .filter((f) => !matchingFolderIds || matchingFolderIds.has(f.id));
   const folderNotes = notes.filter((n) => n.folder_id === folder.id);
   const isActive = activeFolderId === folder.id;
+
+  // Count all notes in this folder and its descendants
+  const getAllDescendantIds = (parentId: string): string[] => {
+    const childFolders = folders.filter((f) => f.parent_id === parentId);
+    return [parentId, ...childFolders.flatMap((f) => getAllDescendantIds(f.id))];
+  };
+  const allFolderIds = new Set(getAllDescendantIds(folder.id));
+  const totalNoteCount = notes.filter((n) => n.folder_id && allFolderIds.has(n.folder_id)).length;
 
   const handleClick = () => {
     onSelectFolder(folder.id);
@@ -111,6 +123,11 @@ export default function SidebarFolder({
         <ChevronIcon open={isOpen} />
         <FolderIcon open={isOpen} />
         <span className="truncate">{folder.name}</span>
+        {totalNoteCount > 0 && (
+          <span className="ml-auto text-[10px] text-vault-muted tabular-nums">
+            {totalNoteCount}
+          </span>
+        )}
       </button>
 
       {isOpen && (
@@ -123,8 +140,9 @@ export default function SidebarFolder({
               notes={notes}
               activeFolderId={activeFolderId}
               activeNoteId={activeNoteId}
-              isOpen={openFolderIds.includes(child.id)}
+              isOpen={!!matchingFolderIds || openFolderIds.includes(child.id)}
               openFolderIds={openFolderIds}
+              matchingFolderIds={matchingFolderIds}
               depth={depth + 1}
               onToggle={onToggle}
               onSelectFolder={onSelectFolder}
