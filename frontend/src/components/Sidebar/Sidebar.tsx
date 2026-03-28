@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useNoteStore } from "@/store/useNoteStore";
+import { useModal } from "@/components/Modal";
 import SidebarFolder from "./SidebarFolder";
 import SidebarNote from "./SidebarNote";
 import ContextMenu, { type MenuItem } from "./ContextMenu";
@@ -81,6 +82,8 @@ export default function Sidebar() {
     moveNote,
   } = useNoteStore();
 
+  const { showConfirm, showPrompt, close: closeModal, renderModal } = useModal();
+
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -132,8 +135,15 @@ export default function Sidebar() {
   }, [handleNewNote]);
 
   const handleNewFolder = () => {
-    const name = prompt("Folder name:");
-    if (name?.trim()) addFolder(name.trim(), activeFolderId ?? undefined);
+    showPrompt({
+      title: "New folder",
+      placeholder: "Folder name",
+      confirmLabel: "Create",
+      onConfirm: (name) => {
+        addFolder(name, activeFolderId ?? undefined);
+        closeModal();
+      },
+    });
   };
 
   const handleFolderContextMenu = (e: React.MouseEvent, folderId: string) => {
@@ -155,24 +165,44 @@ export default function Sidebar() {
         {
           label: "New Folder",
           onClick: () => {
-            const name = prompt("Sub-folder name:");
-            if (name?.trim()) addFolder(name.trim(), folderId);
+            showPrompt({
+              title: "New sub-folder",
+              placeholder: "Folder name",
+              confirmLabel: "Create",
+              onConfirm: (name) => {
+                addFolder(name, folderId);
+                closeModal();
+              },
+            });
           },
         },
         {
           label: "Rename",
           onClick: () => {
             const current = folders.find((f) => f.id === folderId);
-            const name = prompt("Rename folder:", current?.name);
-            if (name?.trim()) renameFolder(folderId, name.trim());
+            showPrompt({
+              title: "Rename folder",
+              defaultValue: current?.name ?? "",
+              confirmLabel: "Rename",
+              onConfirm: (name) => {
+                renameFolder(folderId, name);
+                closeModal();
+              },
+            });
           },
         },
         {
           label: "Delete",
           onClick: () => {
-            if (confirm("Delete this folder and all its contents?")) {
-              removeFolder(folderId);
-            }
+            showConfirm({
+              title: "Delete folder",
+              message: "This will permanently delete this folder and all its contents.",
+              confirmLabel: "Delete",
+              onConfirm: () => {
+                removeFolder(folderId);
+                closeModal();
+              },
+            });
           },
         },
       ],
@@ -203,8 +233,15 @@ export default function Sidebar() {
           label: "Rename",
           onClick: () => {
             const note = notes.find((n) => n.id === noteId);
-            const title = prompt("Rename note:", note?.title);
-            if (title?.trim()) saveNote(noteId, { title: title.trim() });
+            showPrompt({
+              title: "Rename note",
+              defaultValue: note?.title ?? "",
+              confirmLabel: "Rename",
+              onConfirm: (title) => {
+                saveNote(noteId, { title });
+                closeModal();
+              },
+            });
           },
         },
         {
@@ -214,7 +251,15 @@ export default function Sidebar() {
         {
           label: "Delete",
           onClick: () => {
-            if (confirm("Delete this note?")) removeNote(noteId);
+            showConfirm({
+              title: "Delete note",
+              message: "This will permanently delete this note.",
+              confirmLabel: "Delete",
+              onConfirm: () => {
+                removeNote(noteId);
+                closeModal();
+              },
+            });
           },
         },
       ],
@@ -352,6 +397,8 @@ export default function Sidebar() {
           onClose={() => setContextMenu(null)}
         />
       )}
+
+      {renderModal()}
     </aside>
   );
 }
