@@ -1,0 +1,60 @@
+# Environment & secrets
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# ChromaDB local storage
+chroma_data/
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
+# Tauri build artifacts
+src-tauri/target/
+src-tauri/WixTools/
+src-tauri/Frameworks/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Coverage & testing
+.coverage
+htmlcov/
+.pytest_cache/
+coverage/
+
+
+claude_prompts/

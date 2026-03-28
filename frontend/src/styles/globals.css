@@ -1,0 +1,169 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-vault-border;
+  }
+
+  body {
+    @apply bg-vault-bg text-vault-text antialiased;
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-vault-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-vault-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-vault-muted;
+  }
+}
+
+@layer utilities {
+  /* Default transition duration used across all sidebar interactions */
+  .transition-sidebar {
+    transition-property: color, background-color, opacity, transform;
+    transition-duration: 150ms;
+    transition-timing-function: ease;
+  }
+}
+
+/* ── Markdown preview prose styling ────────────────────────────────────── */
+
+.prose-vault {
+  color: #c0caf5;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.prose-vault h1 {
+  color: #7aa2f7;
+  font-size: 1.8em;
+  font-weight: 700;
+  margin: 1.5em 0 0.6em;
+  line-height: 1.3;
+}
+
+.prose-vault h2 {
+  color: #7aa2f7;
+  font-size: 1.4em;
+  font-weight: 600;
+  margin: 1.3em 0 0.5em;
+  line-height: 1.35;
+}
+
+.prose-vault h3 {
+  color: #7aa2f7;
+  font-size: 1.15em;
+  font-weight: 600;
+  margin: 1.2em 0 0.4em;
+}
+
+.prose-vault p {
+  margin: 0.8em 0;
+}
+
+.prose-vault strong {
+  font-weight: 700;
+}
+
+.prose-vault em {
+  font-style: italic;
+}
+
+.prose-vault a {
+  color: #89b4fa;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose-vault code {
+  color: #9ece6a;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9em;
+  background: #1a1b26;
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+}
+
+.prose-vault pre {
+  background: #1a1b26;
+  border-radius: 6px;
+  padding: 1em;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.prose-vault pre code {
+  background: none;
+  padding: 0;
+}
+
+.prose-vault blockquote {
+  border-left: 3px solid #3b4261;
+  padding-left: 1em;
+  color: #565f89;
+  font-style: italic;
+  margin: 1em 0;
+}
+
+.prose-vault ul,
+.prose-vault ol {
+  padding-left: 1.5em;
+  margin: 0.6em 0;
+}
+
+.prose-vault li {
+  margin: 0.3em 0;
+}
+
+.prose-vault ul {
+  list-style-type: disc;
+}
+
+.prose-vault ol {
+  list-style-type: decimal;
+}
+
+.prose-vault hr {
+  border: none;
+  border-top: 1px solid #3b4261;
+  margin: 1.5em 0;
+}
+
+.prose-vault table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.prose-vault th,
+.prose-vault td {
+  border: 1px solid #3b4261;
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.prose-vault th {
+  background: #1a1b26;
+  font-weight: 600;
+}
+
+.prose-vault img {
+  max-width: 100%;
+  border-radius: 6px;
+}
