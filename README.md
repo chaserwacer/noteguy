@@ -1,3 +1,4 @@
+*actively being developed / worked on
 # NoteGuy
 
 A clean, distraction-free markdown note editor with AI-powered RAG chat and built-in version history. Think OneNote — but simpler and more elegant.
