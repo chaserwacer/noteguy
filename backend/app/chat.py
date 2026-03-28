@@ -3,11 +3,12 @@
 from typing import Optional
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlmodel import Session
 
 from app.database import get_session
-from app.rag import ask
+from app.rag import ask, ask_stream
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
@@ -17,6 +18,16 @@ class ChatRequest(BaseModel):
 
     message: str
     folder_id: Optional[str] = None
+    provider: str = "anthropic"
+
+
+class ChatStreamRequest(BaseModel):
+    """Incoming streaming chat message."""
+
+    message: str
+    conversation_history: list[dict] = []
+    folder_scope: Optional[str] = None
+    active_note_id: Optional[str] = None
     provider: str = "anthropic"
 
 
@@ -36,3 +47,23 @@ def chat(body: ChatRequest, session: Session = Depends(get_session)):
         provider=body.provider,
     )
     return ChatResponse(**result)
+
+
+@router.post("/stream")
+def chat_stream(body: ChatStreamRequest):
+    """Stream an AI answer using Server-Sent Events."""
+    return StreamingResponse(
+        ask_stream(
+            question=body.message,
+            conversation_history=body.conversation_history,
+            folder_scope=body.folder_scope,
+            active_note_id=body.active_note_id,
+            provider=body.provider,
+        ),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )

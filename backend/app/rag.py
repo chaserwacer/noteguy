@@ -158,6 +158,73 @@ def ask(
     return {"answer": answer, "sources": sources}
 
 
+def ask_stream(
+    question: str,
+    conversation_history: list[dict] | None = None,
+    folder_id: Optional[str] = None,
+    folder_scope: Optional[str] = None,
+    active_note_id: Optional[str] = None,
+    provider: str = "anthropic",
+):
+    """Stream an answer using retrieved context.  Yields SSE-formatted strings.
+
+    Events:
+      data: {"type":"text_delta","delta":"..."}
+      data: {"type":"source_notes","notes":[{"note_id":...,"note_title":...,"folder_path":...}]}
+      data: {"type":"done"}
+    """
+    import json
+
+    scope = folder_scope
+    if not scope and folder_id:
+        scope = None
+
+    chunks = retrieve_context(question, folder_scope=scope)
+    if not chunks and scope:
+        chunks = retrieve_context(question, folder_scope=None, top_k=4)
+
+    context_block = "\n\n---\n\n".join(
+        f"[{c['note_title']}]\n{c['content']}" for c in chunks
+    )
+
+    system_prompt = (
+        "You are NoteVault Assistant, a helpful AI with access to the user's notes. "
+        "Here are relevant excerpts from their notes:\n\n"
+        f"{context_block}\n\n"
+        "Answer based on this information, citing which note the info came from. "
+        "If the context does not contain enough information, say so."
+    )
+
+    # Build messages list from conversation history
+    messages: list[dict] = []
+    if conversation_history:
+        for msg in conversation_history:
+            messages.append({"role": msg["role"], "content": msg["content"]})
+    messages.append({"role": "user", "content": question})
+
+    if provider == "anthropic":
+        yield from _stream_anthropic(system_prompt, messages)
+    else:
+        yield from _stream_openai(system_prompt, messages)
+
+    # Emit source notes
+    seen = set()
+    source_notes = []
+    for c in chunks:
+        nid = c["note_id"]
+        if nid not in seen:
+            seen.add(nid)
+            source_notes.append(
+                {
+                    "note_id": nid,
+                    "note_title": c["note_title"],
+                    "folder_path": c["folder_path"],
+                }
+            )
+    yield f"data: {json.dumps({'type': 'source_notes', 'notes': source_notes})}\n\n"
+    yield f"data: {json.dumps({'type': 'done'})}\n\n"
+
+
 def _ask_anthropic(system: str, user: str) -> str:
     settings = get_settings()
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
@@ -168,6 +235,22 @@ def _ask_anthropic(system: str, user: str) -> str:
         messages=[{"role": "user", "content": user}],
     )
     return message.content[0].text
+
+
+def _stream_anthropic(system: str, messages: list[dict]):
+    """Yield SSE text_delta events from Anthropic streaming."""
+    import json
+
+    settings = get_settings()
+    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+    with client.messages.stream(
+        model="claude-sonnet-4-20250514",
+        max_tokens=1024,
+        system=system,
+        messages=messages,
+    ) as stream:
+        for text in stream.text_stream:
+            yield f"data: {json.dumps({'type': 'text_delta', 'delta': text})}\n\n"
 
 
 def _ask_openai(system: str, user: str) -> str:
@@ -182,3 +265,24 @@ def _ask_openai(system: str, user: str) -> str:
         max_tokens=1024,
     )
     return response.choices[0].message.content
+
+
+def _stream_openai(system: str, messages: list[dict]):
+    """Yield SSE text_delta events from OpenAI streaming."""
+    import json
+
+    settings = get_settings()
+    client = openai.OpenAI(api_key=settings.openai_api_key)
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": system},
+            *messages,
+        ],
+        max_tokens=1024,
+        stream=True,
+    )
+    for chunk in response:
+        if chunk.choices and chunk.choices[0].delta.content:
+            delta = chunk.choices[0].delta.content
+            yield f"data: {json.dumps({'type': 'text_delta', 'delta': delta})}\n\n"
