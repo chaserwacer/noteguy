@@ -13,22 +13,22 @@ import EditorToolbar from "./EditorToolbar";
 import MarkdownPreview from "./MarkdownPreview";
 import HistoryPanel from "./HistoryPanel";
 
-const SAVE_DEBOUNCE_MS = 800;
+const SAVE_DEBOUNCE_MS = 1200;
 
 /* ── Syntax highlight style ──────────────────────────────────────────────── */
 
 const mdHighlight = HighlightStyle.define([
-  { tag: tags.heading1, color: "#7aa2f7", fontWeight: "700", fontSize: "1.6em" },
-  { tag: tags.heading2, color: "#7aa2f7", fontWeight: "600", fontSize: "1.35em" },
-  { tag: tags.heading3, color: "#7aa2f7", fontWeight: "600", fontSize: "1.15em" },
-  { tag: tags.heading4, color: "#7aa2f7", fontWeight: "500" },
-  { tag: tags.strong, color: "#c0caf5", fontWeight: "700" },
-  { tag: tags.emphasis, color: "#c0caf5", fontStyle: "italic" },
-  { tag: tags.monospace, color: "#9ece6a", fontFamily: "'JetBrains Mono', monospace" },
-  { tag: tags.link, color: "#89b4fa", textDecoration: "underline" },
-  { tag: tags.url, color: "#565f89" },
-  { tag: tags.quote, color: "#565f89", fontStyle: "italic" },
-  { tag: tags.processingInstruction, color: "#565f89" }, // markdown markers like **, #, etc.
+  { tag: tags.heading1, color: "#e8e4df", fontWeight: "700", fontSize: "1.6em" },
+  { tag: tags.heading2, color: "#e8e4df", fontWeight: "600", fontSize: "1.35em" },
+  { tag: tags.heading3, color: "#e8e4df", fontWeight: "600", fontSize: "1.15em" },
+  { tag: tags.heading4, color: "#e8e4df", fontWeight: "500" },
+  { tag: tags.strong, color: "#e8e4df", fontWeight: "700" },
+  { tag: tags.emphasis, color: "#e8e4df", fontStyle: "italic" },
+  { tag: tags.monospace, color: "#7dae80", fontFamily: "'JetBrains Mono', monospace" },
+  { tag: tags.link, color: "#c4956a", textDecoration: "underline" },
+  { tag: tags.url, color: "#6b6560" },
+  { tag: tags.quote, color: "#a8a29e", fontStyle: "italic" },
+  { tag: tags.processingInstruction, color: "#6b6560" },
 ]);
 
 /* ── Editor theme ────────────────────────────────────────────────────────── */
@@ -36,25 +36,26 @@ const mdHighlight = HighlightStyle.define([
 const vaultTheme = EditorView.theme(
   {
     "&": {
-      backgroundColor: "#16161e",
-      color: "#c0caf5",
-      fontFamily: "'JetBrains Mono', monospace",
-      fontSize: "14px",
-      lineHeight: "1.8",
+      backgroundColor: "#191919",
+      color: "#e8e4df",
+      fontFamily: "'Inter', system-ui, sans-serif",
+      fontSize: "15px",
+      lineHeight: "1.75",
       height: "100%",
     },
     ".cm-content": {
-      padding: "1.5rem 2rem",
-      caretColor: "#7aa2f7",
+      padding: "1rem 2rem",
+      caretColor: "#c4956a",
       maxWidth: "72ch",
       marginLeft: "auto",
       marginRight: "auto",
     },
     ".cm-cursor": {
-      borderLeftColor: "#7aa2f7",
+      borderLeftColor: "#c4956a",
+      borderLeftWidth: "2px",
     },
     "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
-      backgroundColor: "#3b4261",
+      backgroundColor: "rgba(196, 149, 106, 0.15)",
     },
     ".cm-gutters": {
       display: "none",
@@ -63,7 +64,7 @@ const vaultTheme = EditorView.theme(
       overflow: "auto",
     },
     ".cm-placeholder": {
-      color: "#3b4261",
+      color: "#3a3a3a",
       fontStyle: "italic",
     },
     "&.cm-focused": {
@@ -100,7 +101,7 @@ export default function Editor() {
   const [showPreview, setShowPreview] = useState(false);
   const [toolbarVisible, setToolbarVisible] = useState(false);
 
-  /* ── Autosave content (800ms debounce) ─────────────────────────────────── */
+  /* ── Autosave content ────────────────────────────────────────────────────── */
 
   const handleContentChange = useCallback(
     (content: string) => {
@@ -116,7 +117,7 @@ export default function Editor() {
     [activeNoteId, saveNote],
   );
 
-  /* ── Autosave title (800ms debounce) ───────────────────────────────────── */
+  /* ── Autosave title ──────────────────────────────────────────────────────── */
 
   const handleTitleChange = useCallback(
     (title: string) => {
@@ -163,7 +164,6 @@ export default function Editor() {
       clearTimeout(saveTimerRef.current);
       view.destroy();
     };
-    // Re-create when note changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNoteId]);
 
@@ -206,24 +206,26 @@ export default function Editor() {
 
   if (!activeNote) {
     return (
-      <div className="flex items-center justify-center h-full bg-[#16161e] text-vault-muted text-sm">
-        Select or create a note to start writing.
+      <div className="flex items-center justify-center h-full bg-vault-bg text-vault-muted text-sm select-none">
+        <div className="text-center space-y-2">
+          <div className="text-2xl opacity-30">&#9998;</div>
+          <p>Select or create a note to start writing</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full bg-[#16161e] relative">
-      {/* Editor content area */}
+    <div className="flex h-full bg-vault-bg relative">
       <div className="flex flex-col flex-1 min-w-0">
         {/* Title field */}
-        <div className="px-8 pt-6 pb-2 max-w-[72ch] mx-auto w-full">
+        <div className="px-8 pt-8 pb-1 max-w-[72ch] mx-auto w-full">
           <input
             type="text"
             value={activeNote.title}
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="Untitled"
-            className="w-full bg-transparent text-vault-text text-2xl font-semibold outline-none placeholder:text-vault-border font-mono"
+            className="w-full bg-transparent text-vault-text text-[28px] font-bold outline-none placeholder:text-vault-border-strong"
           />
         </div>
 
@@ -260,10 +262,10 @@ export default function Editor() {
 
           {/* Version preview overlay */}
           {selectedVersionSha && previewContent !== null && (
-            <div className="absolute inset-0 z-10 bg-[#16161e] overflow-auto">
+            <div className="absolute inset-0 z-10 bg-vault-bg overflow-auto">
               <div className="px-8 pt-6 pb-2 max-w-[72ch] mx-auto">
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xs font-mono text-vault-muted bg-vault-border/40 px-2 py-0.5 rounded">
+                  <span className="text-xs font-mono text-vault-muted bg-vault-surface px-2 py-0.5 rounded">
                     {selectedVersionSha.slice(0, 7)}
                   </span>
                   <span className="text-xs text-vault-muted">
@@ -280,13 +282,13 @@ export default function Editor() {
 
         {/* Save status indicator */}
         {saveStatus !== "idle" && (
-          <div className="absolute bottom-3 right-3 text-xs text-vault-muted">
+          <div className="absolute bottom-3 right-3 text-xs text-vault-muted animate-fade-in">
             {saveStatus === "saving" ? "Saving..." : "Saved"}
           </div>
         )}
       </div>
 
-      {/* History panel — right side */}
+      {/* History panel */}
       {historyPanelOpen && <HistoryPanel />}
     </div>
   );

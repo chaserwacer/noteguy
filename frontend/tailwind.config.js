@@ -4,18 +4,43 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
         mono: ["JetBrains Mono", "Fira Code", "monospace"],
-        sans: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
         vault: {
-          bg: "#1a1b26",
-          surface: "#24283b",
-          border: "#3b4261",
-          text: "#c0caf5",
-          muted: "#565f89",
-          accent: "#7aa2f7",
-          "accent-hover": "#89b4fa",
+          bg: "#191919",
+          surface: "#1e1e1e",
+          "surface-hover": "#252525",
+          border: "#2e2e2e",
+          "border-strong": "#3a3a3a",
+          text: "#e8e4df",
+          "text-secondary": "#a8a29e",
+          muted: "#6b6560",
+          accent: "#c4956a",
+          "accent-hover": "#d4a57a",
+          "accent-subtle": "rgba(196, 149, 106, 0.12)",
+          success: "#7dae80",
+          danger: "#d48585",
+        },
+      },
+      boxShadow: {
+        modal: "0 -4px 32px rgba(0, 0, 0, 0.4)",
+        "modal-full": "0 0 0 1px rgba(46, 46, 46, 0.5)",
+        float: "0 2px 12px rgba(0, 0, 0, 0.3)",
+      },
+      animation: {
+        "slide-up": "slideUp 200ms ease-out",
+        "fade-in": "fadeIn 150ms ease-out",
+      },
+      keyframes: {
+        slideUp: {
+          from: { transform: "translateY(100%)", opacity: "0" },
+          to: { transform: "translateY(0)", opacity: "1" },
+        },
+        fadeIn: {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
         },
       },
     },

@@ -2,9 +2,13 @@
 
 Wraps GitPython to provide automatic commits on note CRUD operations
 and history browsing. Git failures are logged but never block note ops.
+
+Update commits are batched: at most one commit per note per day to avoid
+excessive git overhead that causes input lag.
 """
 
 import logging
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -22,6 +26,9 @@ class GitService:
     def __init__(self, vault_path: str) -> None:
         self.vault = Path(vault_path)
         self.repo: Optional[Repo] = None
+        # Track which notes have been committed today to batch updates
+        # Key: (date_str, relative_path) -> True if already committed today
+        self._committed_today: dict[tuple[str, str], bool] = {}
 
     def ensure_repo(self) -> None:
         """Initialise or open the git repo at the vault root."""
@@ -47,6 +54,11 @@ class GitService:
         """Convert an absolute path to a vault-relative posix path."""
         return str(abs_path.relative_to(self.vault).as_posix())
 
+    def _today_key(self, rel_path: str) -> tuple[str, str]:
+        """Return a cache key for today + file path."""
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        return (today, rel_path)
+
     def commit_note(self, abs_path: Path, message: str) -> Optional[str]:
         """Stage and commit a single note file. Returns the commit SHA."""
         if not self.repo:
@@ -60,17 +72,60 @@ class GitService:
             logger.exception("Git commit failed for %s", abs_path)
             return None
 
+    def commit_note_batched(self, abs_path: Path, message: str) -> Optional[str]:
+        """Stage and commit a note, but only once per day per file.
+
+        For update operations, this avoids creating hundreds of commits
+        from autosave. The note is still staged so changes aren't lost,
+        but the actual commit only happens once per calendar day (UTC).
+        """
+        if not self.repo:
+            return None
+        try:
+            rel = self._rel(abs_path)
+            # Always stage the file so working tree stays clean
+            self.repo.index.add([rel])
+
+            key = self._today_key(rel)
+            if key in self._committed_today:
+                # Already committed today — just stage, skip commit
+                logger.debug("Skipping commit for %s (already committed today)", rel)
+                return None
+
+            commit = self.repo.index.commit(message)
+            self._committed_today[key] = True
+            return commit.hexsha
+        except Exception:
+            logger.exception("Git batched commit failed for %s", abs_path)
+            return None
+
+    def flush_staged(self) -> Optional[str]:
+        """Commit any staged but uncommitted changes.
+
+        Called during app shutdown or periodically to ensure no changes
+        are lost when using batched commits.
+        """
+        if not self.repo:
+            return None
+        try:
+            # Check if there are staged changes
+            if not self.repo.index.diff("HEAD"):
+                return None
+            commit = self.repo.index.commit("[auto] Batch save")
+            return commit.hexsha
+        except Exception:
+            logger.exception("Git flush failed")
+            return None
+
     def commit_delete(self, abs_path: Path, message: str) -> Optional[str]:
         """Stage a file deletion and commit. Returns the commit SHA."""
         if not self.repo:
             return None
         try:
             rel = self._rel(abs_path)
-            # Only remove from index if git is tracking the file
             try:
                 self.repo.index.remove([rel])
             except Exception:
-                # File may not be tracked yet — that's fine
                 return None
             commit = self.repo.index.commit(message)
             return commit.hexsha
@@ -152,7 +207,6 @@ class GitService:
             commit = self.repo.commit(sha)
             parents = commit.parents
             if not parents:
-                # First commit — diff against empty tree
                 diffs = commit.diff(
                     git.NULL_TREE, paths=[rel], create_patch=True
                 )

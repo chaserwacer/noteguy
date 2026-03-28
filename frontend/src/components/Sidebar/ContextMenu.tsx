@@ -30,17 +30,11 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
     };
   }, [onClose]);
 
-  // Keep the menu inside the viewport
-  const style: React.CSSProperties = {
-    left: x,
-    top: y,
-  };
-
   return (
     <div
       ref={ref}
-      className="fixed z-50 bg-vault-surface border border-vault-border rounded-md shadow-lg py-1 min-w-[160px]"
-      style={style}
+      className="fixed z-50 bg-vault-surface border border-vault-border-strong rounded-lg shadow-float py-1 min-w-[160px] animate-fade-in"
+      style={{ left: x, top: y }}
     >
       {items.map((item, i) => (
         <button
@@ -49,7 +43,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
             item.onClick();
             onClose();
           }}
-          className="w-full text-left px-3 py-1.5 text-sm text-vault-text hover:bg-vault-accent/10 hover:text-vault-accent transition-colors duration-150"
+          className="w-full text-left px-3 py-1.5 text-[13px] text-vault-text hover:bg-vault-surface-hover transition-colors"
         >
           {item.label}
         </button>
