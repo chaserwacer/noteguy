@@ -20,7 +20,7 @@ const buttons: ToolbarButton[] = [
   { label: "B", title: "Bold", before: "**", after: "**" },
   { label: "I", title: "Italic", before: "_", after: "_" },
   { label: "<>", title: "Code", before: "`", after: "`" },
-  { label: "🔗", title: "Link", before: "[", after: "](url)" },
+  { label: "Link", title: "Link", before: "[", after: "](url)" },
 ];
 
 export default function EditorToolbar({
@@ -33,7 +33,7 @@ export default function EditorToolbar({
 }: ToolbarProps) {
   return (
     <div
-      className={`flex items-center gap-1 px-3 py-1.5 bg-vault-surface/90 backdrop-blur-sm rounded-lg shadow-lg border border-vault-border/50 mx-auto w-fit mt-2 transition-opacity duration-150 ${
+      className={`flex items-center gap-0.5 px-2 py-1 bg-vault-surface border border-vault-border rounded-lg shadow-float mx-auto w-fit mt-2 transition-opacity duration-150 ${
         visible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
@@ -42,10 +42,10 @@ export default function EditorToolbar({
           key={btn.label}
           title={btn.title}
           onMouseDown={(e) => {
-            e.preventDefault(); // keep editor focus
+            e.preventDefault();
             onCommand(btn.before, btn.after);
           }}
-          className="px-2 py-0.5 text-xs font-mono text-vault-muted hover:text-vault-text hover:bg-vault-border/40 rounded transition-colors duration-150"
+          className="px-2 py-0.5 text-xs text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-hover rounded transition-colors"
         >
           {btn.label}
         </button>
@@ -59,10 +59,10 @@ export default function EditorToolbar({
           e.preventDefault();
           onTogglePreview();
         }}
-        className={`px-2 py-0.5 text-xs font-mono rounded transition-colors duration-150 ${
+        className={`px-2 py-0.5 text-xs rounded transition-colors ${
           previewActive
-            ? "text-vault-accent bg-vault-accent/10"
-            : "text-vault-muted hover:text-vault-text hover:bg-vault-border/40"
+            ? "text-vault-accent bg-vault-accent-subtle"
+            : "text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-hover"
         }`}
       >
         Preview
@@ -74,10 +74,10 @@ export default function EditorToolbar({
           e.preventDefault();
           onToggleHistory();
         }}
-        className={`px-2 py-0.5 text-xs font-mono rounded transition-colors duration-150 ${
+        className={`px-2 py-0.5 text-xs rounded transition-colors ${
           historyActive
-            ? "text-vault-accent bg-vault-accent/10"
-            : "text-vault-muted hover:text-vault-text hover:bg-vault-border/40"
+            ? "text-vault-accent bg-vault-accent-subtle"
+            : "text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-hover"
         }`}
       >
         History

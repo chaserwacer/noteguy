@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -16,15 +16,15 @@
 
   /* Scrollbar styling */
   ::-webkit-scrollbar {
-    @apply w-2;
+    @apply w-1.5;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-vault-bg;
+    @apply bg-transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-vault-border rounded-full;
+    @apply bg-vault-border-strong rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -33,10 +33,9 @@
 }
 
 @layer utilities {
-  /* Default transition duration used across all sidebar interactions */
   .transition-sidebar {
     transition-property: color, background-color, opacity, transform;
-    transition-duration: 150ms;
+    transition-duration: 120ms;
     transition-timing-function: ease;
   }
 }
@@ -44,14 +43,14 @@
 /* ── Markdown preview prose styling ────────────────────────────────────── */
 
 .prose-vault {
-  color: #c0caf5;
+  color: #e8e4df;
   font-family: "Inter", system-ui, sans-serif;
   font-size: 15px;
   line-height: 1.75;
 }
 
 .prose-vault h1 {
-  color: #7aa2f7;
+  color: #e8e4df;
   font-size: 1.8em;
   font-weight: 700;
   margin: 1.5em 0 0.6em;
@@ -59,7 +58,7 @@
 }
 
 .prose-vault h2 {
-  color: #7aa2f7;
+  color: #e8e4df;
   font-size: 1.4em;
   font-weight: 600;
   margin: 1.3em 0 0.5em;
@@ -67,7 +66,7 @@
 }
 
 .prose-vault h3 {
-  color: #7aa2f7;
+  color: #e8e4df;
   font-size: 1.15em;
   font-weight: 600;
   margin: 1.2em 0 0.4em;
@@ -86,23 +85,24 @@
 }
 
 .prose-vault a {
-  color: #89b4fa;
+  color: #c4956a;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .prose-vault code {
-  color: #9ece6a;
+  color: #7dae80;
   font-family: "JetBrains Mono", monospace;
   font-size: 0.9em;
-  background: #1a1b26;
+  background: #252525;
   padding: 0.15em 0.35em;
   border-radius: 4px;
 }
 
 .prose-vault pre {
-  background: #1a1b26;
-  border-radius: 6px;
+  background: #1a1a1a;
+  border: 1px solid #2e2e2e;
+  border-radius: 8px;
   padding: 1em;
   overflow-x: auto;
   margin: 1em 0;
@@ -114,9 +114,9 @@
 }
 
 .prose-vault blockquote {
-  border-left: 3px solid #3b4261;
+  border-left: 2px solid #3a3a3a;
   padding-left: 1em;
-  color: #565f89;
+  color: #a8a29e;
   font-style: italic;
   margin: 1em 0;
 }
@@ -141,7 +141,7 @@
 
 .prose-vault hr {
   border: none;
-  border-top: 1px solid #3b4261;
+  border-top: 1px solid #2e2e2e;
   margin: 1.5em 0;
 }
 
@@ -153,17 +153,17 @@
 
 .prose-vault th,
 .prose-vault td {
-  border: 1px solid #3b4261;
+  border: 1px solid #2e2e2e;
   padding: 0.5em 0.75em;
   text-align: left;
 }
 
 .prose-vault th {
-  background: #1a1b26;
+  background: #252525;
   font-weight: 600;
 }
 
 .prose-vault img {
   max-width: 100%;
-  border-radius: 6px;
+  border-radius: 8px;
 }

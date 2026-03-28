@@ -1,124 +1,65 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Editor from "@/components/Editor";
 import Chat from "@/components/Chat";
 
-const MIN_CHAT_WIDTH = 280;
-const MAX_CHAT_FRACTION = 0.6;
-const DEFAULT_CHAT_FRACTION = 0.4;
-
 export default function Layout() {
-  const [chatOpen, setChatOpen] = useState(true);
-  const [chatFraction, setChatFraction] = useState(DEFAULT_CHAT_FRACTION);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatExpanded, setChatExpanded] = useState(false);
 
-  // ── Keyboard shortcut: Cmd/Ctrl + Shift + C ──────────────────────────
+  // Keyboard shortcut: Cmd/Ctrl + Shift + C
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "C") {
         e.preventDefault();
         setChatOpen((prev) => !prev);
+        setChatExpanded(false);
+      }
+      // Escape to close expanded chat
+      if (e.key === "Escape" && chatExpanded) {
+        setChatExpanded(false);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
-
-  // ── Resize handle drag logic ─────────────────────────────────────────
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      if (!containerRef.current) return;
-      e.preventDefault();
-      isDragging.current = true;
-      const el = e.currentTarget as HTMLElement;
-      el.setPointerCapture(e.pointerId);
-
-      const containerRect = containerRef.current.getBoundingClientRect();
-
-      const onPointerMove = (ev: PointerEvent) => {
-        if (!isDragging.current) return;
-        const containerWidth = containerRect.width;
-        // Chat is on the right — calculate from right edge
-        const chatWidth = containerRect.right - ev.clientX;
-        let fraction = chatWidth / containerWidth;
-        // Clamp
-        const minFraction = MIN_CHAT_WIDTH / containerWidth;
-        fraction = Math.max(minFraction, Math.min(MAX_CHAT_FRACTION, fraction));
-        setChatFraction(fraction);
-      };
-
-      const onPointerUp = () => {
-        isDragging.current = false;
-        window.removeEventListener("pointermove", onPointerMove);
-        window.removeEventListener("pointerup", onPointerUp);
-      };
-
-      window.addEventListener("pointermove", onPointerMove);
-      window.addEventListener("pointerup", onPointerUp);
-    },
-    [],
-  );
-
-  const chatWidthPercent = chatOpen ? `${chatFraction * 100}%` : "0px";
+  }, [chatExpanded]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
-      {/* Sidebar — fixed width file tree */}
+    <div className="flex h-screen w-screen overflow-hidden bg-vault-bg">
+      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main content area (editor + chat) */}
-      <div ref={containerRef} className="flex flex-1 min-w-0">
-        {/* Editor — fills remaining space */}
-        <main
-          className="min-w-0"
-          style={{
-            flex: "1 1 0%",
-            transition: isDragging.current
-              ? "none"
-              : "flex 200ms ease",
-          }}
+      {/* Editor fills remaining space */}
+      <main className="flex-1 min-w-0">
+        <Editor />
+      </main>
+
+      {/* Chat modal (bottom sheet / fullscreen) */}
+      <Chat
+        isOpen={chatOpen}
+        isExpanded={chatExpanded}
+        onExpand={() => setChatExpanded(true)}
+        onCollapse={() => setChatExpanded(false)}
+        onClose={() => {
+          setChatOpen(false);
+          setChatExpanded(false);
+        }}
+      />
+
+      {/* Chat FAB button */}
+      {!chatOpen && (
+        <button
+          onClick={() => setChatOpen(true)}
+          className="fixed bottom-4 right-4 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full bg-vault-surface border border-vault-border shadow-float text-vault-text-secondary hover:text-vault-text hover:border-vault-border-strong transition-all group"
+          title="Open AI Chat (Ctrl+Shift+C)"
         >
-          <Editor />
-        </main>
-
-        {/* Resize handle */}
-        {chatOpen && (
-          <div
-            onPointerDown={handlePointerDown}
-            className="w-1 shrink-0 cursor-col-resize bg-vault-border hover:bg-vault-accent transition-colors relative group"
-          >
-            {/* Larger invisible hit target */}
-            <div className="absolute inset-y-0 -left-1 -right-1" />
-          </div>
-        )}
-
-        {/* Chat pane */}
-        <div
-          className="shrink-0 overflow-hidden"
-          style={{
-            width: chatWidthPercent,
-            transition: isDragging.current
-              ? "none"
-              : "width 200ms ease",
-          }}
-        >
-          {chatOpen && <Chat />}
-        </div>
-      </div>
-
-      {/* Chat toggle button */}
-      <button
-        onClick={() => setChatOpen((prev) => !prev)}
-        className="fixed bottom-4 right-4 z-50 p-2 rounded-full bg-vault-accent text-vault-bg shadow-lg hover:bg-vault-accent-hover transition-colors"
-        title={
-          chatOpen
-            ? "Hide Chat (Ctrl+Shift+C)"
-            : "Show Chat (Ctrl+Shift+C)"
-        }
-      >
-        {chatOpen ? "✕" : "💬"}
-      </button>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-vault-accent">
+            <path d="M2 3h12v8H5l-3 3V3z" />
+            <path d="M5 6.5h6M5 8.5h4" />
+          </svg>
+          <span className="text-xs font-medium">AI</span>
+        </button>
+      )}
     </div>
   );
 }

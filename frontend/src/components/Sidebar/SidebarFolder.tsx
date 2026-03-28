@@ -2,8 +2,6 @@ import { useState } from "react";
 import type { FolderData, NoteData } from "@/api/client";
 import SidebarNote from "./SidebarNote";
 
-/* ── SVG Icons ──────────────────────────────────────────────────────────── */
-
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
@@ -15,7 +13,7 @@ function ChevronIcon({ open }: { open: boolean }) {
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`shrink-0 transition-transform duration-150 ${open ? "rotate-90" : ""}`}
+      className={`shrink-0 transition-transform duration-120 ${open ? "rotate-90" : ""}`}
     >
       <path d="M4.5 2.5L7.5 6L4.5 9.5" />
     </svg>
@@ -25,23 +23,21 @@ function ChevronIcon({ open }: { open: boolean }) {
 function FolderIcon({ open }: { open: boolean }) {
   return (
     <svg
-      width="16"
-      height="16"
+      width="15"
+      height="15"
       viewBox="0 0 16 16"
       fill={open ? "currentColor" : "none"}
-      fillOpacity={open ? 0.2 : 0}
+      fillOpacity={open ? 0.15 : 0}
       stroke="currentColor"
       strokeWidth="1.2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="shrink-0"
+      className="shrink-0 opacity-60"
     >
       <path d="M2 4.5V12.5H14V6.5H8L6.5 4.5H2Z" />
     </svg>
   );
 }
-
-/* ── Component ──────────────────────────────────────────────────────────── */
 
 interface SidebarFolderProps {
   folder: FolderData;
@@ -89,7 +85,6 @@ export default function SidebarFolder({
 
   return (
     <div>
-      {/* Folder row */}
       <button
         onClick={handleClick}
         onContextMenu={(e) => onFolderContextMenu(e, folder.id)}
@@ -106,11 +101,11 @@ export default function SidebarFolder({
           const noteId = e.dataTransfer.getData("text/note-id");
           if (noteId) onMoveNote(noteId, folder.id);
         }}
-        className={`w-full flex items-center gap-1.5 px-2 py-1 rounded text-sm transition-colors duration-150 ${
+        className={`w-full flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[13px] transition-colors ${
           isActive
-            ? "bg-vault-accent/10 text-vault-accent"
-            : "text-vault-muted hover:text-vault-text hover:bg-vault-border/40"
-        } ${isDragOver ? "ring-1 ring-vault-accent bg-vault-accent/20" : ""}`}
+            ? "bg-vault-accent-subtle text-vault-accent"
+            : "text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-hover"
+        } ${isDragOver ? "ring-1 ring-vault-accent bg-vault-accent-subtle" : ""}`}
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
       >
         <ChevronIcon open={isOpen} />
@@ -118,9 +113,8 @@ export default function SidebarFolder({
         <span className="truncate">{folder.name}</span>
       </button>
 
-      {/* Expanded children */}
       {isOpen && (
-        <div className="transition-all duration-150">
+        <div>
           {children.map((child) => (
             <SidebarFolder
               key={child.id}

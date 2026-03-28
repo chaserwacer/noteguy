@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.database import init_db
-from app.git_service import init_git_service
+from app.git_service import init_git_service, get_git_service
 from app.notes import router as notes_router
 from app.chat import router as chat_router
 from app.history import router as history_router
@@ -24,6 +24,11 @@ async def lifespan(app: FastAPI):
     Path(get_settings().vault_path).mkdir(parents=True, exist_ok=True)
     init_git_service()
     yield
+    # Flush any staged but uncommitted git changes on shutdown
+    try:
+        get_git_service().flush_staged()
+    except Exception:
+        pass
 
 
 app = FastAPI(

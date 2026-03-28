@@ -22,7 +22,6 @@ const HistoryPanel: FC = () => {
   const toggleHistoryPanel = useNoteStore((s) => s.toggleHistoryPanel);
   const loadHistory = useNoteStore((s) => s.loadHistory);
 
-  // Reload history when the active note changes
   useEffect(() => {
     if (activeNoteId) {
       loadHistory(activeNoteId);
@@ -33,12 +32,12 @@ const HistoryPanel: FC = () => {
     <div className="flex flex-col h-full border-l border-vault-border bg-vault-surface w-64 shrink-0">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-vault-border">
-        <h3 className="text-xs font-semibold text-vault-accent uppercase tracking-wide">
+        <h3 className="text-xs font-medium text-vault-text-secondary uppercase tracking-wide">
           Version History
         </h3>
         <button
           onClick={toggleHistoryPanel}
-          className="text-vault-muted hover:text-vault-text transition-colors"
+          className="text-vault-muted hover:text-vault-text transition-colors p-0.5 rounded hover:bg-vault-surface-hover"
           title="Close history"
         >
           <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
@@ -51,10 +50,10 @@ const HistoryPanel: FC = () => {
       <div className="flex-1 overflow-y-auto">
         {versionHistory.length === 0 ? (
           <p className="text-xs text-vault-muted text-center mt-8 px-3">
-            No version history yet. History is recorded when you save notes.
+            No version history yet.
           </p>
         ) : (
-          <div className="py-2">
+          <div className="py-1">
             {versionHistory.map((entry, idx) => {
               const isSelected = selectedVersionSha === entry.sha;
               const isCurrent = idx === 0;
@@ -66,17 +65,16 @@ const HistoryPanel: FC = () => {
                   }
                   className={`w-full text-left px-3 py-2 transition-colors ${
                     isSelected
-                      ? "bg-vault-accent/15 border-l-2 border-vault-accent"
-                      : "hover:bg-vault-border/30 border-l-2 border-transparent"
+                      ? "bg-vault-accent-subtle border-l-2 border-vault-accent"
+                      : "hover:bg-vault-surface-hover border-l-2 border-transparent"
                   }`}
                 >
                   <div className="flex items-center gap-1.5">
-                    {/* Commit dot */}
                     <div
-                      className={`w-2 h-2 rounded-full shrink-0 ${
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                         isCurrent
                           ? "bg-vault-accent"
-                          : "bg-vault-muted/50"
+                          : "bg-vault-muted/40"
                       }`}
                     />
                     <span className="text-xs font-mono text-vault-muted">
@@ -86,19 +84,18 @@ const HistoryPanel: FC = () => {
                       {relativeTime(entry.timestamp)}
                     </span>
                   </div>
-                  <p className="text-xs text-vault-text mt-0.5 pl-3.5 truncate">
+                  <p className="text-xs text-vault-text-secondary mt-0.5 pl-3 truncate">
                     {entry.message}
                   </p>
 
-                  {/* Restore button */}
                   {isSelected && !isCurrent && activeNoteId && (
-                    <div className="pl-3.5 mt-1.5">
+                    <div className="pl-3 mt-1.5">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           restoreVersion(activeNoteId, entry.sha);
                         }}
-                        className="px-2 py-0.5 text-[11px] font-medium rounded bg-vault-accent text-vault-bg hover:bg-vault-accent-hover transition-colors"
+                        className="px-2.5 py-0.5 text-[11px] font-medium rounded-md bg-vault-accent text-vault-bg hover:bg-vault-accent-hover transition-colors"
                       >
                         Restore this version
                       </button>

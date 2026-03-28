@@ -1,27 +1,23 @@
 import type { NoteData } from "@/api/client";
 
-/* ── SVG Icon ───────────────────────────────────────────────────────────── */
-
 function FileIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="15"
+      height="15"
       viewBox="0 0 16 16"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="shrink-0"
+      className="shrink-0 opacity-60"
     >
       <path d="M4.5 2H10L12 4.5V14H4.5V2Z" />
       <path d="M10 2V4.5H12" />
     </svg>
   );
 }
-
-/* ── Component ──────────────────────────────────────────────────────────── */
 
 interface SidebarNoteProps {
   note: NoteData;
@@ -47,15 +43,15 @@ export default function SidebarNote({
       }}
       onClick={() => onSelect(note.id)}
       onContextMenu={(e) => onContextMenu(e, note.id)}
-      className={`w-full flex items-center gap-1.5 px-2 py-1 rounded text-sm transition-colors duration-150 ${
+      className={`w-full flex items-center gap-2 px-2.5 py-1 rounded-md text-[13px] transition-colors ${
         isActive
-          ? "bg-vault-accent/10 text-vault-accent font-medium"
-          : "text-vault-muted hover:text-vault-text hover:bg-vault-border/40"
+          ? "bg-vault-accent-subtle text-vault-accent font-medium"
+          : "text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-hover"
       }`}
       style={{ paddingLeft: `${depth * 12 + 20}px` }}
     >
       <FileIcon />
-      <span className="truncate font-mono text-[13px]">
+      <span className="truncate">
         {note.title || "Untitled"}
       </span>
     </button>

@@ -72,8 +72,6 @@ export default function Sidebar() {
     load();
   }, [load]);
 
-  // ── Keyboard shortcut: Cmd/Ctrl+N → new note ───────────────────────────
-
   const handleNewNote = useCallback(() => addNote(), [addNote]);
 
   useEffect(() => {
@@ -87,14 +85,10 @@ export default function Sidebar() {
     return () => document.removeEventListener("keydown", handler);
   }, [handleNewNote]);
 
-  // ── Header actions ──────────────────────────────────────────────────────
-
   const handleNewFolder = () => {
     const name = prompt("Folder name:");
     if (name?.trim()) addFolder(name.trim(), activeFolderId ?? undefined);
   };
-
-  // ── Context menu handlers ───────────────────────────────────────────────
 
   const handleFolderContextMenu = (e: React.MouseEvent, folderId: string) => {
     e.preventDefault();
@@ -164,7 +158,6 @@ export default function Sidebar() {
   };
 
   const handleBackgroundContextMenu = (e: React.MouseEvent) => {
-    // Only trigger on the nav background, not on items
     if (e.target !== e.currentTarget) return;
     e.preventDefault();
     setContextMenu({
@@ -177,37 +170,33 @@ export default function Sidebar() {
     });
   };
 
-  // ── Drag-and-drop: drop onto sidebar background moves to root ──────────
-
   const handleBackgroundDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const noteId = e.dataTransfer.getData("text/note-id");
     if (noteId) moveNote(noteId, null);
   };
 
-  // ── Derived data ────────────────────────────────────────────────────────
-
   const rootFolders = folders.filter((f) => !f.parent_id);
   const rootNotes = notes.filter((n) => !n.folder_id);
 
   return (
-    <aside className="flex flex-col h-full w-64 border-r border-vault-border bg-vault-surface">
+    <aside className="flex flex-col h-full w-60 border-r border-vault-border bg-vault-surface select-none">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-vault-border">
-        <h1 className="text-sm font-semibold tracking-wide uppercase text-vault-accent">
+      <div className="flex items-center justify-between px-4 py-3">
+        <h1 className="text-[13px] font-semibold text-vault-text-secondary tracking-wide">
           NoteGuy
         </h1>
-        <div className="flex gap-1">
+        <div className="flex gap-0.5">
           <button
             onClick={handleNewFolder}
-            className="p-1.5 rounded hover:bg-vault-border text-vault-muted hover:text-vault-text transition-colors duration-150"
+            className="p-1.5 rounded-md text-vault-muted hover:text-vault-text hover:bg-vault-surface-hover transition-colors"
             title="New Folder"
           >
             <FolderPlusIcon />
           </button>
           <button
             onClick={handleNewNote}
-            className="p-1.5 rounded hover:bg-vault-border text-vault-muted hover:text-vault-text transition-colors duration-150"
+            className="p-1.5 rounded-md text-vault-muted hover:text-vault-text hover:bg-vault-surface-hover transition-colors"
             title="New Note (Ctrl+N)"
           >
             <PlusIcon />
@@ -218,10 +207,10 @@ export default function Sidebar() {
       {/* All Notes shortcut */}
       <button
         onClick={() => setActiveFolder(null)}
-        className={`px-4 py-2 text-left text-sm transition-colors duration-150 ${
+        className={`mx-2 px-3 py-1.5 text-left text-[13px] rounded-md transition-colors ${
           activeFolderId === null
-            ? "bg-vault-accent/10 text-vault-accent"
-            : "text-vault-muted hover:text-vault-text"
+            ? "bg-vault-accent-subtle text-vault-accent"
+            : "text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-hover"
         }`}
       >
         All Notes
@@ -229,7 +218,7 @@ export default function Sidebar() {
 
       {/* Folder tree + root notes */}
       <nav
-        className="flex-1 overflow-y-auto px-2 py-1 space-y-0.5"
+        className="flex-1 overflow-y-auto px-2 py-2 space-y-0.5"
         onContextMenu={handleBackgroundContextMenu}
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleBackgroundDrop}
@@ -253,7 +242,6 @@ export default function Sidebar() {
           />
         ))}
 
-        {/* Root-level notes (not in any folder) */}
         {rootNotes.map((note) => (
           <SidebarNote
             key={note.id}
@@ -265,7 +253,6 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Context menu overlay */}
       {contextMenu && (
         <ContextMenu
           x={contextMenu.x}

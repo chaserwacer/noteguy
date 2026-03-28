@@ -21,7 +21,7 @@ from app.models import Note, Folder
 router = APIRouter(prefix="/api", tags=["notes"])
 
 
-# ── Background ingestion helpers ─────────────────────────────────────────────
+# ── Background helpers ─────────────────────────────────────────────────────
 
 
 def _schedule_ingest(background_tasks: BackgroundTasks, note_id: str) -> None:
@@ -34,6 +34,30 @@ def _bg_remove_chunks(note_id: str) -> None:
     """Remove all vector chunks for a deleted note."""
     from app.ingestion import remove_note_chunks
     remove_note_chunks(note_id)
+
+
+def _bg_git_commit_batched(abs_path_str: str, message: str) -> None:
+    """Run batched git commit in background to avoid blocking the response."""
+    gs = get_git_service()
+    gs.commit_note_batched(Path(abs_path_str), message)
+
+
+def _bg_git_commit(abs_path_str: str, message: str) -> None:
+    """Run git commit in background."""
+    gs = get_git_service()
+    gs.commit_note(Path(abs_path_str), message)
+
+
+def _bg_git_move(old_path_str: str, new_path_str: str, message: str) -> None:
+    """Run git move commit in background."""
+    gs = get_git_service()
+    gs.commit_move(Path(old_path_str), Path(new_path_str), message)
+
+
+def _bg_git_delete(abs_path_str: str, message: str) -> None:
+    """Run git delete commit in background."""
+    gs = get_git_service()
+    gs.commit_delete(Path(abs_path_str), message)
 
 
 # ── Vault file helpers ──────────────────────────────────────────────────────
@@ -166,12 +190,9 @@ def create_note(
     _write_note_file(note, session)
     _schedule_ingest(background_tasks, note.id)
 
-    # Git: commit the new note
-    gs = get_git_service()
-    gs.commit_note(
-        _note_disk_path(note, session),
-        f"[create] {note.title}",
-    )
+    # Git: commit the new note (always commit creates immediately, in background)
+    disk_path = _note_disk_path(note, session)
+    background_tasks.add_task(_bg_git_commit, str(disk_path), f"[create] {note.title}")
 
     return note
 
@@ -216,13 +237,18 @@ def _do_update_note(
     _write_note_file(note, session)
     _schedule_ingest(background_tasks, note.id)
 
-    # Git: commit the update (or move)
-    gs = get_git_service()
+    # Git: commit in background
     new_disk_path = _note_disk_path(note, session)
     if moved and old_disk_path:
-        gs.commit_move(old_disk_path, new_disk_path, f"[move] {note.title}")
+        # Moves always get their own commit (important structural change)
+        background_tasks.add_task(
+            _bg_git_move, str(old_disk_path), str(new_disk_path), f"[move] {note.title}"
+        )
     else:
-        gs.commit_note(new_disk_path, f"[update] {note.title}")
+        # Regular updates use daily batching to avoid input lag
+        background_tasks.add_task(
+            _bg_git_commit_batched, str(new_disk_path), f"[update] {note.title}"
+        )
 
     return note
 
@@ -267,9 +293,8 @@ def delete_note(
     session.commit()
     background_tasks.add_task(_bg_remove_chunks, note_id)
 
-    # Git: commit the deletion
-    gs = get_git_service()
-    gs.commit_delete(disk_path, f"[delete] {title}")
+    # Git: commit the deletion in background
+    background_tasks.add_task(_bg_git_delete, str(disk_path), f"[delete] {title}")
 
 
 # ── Folder Endpoints ────────────────────────────────────────────────────────
@@ -376,11 +401,9 @@ def delete_folder(folder_id: str, session: Session = Depends(get_session)):
 
     # Collect paths for git before removing from disk
     deleted_note_paths = []
-    for fid in all_folder_ids:
-        fld = session.get(Folder, fid)  # already deleted above, skip
-        folder_dir = _vault_path() / folder.path
-        if folder_dir.exists():
-            deleted_note_paths.extend(folder_dir.rglob("*.md"))
+    folder_dir = _vault_path() / folder.path
+    if folder_dir.exists():
+        deleted_note_paths.extend(folder_dir.rglob("*.md"))
 
     # Remove the entire directory tree from disk
     disk_path = _vault_path() / folder.path
