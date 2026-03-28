@@ -4,6 +4,10 @@ $RootDir = Split-Path -Parent $PSScriptRoot
 
 Write-Host "Starting NoteGuy development servers..." -ForegroundColor Cyan
 
+# Ensure backend Python dependencies are present in the active environment.
+Write-Host "Checking backend dependencies..." -ForegroundColor DarkCyan
+python -m pip install -r "$RootDir\backend\requirements.txt"
+
 # Backend
 $backend = Start-Process -NoNewWindow -PassThru -FilePath "python" `
     -ArgumentList "-m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000" `
