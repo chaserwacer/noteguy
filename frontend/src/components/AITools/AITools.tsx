@@ -2,6 +2,7 @@ import { useState, useCallback, type FC } from "react";
 import { useNoteStore } from "@/store/useNoteStore";
 import {
   fetchAIFrameworks,
+  fetchAIRoutingInfo,
   langchainAsk,
   llamaIndexQuery,
   crewaiResearch,
@@ -18,6 +19,7 @@ import {
   pydanticAiEnhance,
   pydanticAiConnections,
   type AIFrameworkInfo,
+  type AIRoutingInfo,
 } from "@/api/client";
 
 // ── Framework icons (simple SVG) ─────────────────────────────────────────
@@ -39,6 +41,25 @@ const FrameworkIcon: FC<{ id: string }> = ({ id }) => {
   );
 };
 
+// ── Provider badge ────────────────────────────────────────────────────────
+
+const LIGHT_TASKS = new Set([
+  "dspy_summarise", "dspy_topics",
+  "instructor_tags", "instructor_entities",
+  "pydantic_enhance",
+]);
+
+// Tasks that can route to Ollama when provider is "auto"
+const ROUTABLE_FRAMEWORKS: Record<string, string[]> = {
+  dspy: ["dspy_summarise", "dspy_topics"],
+  instructor: ["instructor_tags", "instructor_entities"],
+  pydantic_ai: ["pydantic_enhance"],
+};
+
+function frameworkHasLocalTasks(frameworkId: string): boolean {
+  return frameworkId in ROUTABLE_FRAMEWORKS;
+}
+
 // ── Tool card ────────────────────────────────────────────────────────────
 
 interface ToolAction {
@@ -46,7 +67,8 @@ interface ToolAction {
   description: string;
   requiresNote: boolean;
   requiresInput: boolean;
-  run: (noteId?: string, input?: string) => Promise<unknown>;
+  taskKey?: string; // whether this task can be locally routed
+  run: (noteId?: string, input?: string, provider?: string) => Promise<unknown>;
 }
 
 const FRAMEWORK_ACTIONS: Record<string, ToolAction[]> = {
@@ -56,7 +78,7 @@ const FRAMEWORK_ACTIONS: Record<string, ToolAction[]> = {
       description: "Answer a question using LangChain's RetrievalQA chain",
       requiresNote: false,
       requiresInput: true,
-      run: (_n, input) => langchainAsk(input!),
+      run: (_n, input, p) => langchainAsk(input!, undefined, p),
     },
   ],
   llama_index: [
@@ -65,7 +87,7 @@ const FRAMEWORK_ACTIONS: Record<string, ToolAction[]> = {
       description: "Query notes using LlamaIndex's vector store index",
       requiresNote: false,
       requiresInput: true,
-      run: (_n, input) => llamaIndexQuery(input!),
+      run: (_n, input, p) => llamaIndexQuery(input!, undefined, p),
     },
   ],
   crewai: [
@@ -74,21 +96,21 @@ const FRAMEWORK_ACTIONS: Record<string, ToolAction[]> = {
       description: "Multi-agent research across your notes",
       requiresNote: false,
       requiresInput: true,
-      run: (_n, input) => crewaiResearch(input!),
+      run: (_n, input, p) => crewaiResearch(input!, p),
     },
     {
       label: "Summarise Crew",
       description: "Multi-agent summarisation of a note",
       requiresNote: true,
       requiresInput: false,
-      run: (noteId) => crewaiSummarise(noteId!),
+      run: (noteId, _i, p) => crewaiSummarise(noteId!, p),
     },
     {
       label: "Writing Crew",
       description: "Multi-agent content generation on a topic",
       requiresNote: false,
       requiresInput: true,
-      run: (_n, input) => crewaiWrite(input!),
+      run: (_n, input, p) => crewaiWrite(input!, p),
     },
   ],
   dspy: [
@@ -97,21 +119,23 @@ const FRAMEWORK_ACTIONS: Record<string, ToolAction[]> = {
       description: "Chain-of-thought RAG with DSPy modules",
       requiresNote: false,
       requiresInput: true,
-      run: (_n, input) => dspyAsk(input!),
+      run: (_n, input, p) => dspyAsk(input!, undefined, p),
     },
     {
       label: "Summarise (DSPy)",
       description: "Structured summary with TL;DR and action items",
       requiresNote: true,
       requiresInput: false,
-      run: (noteId) => dspySummarise(noteId!),
+      taskKey: "dspy_summarise",
+      run: (noteId, _i, p) => dspySummarise(noteId!, p),
     },
     {
       label: "Extract Topics",
       description: "Extract topics, themes, and connections",
       requiresNote: true,
       requiresInput: false,
-      run: (noteId) => dspyTopics(noteId!),
+      taskKey: "dspy_topics",
+      run: (noteId, _i, p) => dspyTopics(noteId!, p),
     },
   ],
   instructor: [
@@ -120,21 +144,23 @@ const FRAMEWORK_ACTIONS: Record<string, ToolAction[]> = {
       description: "Extract structured tags and metadata with Pydantic validation",
       requiresNote: true,
       requiresInput: false,
-      run: (noteId) => instructorTags(noteId!),
+      taskKey: "instructor_tags",
+      run: (noteId, _i, p) => instructorTags(noteId!, p),
     },
     {
       label: "Extract Entities",
       description: "Find people, concepts, and technologies mentioned",
       requiresNote: true,
       requiresInput: false,
-      run: (noteId) => instructorEntities(noteId!),
+      taskKey: "instructor_entities",
+      run: (noteId, _i, p) => instructorEntities(noteId!, p),
     },
     {
       label: "Structured Summary",
       description: "Generate summary with action items and related topics",
       requiresNote: true,
       requiresInput: false,
-      run: (noteId) => instructorSummary(noteId!),
+      run: (noteId, _i, p) => instructorSummary(noteId!, p),
     },
   ],
   mem0: [
@@ -143,7 +169,7 @@ const FRAMEWORK_ACTIONS: Record<string, ToolAction[]> = {
       description: "Chat with persistent memory across sessions",
       requiresNote: false,
       requiresInput: true,
-      run: (_n, input) => mem0Chat(input!),
+      run: (_n, input, p) => mem0Chat(input!, undefined, p),
     },
   ],
   pydantic_ai: [
@@ -152,21 +178,22 @@ const FRAMEWORK_ACTIONS: Record<string, ToolAction[]> = {
       description: "Type-safe QA with confidence scores and follow-ups",
       requiresNote: false,
       requiresInput: true,
-      run: (_n, input) => pydanticAiAsk(input!),
+      run: (_n, input, p) => pydanticAiAsk(input!, undefined, p),
     },
     {
       label: "Enhance Note",
       description: "Improve grammar, structure, and formatting",
       requiresNote: true,
       requiresInput: false,
-      run: (noteId) => pydanticAiEnhance(noteId!),
+      taskKey: "pydantic_enhance",
+      run: (noteId, _i, p) => pydanticAiEnhance(noteId!, p),
     },
     {
       label: "Find Connections",
       description: "Discover links between this note and others",
       requiresNote: true,
       requiresInput: false,
-      run: (noteId) => pydanticAiConnections(noteId!),
+      run: (noteId, _i, p) => pydanticAiConnections(noteId!, p),
     },
   ],
 };
@@ -180,21 +207,27 @@ interface AIToolsProps {
 
 export default function AITools({ isOpen, onClose }: AIToolsProps) {
   const [frameworks, setFrameworks] = useState<AIFrameworkInfo[]>([]);
+  const [routingInfo, setRoutingInfo] = useState<AIRoutingInfo | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [selectedFramework, setSelectedFramework] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [provider, setProvider] = useState<string>("auto");
 
   const activeNoteId = useNoteStore((s) => s.activeNoteId);
 
-  // Load frameworks on first open
+  // Load frameworks and routing info on first open
   const loadFrameworks = useCallback(async () => {
     if (loaded) return;
     try {
-      const data = await fetchAIFrameworks();
-      setFrameworks(data.frameworks);
+      const [fwData, routeData] = await Promise.all([
+        fetchAIFrameworks(),
+        fetchAIRoutingInfo(),
+      ]);
+      setFrameworks(fwData.frameworks);
+      setRoutingInfo(routeData);
       setLoaded(true);
     } catch {
       setError("Failed to load AI frameworks");
@@ -224,6 +257,7 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
         const res = await action.run(
           activeNoteId ?? undefined,
           input.trim() || undefined,
+          provider,
         );
         setResult(JSON.stringify(res, null, 2));
       } catch (err: unknown) {
@@ -232,7 +266,7 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
         setLoading(false);
       }
     },
-    [activeNoteId, input],
+    [activeNoteId, input, provider],
   );
 
   if (!isOpen) return null;
@@ -252,14 +286,40 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
               7 frameworks &middot; LangChain, LlamaIndex, CrewAI, DSPy, Instructor, Mem0, PydanticAI
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-md text-vault-muted hover:text-vault-text hover:bg-vault-surface-hover transition-colors"
-          >
-            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Ollama status */}
+            {routingInfo && (
+              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium ${
+                routingInfo.ollama.available
+                  ? "bg-green-500/10 text-green-400"
+                  : "bg-vault-surface-hover text-vault-muted"
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${routingInfo.ollama.available ? "bg-green-400" : "bg-vault-muted"}`} />
+                {routingInfo.ollama.available
+                  ? `Ollama · ${routingInfo.ollama.model}`
+                  : "Ollama offline"}
+              </div>
+            )}
+            {/* Provider selector */}
+            <select
+              value={provider}
+              onChange={(e) => setProvider(e.target.value)}
+              className="text-[11px] bg-vault-bg border border-vault-border rounded-md px-2 py-1 text-vault-text-secondary focus:outline-none focus:ring-1 focus:ring-vault-accent"
+              title="Select AI provider. 'Auto' routes light tasks to local Ollama when available."
+            >
+              <option value="auto">Auto (smart routing)</option>
+              <option value="anthropic">Anthropic (cloud)</option>
+              <option value="openai">OpenAI (cloud)</option>
+            </select>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-md text-vault-muted hover:text-vault-text hover:bg-vault-surface-hover transition-colors"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-1 min-h-0">
@@ -319,20 +379,27 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
 
                 {/* Actions */}
                 <div className="px-5 py-3 border-b border-vault-border/30 flex flex-wrap gap-2">
-                  {actions.map((action) => (
-                    <button
-                      key={action.label}
-                      onClick={() => runAction(action)}
-                      disabled={loading}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-vault-accent-subtle text-vault-accent hover:bg-vault-accent/20 disabled:opacity-50 transition-colors"
-                      title={action.description}
-                    >
-                      {action.label}
-                      {action.requiresNote && (
-                        <span className="text-[9px] opacity-60">(note)</span>
-                      )}
-                    </button>
-                  ))}
+                  {actions.map((action) => {
+                    const isLocalRoutable = provider === "auto" && action.taskKey && LIGHT_TASKS.has(action.taskKey);
+                    const ollamaUp = routingInfo?.ollama.available;
+                    return (
+                      <button
+                        key={action.label}
+                        onClick={() => runAction(action)}
+                        disabled={loading}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-vault-accent-subtle text-vault-accent hover:bg-vault-accent/20 disabled:opacity-50 transition-colors"
+                        title={action.description}
+                      >
+                        {action.label}
+                        {action.requiresNote && (
+                          <span className="text-[9px] opacity-60">(note)</span>
+                        )}
+                        {isLocalRoutable && ollamaUp && (
+                          <span className="text-[9px] bg-green-500/20 text-green-400 px-1 rounded">local</span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* Result / Error */}
@@ -358,11 +425,31 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
                       {error}
                     </div>
                   )}
-                  {result && (
-                    <pre className="text-xs text-vault-text-secondary whitespace-pre-wrap font-mono bg-vault-bg rounded-md px-4 py-3 overflow-x-auto">
-                      {result}
-                    </pre>
-                  )}
+                  {result && (() => {
+                    let parsed: Record<string, unknown> | null = null;
+                    try { parsed = JSON.parse(result); } catch { /* ignore */ }
+                    const meta = parsed as Record<string, unknown> | null;
+                    const providerUsed = meta?.provider_used as string | undefined;
+                    const modelUsed = meta?.model_used as string | undefined;
+                    const isLocal = meta?.local_inference as boolean | undefined;
+                    return (
+                      <div className="space-y-2">
+                        {providerUsed && (
+                          <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium ${
+                            isLocal
+                              ? "bg-green-500/10 text-green-400"
+                              : "bg-vault-accent-subtle text-vault-accent"
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${isLocal ? "bg-green-400" : "bg-vault-accent"}`} />
+                            {isLocal ? "Local" : "Cloud"} · {modelUsed}
+                          </div>
+                        )}
+                        <pre className="text-xs text-vault-text-secondary whitespace-pre-wrap font-mono bg-vault-bg rounded-md px-4 py-3 overflow-x-auto">
+                          {result}
+                        </pre>
+                      </div>
+                    );
+                  })()}
                 </div>
               </>
             ) : (

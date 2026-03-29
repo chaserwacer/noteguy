@@ -99,6 +99,13 @@ ConnectionResult.model_rebuild()
 def _get_model(provider: str = "anthropic"):
     """Return a PydanticAI model instance."""
     settings = get_settings()
+    if provider == "ollama":
+        # Ollama exposes an OpenAI-compatible /v1 endpoint
+        return OpenAIModel(
+            settings.ollama_model,
+            base_url=f"{settings.ollama_base_url}/v1",
+            api_key="ollama",
+        )
     if provider == "anthropic":
         return AnthropicModel(
             "claude-sonnet-4-20250514",

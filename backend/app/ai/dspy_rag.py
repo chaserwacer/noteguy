@@ -31,7 +31,13 @@ from app.config import get_settings
 def _configure_dspy(provider: str = "anthropic") -> None:
     """Configure the global DSPy language model."""
     settings = get_settings()
-    if provider == "anthropic":
+    if provider == "ollama":
+        lm = dspy.LM(
+            model=f"ollama_chat/{settings.ollama_model}",
+            api_base=settings.ollama_base_url,
+            max_tokens=1024,
+        )
+    elif provider == "anthropic":
         lm = dspy.LM(
             model="anthropic/claude-sonnet-4-20250514",
             api_key=settings.anthropic_api_key,
