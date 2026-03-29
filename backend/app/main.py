@@ -15,6 +15,7 @@ from app.history import router as history_router
 from app.ingestion import router as ingestion_router
 from app.rag import router as search_router
 from app.context import router as context_router
+from app.ai.router import router as ai_router
 
 
 @asynccontextmanager
@@ -52,6 +53,7 @@ app.include_router(history_router)
 app.include_router(ingestion_router)
 app.include_router(search_router)
 app.include_router(context_router)
+app.include_router(ai_router)
 
 
 @app.get("/health")

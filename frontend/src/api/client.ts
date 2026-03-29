@@ -155,3 +155,246 @@ export function sendChatMessage(
     body: JSON.stringify({ message, folder_id: folderId }),
   });
 }
+
+// ── AI Frameworks ──────────────────────────────────────────────────────────
+
+export interface AIFrameworkInfo {
+  id: string;
+  name: string;
+  description: string;
+  capabilities: string[];
+  category: string;
+}
+
+export interface AIAskResponse {
+  answer: string;
+  sources?: string[];
+  reasoning?: string;
+  framework: string;
+}
+
+export interface AIAnalysisResponse {
+  category?: string;
+  tags?: Array<{ name: string; confidence: number }>;
+  complexity?: number;
+  summary_sentence?: string;
+  entities?: Array<{ name: string; entity_type: string; context: string }>;
+  key_concepts?: string[];
+  title_suggestion?: string;
+  tldr?: string;
+  key_points?: string[];
+  action_items?: Array<{ task: string; priority: string; deadline?: string }>;
+  related_topics?: string[];
+  framework: string;
+}
+
+export interface AICrewResponse {
+  result: string;
+  framework: string;
+}
+
+export interface AIMemoryResponse {
+  memories: Array<{ memory: string; score?: number; metadata?: Record<string, unknown> }>;
+  framework: string;
+}
+
+export interface AIEnhanceResponse {
+  enhanced_content: string;
+  changes_made: string[];
+  readability_score: number;
+  framework: string;
+}
+
+export interface AIConnectionResponse {
+  connections: Array<{ related_title: string; relationship: string; strength: number }>;
+  suggested_tags: string[];
+  knowledge_gaps: string[];
+  framework: string;
+}
+
+export function fetchAIFrameworks(): Promise<{ frameworks: AIFrameworkInfo[] }> {
+  return request("/api/ai/frameworks");
+}
+
+// LangChain
+export function langchainAsk(
+  question: string,
+  folderScope?: string,
+  provider = "anthropic",
+): Promise<AIAskResponse> {
+  return request("/api/ai/langchain/ask", {
+    method: "POST",
+    body: JSON.stringify({ question, folder_scope: folderScope, provider }),
+  });
+}
+
+// LlamaIndex
+export function llamaIndexQuery(
+  question: string,
+  folderScope?: string,
+  provider = "anthropic",
+): Promise<AIAskResponse> {
+  return request("/api/ai/llama-index/query", {
+    method: "POST",
+    body: JSON.stringify({ question, folder_scope: folderScope, provider }),
+  });
+}
+
+// CrewAI
+export function crewaiResearch(
+  question: string,
+  provider = "anthropic",
+): Promise<AICrewResponse> {
+  return request("/api/ai/crewai/research", {
+    method: "POST",
+    body: JSON.stringify({ question, provider }),
+  });
+}
+
+export function crewaiSummarise(
+  noteId: string,
+  provider = "anthropic",
+): Promise<AICrewResponse> {
+  return request("/api/ai/crewai/summarise", {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId, provider }),
+  });
+}
+
+export function crewaiWrite(
+  topic: string,
+  provider = "anthropic",
+): Promise<AICrewResponse> {
+  return request("/api/ai/crewai/write", {
+    method: "POST",
+    body: JSON.stringify({ topic, provider }),
+  });
+}
+
+// DSPy
+export function dspyAsk(
+  question: string,
+  folderScope?: string,
+  provider = "anthropic",
+): Promise<AIAskResponse> {
+  return request("/api/ai/dspy/ask", {
+    method: "POST",
+    body: JSON.stringify({ question, folder_scope: folderScope, provider }),
+  });
+}
+
+export function dspySummarise(
+  noteId: string,
+  provider = "anthropic",
+): Promise<Record<string, string>> {
+  return request("/api/ai/dspy/summarise", {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId, provider }),
+  });
+}
+
+export function dspyTopics(
+  noteId: string,
+  provider = "anthropic",
+): Promise<Record<string, string>> {
+  return request("/api/ai/dspy/topics", {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId, provider }),
+  });
+}
+
+// Instructor
+export function instructorTags(
+  noteId: string,
+  provider = "anthropic",
+): Promise<AIAnalysisResponse> {
+  return request("/api/ai/instructor/tags", {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId, provider }),
+  });
+}
+
+export function instructorEntities(
+  noteId: string,
+  provider = "anthropic",
+): Promise<AIAnalysisResponse> {
+  return request("/api/ai/instructor/entities", {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId, provider }),
+  });
+}
+
+export function instructorSummary(
+  noteId: string,
+  provider = "anthropic",
+): Promise<AIAnalysisResponse> {
+  return request("/api/ai/instructor/summary", {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId, provider }),
+  });
+}
+
+// Mem0
+export function mem0AddMemory(
+  content: string,
+  userId = "default",
+): Promise<{ status: string; framework: string }> {
+  return request("/api/ai/mem0/add", {
+    method: "POST",
+    body: JSON.stringify({ content, user_id: userId }),
+  });
+}
+
+export function mem0Search(
+  query: string,
+  userId = "default",
+  limit = 5,
+): Promise<AIMemoryResponse> {
+  return request("/api/ai/mem0/search", {
+    method: "POST",
+    body: JSON.stringify({ query, user_id: userId, limit }),
+  });
+}
+
+export function mem0Chat(
+  message: string,
+  userId = "default",
+  provider = "anthropic",
+): Promise<{ answer: string; memories_used: unknown[]; framework: string }> {
+  return request("/api/ai/mem0/chat", {
+    method: "POST",
+    body: JSON.stringify({ message, user_id: userId, provider }),
+  });
+}
+
+// PydanticAI
+export function pydanticAiAsk(
+  question: string,
+  folderScope?: string,
+  provider = "anthropic",
+): Promise<AIAskResponse & { confidence: number; follow_up_questions: string[] }> {
+  return request("/api/ai/pydantic-ai/ask", {
+    method: "POST",
+    body: JSON.stringify({ question, folder_scope: folderScope, provider }),
+  });
+}
+
+export function pydanticAiEnhance(
+  noteId: string,
+  provider = "anthropic",
+): Promise<AIEnhanceResponse> {
+  return request("/api/ai/pydantic-ai/enhance", {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId, provider }),
+  });
+}
+
+export function pydanticAiConnections(
+  noteId: string,
+  provider = "anthropic",
+): Promise<AIConnectionResponse> {
+  return request("/api/ai/pydantic-ai/connections", {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId, provider }),
+  });
+}
