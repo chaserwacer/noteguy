@@ -58,3 +58,6 @@ coverage/
 
 
 claude_prompts/
+
+.claude/
+code_guidlines
