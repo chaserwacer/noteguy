@@ -21,6 +21,14 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2"
 
+    # Embeddings configuration
+    embedding_provider: str = "ollama"
+    embedding_fallback_provider: str = "openai"
+    embedding_allow_fallback: bool = True
+    embedding_timeout_seconds: float = 8.0
+    embedding_ollama_model: str = "all-minilm"
+    embedding_openai_model: str = "text-embedding-3-small"
+
     model_config = {"env_file": "../.env", "env_file_encoding": "utf-8"}
 
 
