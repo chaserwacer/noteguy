@@ -67,7 +67,7 @@ The backend treats markdown files in your vault as the source of truth, while SQ
 |---|---|
 | Backend | Python, FastAPI, SQLModel, ChromaDB, GitPython |
 | Frontend | React, TypeScript, Vite, Zustand, Tailwind |
-| Embeddings | OpenAI text-embedding-3-small |
+| Embeddings | Ollama `all-minilm` (default) with optional OpenAI fallback |
 | LLM providers | Anthropic, OpenAI, optional local Ollama routing |
 | Desktop shell | Tauri v2 |
 
@@ -190,7 +190,7 @@ Reference file: `.env.example`
 
 | Variable | Why it is required |
 |---|---|
-| `OPENAI_API_KEY` | Required for embedding generation used by Chroma retrieval |
+| `OPENAI_API_KEY` | Required only when using OpenAI embeddings or fallback |
 
 ### Provider-specific variables
 
@@ -209,12 +209,19 @@ Reference file: `.env.example`
 | `BACKEND_PORT` | `8000` | Backend bind port |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL |
 | `OLLAMA_MODEL` | `llama3.2` | Ollama model name for local routing |
+| `EMBEDDING_PROVIDER` | `ollama` | Primary embedding provider (`ollama` or `openai`) |
+| `EMBEDDING_FALLBACK_PROVIDER` | `openai` | Fallback provider if primary fails |
+| `EMBEDDING_ALLOW_FALLBACK` | `true` | Enable automatic fallback on embedding errors |
+| `EMBEDDING_TIMEOUT_SECONDS` | `8` | Timeout used for local embedding calls |
+| `EMBEDDING_OLLAMA_MODEL` | `all-minilm` | Ollama embedding model for local vectors |
+| `EMBEDDING_OPENAI_MODEL` | `text-embedding-3-small` | OpenAI embedding model when selected |
 
 ### Provider behavior notes
 
 - `provider=auto` can route selected light tasks to local Ollama if available.
 - Heavy orchestration/query tasks remain on cloud providers.
-- Local generation does not remove the embedding requirement; retrieval currently depends on OpenAI embeddings.
+- Embeddings default to local Ollama (`all-minilm`) and can automatically fall back to OpenAI when enabled.
+- Embedding provider selection is centralized and swappable without changing ingestion or retrieval code.
 
 ## API Overview
 

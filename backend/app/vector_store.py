@@ -3,9 +3,9 @@
 from functools import lru_cache
 
 import chromadb
-from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 from app.config import get_settings
+from app.embeddings import get_embedding_provider
 
 COLLECTION_NAME = "noteguy_notes"
 
@@ -13,15 +13,10 @@ COLLECTION_NAME = "noteguy_notes"
 def _build_embedding_function():
     """Return the ChromaDB embedding function.
 
-    Uses OpenAI text-embedding-3-small.  The ``embeddings.py`` provider
-    abstraction is used by the ingestion pipeline directly; this wrapper
-    exists only because ChromaDB's ``query()`` requires its own callable.
+    Delegates to the configured embedding provider abstraction.
     """
-    settings = get_settings()
-    return OpenAIEmbeddingFunction(
-        api_key=settings.openai_api_key,
-        model_name="text-embedding-3-small",
-    )
+    provider = get_embedding_provider()
+    return provider.embed
 
 
 @lru_cache
