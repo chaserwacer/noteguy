@@ -3,7 +3,7 @@ Code Guidlines
 Design clean, well architected code. 
 Design code thoughtfully with intelligent, modern design. 
 Design reusable components when possible.
-Use idnictive variable and method names. 
+Use indicitive variable and method names. 
 Prefer docstrings on methods over inline comments. 
 Include informative but concise documentation. 
 Follow the newest AI/LLM/Agentic coding guidlines and practices. 
