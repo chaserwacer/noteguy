@@ -124,6 +124,12 @@ class StructuredSummary(BaseModel):
 def _get_instructor_client(provider: str = "anthropic"):
     """Return an instructor-patched LLM client."""
     settings = get_settings()
+    if provider == "ollama":
+        raw_client = openai.OpenAI(
+            base_url=f"{settings.ollama_base_url}/v1",
+            api_key="ollama",
+        )
+        return instructor.from_openai(raw_client, mode=instructor.Mode.JSON), settings.ollama_model
     if provider == "anthropic":
         raw_client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         return instructor.from_anthropic(raw_client), "claude-sonnet-4-20250514"
@@ -157,7 +163,7 @@ def extract_tags(
             }],
             response_model=NoteAnalysis,
         )
-    else:
+    else:  # openai or ollama
         result = client.chat.completions.create(
             model=model,
             max_tokens=1024,
@@ -197,7 +203,7 @@ def extract_entities(
             }],
             response_model=EntityExtraction,
         )
-    else:
+    else:  # openai or ollama
         result = client.chat.completions.create(
             model=model,
             max_tokens=1024,
@@ -238,7 +244,7 @@ def extract_summary(
             }],
             response_model=StructuredSummary,
         )
-    else:
+    else:  # openai or ollama
         result = client.chat.completions.create(
             model=model,
             max_tokens=1024,

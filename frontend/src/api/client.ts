@@ -212,8 +212,30 @@ export interface AIConnectionResponse {
   framework: string;
 }
 
+export interface AIRoutingInfo {
+  ollama: { available: boolean; base_url: string; model: string };
+  routing: {
+    light_tasks: string[];
+    heavy_tasks: string[];
+    auto_description: string;
+  };
+  cloud_models: { anthropic: string; openai: string };
+}
+
+export interface AIRoutingMeta {
+  provider_requested: string;
+  provider_used: string;
+  model_used: string;
+  local_inference: boolean;
+  task: string;
+}
+
 export function fetchAIFrameworks(): Promise<{ frameworks: AIFrameworkInfo[] }> {
   return request("/api/ai/frameworks");
+}
+
+export function fetchAIRoutingInfo(): Promise<AIRoutingInfo> {
+  return request("/api/ai/routing-info");
 }
 
 // LangChain

@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     backend_port: int = 8000
     vault_path: str = str(Path.home() / "NoteGuy")
 
+    # Ollama local inference
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.2"
+
     model_config = {"env_file": "../.env", "env_file_encoding": "utf-8"}
 
 
