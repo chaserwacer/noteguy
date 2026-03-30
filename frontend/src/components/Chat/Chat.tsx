@@ -174,9 +174,9 @@ function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentP
 
   const threadConfig = useMemo<ThreadConfig>(
     () => ({
-      assistantAvatar: { fallback: "C", alt: "Claude-style assistant" },
+      assistantAvatar: { fallback: "NG", alt: "Note Guy assistant" },
       welcome: {
-        message: "Hi! I’m a Claude-inspired assistant for your notes.",
+        message: "Hi! I’m Note Guy, your note assistant.",
         suggestions: [
           {
             text: "Summarize the open note",
@@ -199,7 +199,7 @@ function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentP
       },
       composer: { allowAttachments: false },
       strings: {
-        composer: { input: { placeholder: "Message Claude about your notes..." } },
+        composer: { input: { placeholder: "Ask Note Guy about your notes..." } },
         assistantMessage: {
           copy: { tooltip: "Copy answer" },
           reload: { tooltip: "Regenerate" },
@@ -216,11 +216,11 @@ function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentP
         <div className="flex items-start justify-between px-4 py-3 border-b border-vault-border/70 bg-gradient-to-r from-vault-surface to-vault-bg/60">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-vault-accent-subtle text-vault-accent font-semibold shadow-inner">
-              C
+              NG
             </div>
             <div className="space-y-0.5">
               <p className="text-[11px] uppercase tracking-[0.12em] text-vault-muted">
-                Claude-style assistant
+                Note Guy assistant
               </p>
               <p className="text-sm font-semibold text-vault-text">Assistant UI chat</p>
               <p className="text-[11px] text-vault-text-secondary">
