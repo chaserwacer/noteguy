@@ -123,11 +123,11 @@ export default function Editor() {
   const handleTitleChange = useCallback(
     (title: string) => {
       if (!activeNoteId) return;
+      clearTimeout(titleTimerRef.current);
       if (title === activeNote?.title) {
         setSaveStatus("idle");
         return;
       }
-      clearTimeout(titleTimerRef.current);
       setSaveStatus("saving");
       titleTimerRef.current = setTimeout(async () => {
         await saveNote(activeNoteId, { title });
@@ -171,6 +171,7 @@ export default function Editor() {
 
     return () => {
       clearTimeout(saveTimerRef.current);
+      clearTimeout(titleTimerRef.current);
       view.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

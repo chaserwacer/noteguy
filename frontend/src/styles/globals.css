@@ -177,13 +177,13 @@
 .aui-composer-root input,
 .aui-composer-root textarea,
 .aui-composer-root [contenteditable="true"] {
-  color: #e8e4df !important;
-  background-color: #252525 !important;
+  color: theme("colors.vault.text") !important;
+  background-color: theme("colors.vault.surface-hover") !important;
 }
 
 .aui-composer-root input::placeholder,
 .aui-composer-root textarea::placeholder,
 .aui-composer-root [contenteditable="true"]::before {
-  color: #a8a29e !important;
+  color: theme("colors.vault.text-secondary") !important;
   opacity: 1 !important;
 }
