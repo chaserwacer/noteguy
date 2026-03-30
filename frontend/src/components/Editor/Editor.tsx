@@ -100,6 +100,7 @@ export default function Editor() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [showPreview, setShowPreview] = useState(false);
   const [toolbarVisible, setToolbarVisible] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(activeNote?.title ?? "");
 
   /* ── Autosave content ────────────────────────────────────────────────────── */
 
@@ -123,6 +124,10 @@ export default function Editor() {
     (title: string) => {
       if (!activeNoteId) return;
       clearTimeout(titleTimerRef.current);
+      if (title === activeNote?.title) {
+        setSaveStatus("idle");
+        return;
+      }
       setSaveStatus("saving");
       titleTimerRef.current = setTimeout(async () => {
         await saveNote(activeNoteId, { title });
@@ -130,8 +135,12 @@ export default function Editor() {
         setTimeout(() => setSaveStatus("idle"), 1500);
       }, SAVE_DEBOUNCE_MS);
     },
-    [activeNoteId, saveNote],
+    [activeNoteId, activeNote?.title, saveNote],
   );
+
+  useEffect(() => {
+    setTitleDraft(activeNote?.title ?? "");
+  }, [activeNoteId, activeNote?.title]);
 
   /* ── CodeMirror setup ──────────────────────────────────────────────────── */
 
@@ -162,6 +171,7 @@ export default function Editor() {
 
     return () => {
       clearTimeout(saveTimerRef.current);
+      clearTimeout(titleTimerRef.current);
       view.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,11 +185,11 @@ export default function Editor() {
     clearTimeout(titleTimerRef.current);
     setSaveStatus("saving");
     const content = viewRef.current.state.doc.toString();
-    saveNote(activeNoteId, { content, title: activeNote?.title }).then(() => {
+    saveNote(activeNoteId, { content, title: titleDraft }).then(() => {
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 1500);
     });
-  }, [activeNoteId, activeNote?.title, saveNote]);
+  }, [activeNoteId, titleDraft, saveNote]);
 
   /* ── Keyboard shortcuts ──────────────────────────────────────────────── */
 
@@ -241,8 +251,12 @@ export default function Editor() {
         <div className="px-8 pt-8 pb-1 max-w-[72ch] mx-auto w-full">
           <input
             type="text"
-            value={activeNote.title}
-            onChange={(e) => handleTitleChange(e.target.value)}
+            value={titleDraft}
+            onChange={(e) => {
+              const value = e.target.value;
+              setTitleDraft(value);
+              handleTitleChange(value);
+            }}
             placeholder="Untitled"
             className="w-full bg-transparent text-vault-text text-[28px] font-bold outline-none placeholder:text-vault-border-strong"
           />
