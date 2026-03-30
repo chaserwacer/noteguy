@@ -16,7 +16,7 @@ def _build_embedding_function():
     Delegates to the configured embedding provider abstraction.
     """
     provider = get_embedding_provider()
-    return provider.embed
+    return lambda texts: provider.embed(texts)
 
 
 @lru_cache

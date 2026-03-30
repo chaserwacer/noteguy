@@ -6,11 +6,19 @@ The active provider and fallback behavior are controlled via configuration.
 
 from abc import ABC, abstractmethod
 from functools import lru_cache
+import logging
 
 import httpx
 import openai
 
 from app.config import get_settings
+
+logger = logging.getLogger(__name__)
+
+
+def _normalize_provider_name(provider_name: str) -> str:
+    """Return a canonical provider name for comparisons and dispatch."""
+    return provider_name.strip().lower()
 
 
 class EmbeddingProvider(ABC):
@@ -51,16 +59,40 @@ class OllamaEmbeddingProvider(EmbeddingProvider):
     def embed(self, texts: list[str]) -> list[list[float]]:
         if not texts:
             return []
-        with httpx.Client(timeout=self._timeout_seconds) as client:
-            response = client.post(
-                f"{self._base_url}/api/embed",
-                json={"model": self._model, "input": texts},
-            )
-            response.raise_for_status()
-            payload = response.json()
+        try:
+            with httpx.Client(timeout=self._timeout_seconds) as client:
+                response = client.post(
+                    f"{self._base_url}/api/embed",
+                    json={"model": self._model, "input": texts},
+                )
+                response.raise_for_status()
+                payload = response.json()
+        except httpx.ConnectError as exc:
+            raise RuntimeError(
+                "Ollama embedding service is not running or unreachable"
+            ) from exc
+        except httpx.TimeoutException as exc:
+            raise RuntimeError(
+                f"Ollama embedding request timed out after {self._timeout_seconds} seconds"
+            ) from exc
+        except httpx.HTTPStatusError as exc:
+            raise RuntimeError(
+                f"Ollama embedding request failed with status {exc.response.status_code}"
+            ) from exc
         embeddings = payload.get("embeddings")
         if not isinstance(embeddings, list):
             raise ValueError("Ollama embedding response missing embeddings list")
+        if len(embeddings) != len(texts):
+            raise ValueError(
+                "Ollama embedding response length does not match input text count"
+            )
+        for embedding in embeddings:
+            if not isinstance(embedding, list) or not embedding:
+                raise ValueError("Ollama embedding response contains invalid vectors")
+            if not all(isinstance(value, (int, float)) for value in embedding):
+                raise ValueError(
+                    "Ollama embedding response vectors must contain numeric values"
+                )
         return embeddings
 
     def embed_query(self, text: str) -> list[float]:
@@ -81,9 +113,13 @@ class FallbackEmbeddingProvider(EmbeddingProvider):
     def embed(self, texts: list[str]) -> list[list[float]]:
         try:
             return self._primary.embed(texts)
-        except Exception:
+        except Exception as exc:
             if self._fallback is None:
                 raise
+            logger.warning(
+                "Primary embedding provider failed; using fallback provider",
+                exc_info=exc,
+            )
             return self._fallback.embed(texts)
 
     def embed_query(self, text: str) -> list[float]:
@@ -92,7 +128,7 @@ class FallbackEmbeddingProvider(EmbeddingProvider):
 
 def _build_provider(provider_name: str) -> EmbeddingProvider:
     settings = get_settings()
-    normalized = provider_name.strip().lower()
+    normalized = _normalize_provider_name(provider_name)
     if normalized == "ollama":
         return OllamaEmbeddingProvider(
             base_url=settings.ollama_base_url,
@@ -111,11 +147,11 @@ def _build_provider(provider_name: str) -> EmbeddingProvider:
 def get_embedding_provider() -> EmbeddingProvider:
     """Return the singleton embedding provider with optional fallback."""
     settings = get_settings()
-    primary = _build_provider(settings.embedding_provider)
+    primary_name = _normalize_provider_name(settings.embedding_provider)
+    primary = _build_provider(primary_name)
     fallback = None
     if settings.embedding_allow_fallback:
-        fallback_name = settings.embedding_fallback_provider.strip().lower()
-        primary_name = settings.embedding_provider.strip().lower()
+        fallback_name = _normalize_provider_name(settings.embedding_fallback_provider)
         if fallback_name != primary_name:
             fallback = _build_provider(fallback_name)
     return FallbackEmbeddingProvider(primary=primary, fallback=fallback)
