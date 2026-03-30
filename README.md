@@ -1,179 +1,271 @@
-*actively being developed / worked on
 # NoteGuy
 
-A clean, distraction-free markdown note editor with AI-powered RAG chat and built-in version history. Think OneNote — but simpler and more elegant.
+NoteGuy is a desktop markdown workspace with local-first note storage, semantic retrieval, and AI-assisted workflows.
 
-NoteGuy is a desktop application with a **Python (FastAPI)** backend and a **React + TypeScript** frontend, wrapped in **Tauri** for a lightweight native desktop experience.
+The project is organized as a FastAPI backend, a React frontend, and an optional Tauri desktop shell.
 
-## Features
+## Project Overview
 
-- **Markdown editor** — CodeMirror 6 with JetBrains Mono, syntax highlighting, formatting toolbar, and auto-save
-- **Live preview** — side-by-side markdown rendering with GitHub-flavoured markdown support
-- **Folder-based organisation** — nested folder tree with drag-and-drop, context menus, and scoped note filtering
-- **Version history** — automatic git-backed versioning on every change with diff view and one-click restore
-- **AI chat assistant** — streaming answers sourced from your own notes (RAG) with source attribution pills
-- **Folder-scoped search** — limit AI chat and semantic search to the active folder tree
-- **Document upload** — import `.docx` files with heading hierarchy preserved as markdown notes
-- **Vector search** — ChromaDB-powered semantic search over your entire vault
-- **Dual LLM support** — Anthropic Claude or OpenAI GPT for answer generation
-- **Dark-first UI** — minimal Tailwind CSS theme designed for focus
+NoteGuy combines three capabilities in one application:
+- fast markdown note editing with folder organization
+- retrieval-augmented chat grounded in your notes
+- git-backed note history with restore and diff support
 
-## Tech Stack
+The backend treats markdown files in your vault as the source of truth, while SQLite stores metadata and relationships.
 
-| Layer | Technology |
-|-------|------------|
-| Backend | Python 3.11+, FastAPI, SQLModel (SQLite), ChromaDB, GitPython |
-| Frontend | React 19, TypeScript, Vite 6, Zustand 5, Tailwind CSS |
-| Editor | CodeMirror 6 (markdown mode) |
-| Chat UI | @assistant-ui/react with streaming SSE |
-| Embeddings | OpenAI `text-embedding-3-small` |
-| LLM | Anthropic `claude-sonnet-4` / OpenAI `gpt-4o` |
-| Desktop | Tauri v2 |
+## Architecture
 
-## Project Structure
+### Runtime Components
 
-```
+| Component | Responsibility |
+|---|---|
+| FastAPI backend | API surface, note/folder CRUD, ingestion jobs, RAG chat, history routes |
+| SQLite (SQLModel) | Metadata for notes/folders and app state |
+| Vault filesystem | Persistent markdown content (`.md`) |
+| ChromaDB | Vector index for retrieval and semantic search |
+| Git service | Versioning, diffs, and restore for note files |
+| React frontend | Editor UI, sidebar, chat panel, and history views |
+| Tauri (optional) | Native desktop packaging |
+
+### Data and Request Flow
+
+1. User edits a note in the frontend.
+2. Backend updates metadata in SQLite and writes markdown to the vault path.
+3. Background ingestion re-chunks note content and updates ChromaDB vectors.
+4. Git service stages and commits note changes for history tracking.
+5. Chat/search routes retrieve relevant chunks and call the selected model provider.
+6. Streaming responses are sent to the UI through SSE.
+
+### Backend Module Map
+
+| Module | Responsibility |
+|---|---|
+| `backend/app/main.py` | App startup, middleware, router composition, lifecycle init |
+| `backend/app/config.py` | Environment-driven configuration via `pydantic-settings` |
+| `backend/app/notes.py` | Note/folder CRUD, filesystem sync, ingest + git hooks |
+| `backend/app/ingestion.py` | Markdown/docx ingestion and chunking pipeline |
+| `backend/app/rag.py` | Retrieval + answer generation (standard chat/search path) |
+| `backend/app/chat.py` | Chat endpoints and SSE streaming route |
+| `backend/app/vector_store.py` | Chroma collection and embedding function wiring |
+| `backend/app/history.py` | History, version content, diff, and restore APIs |
+| `backend/app/git_service.py` | Git repository management and commit/history operations |
+| `backend/app/ai/*` | Extended framework endpoints (LangChain, DSPy, etc.) |
+
+### Frontend Module Map
+
+| Area | Responsibility |
+|---|---|
+| `frontend/src/components/Editor` | Markdown editor, preview, toolbar, history panel |
+| `frontend/src/components/Sidebar` | Folder/note navigation and context actions |
+| `frontend/src/components/Chat` | Assistant panel and streaming runtime integration |
+| `frontend/src/store/useNoteStore.ts` | Centralized app state and async actions |
+| `frontend/src/api/client.ts` | Typed backend client and request helpers |
+
+## Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| Backend | Python, FastAPI, SQLModel, ChromaDB, GitPython |
+| Frontend | React, TypeScript, Vite, Zustand, Tailwind |
+| Embeddings | OpenAI text-embedding-3-small |
+| LLM providers | Anthropic, OpenAI, optional local Ollama routing |
+| Desktop shell | Tauri v2 |
+
+## Repository Structure
+
+```text
 noteguy/
-  backend/              # Python FastAPI
+  backend/
     app/
-      main.py           # App entry point & middleware
-      models.py         # SQLModel data models
-      notes.py          # CRUD routes for notes & folders
-      chat.py           # Chat API routes (streaming SSE)
-      rag.py            # Vector search + LLM generation
-      ingestion.py      # Document chunking & embedding pipeline
-      context.py        # Active folder context resolver
-      vector_store.py   # ChromaDB initialisation
-      config.py         # Pydantic settings from .env
-      database.py       # SQLite engine & session
-      git_service.py    # Automatic git versioning for notes
-      history.py        # Version history & restore routes
+      ai/
+      main.py
+      config.py
+      notes.py
+      chat.py
+      rag.py
+      ingestion.py
+      history.py
+      git_service.py
+      database.py
+      models.py
+      vector_store.py
+      context.py
     requirements.txt
-  frontend/             # React + TypeScript + Vite
+  frontend/
     src/
+      api/
       components/
-        Sidebar/        # File tree, context menus, drag-and-drop
-        Editor/         # CodeMirror editor, toolbar, preview, history panel
-        Chat/           # Streaming AI chat with source pills
-        Layout/         # Split-pane application shell
-      store/            # Zustand state management
-      api/              # Typed backend HTTP client
-  src-tauri/            # Tauri v2 desktop wrapper
-  .env.example          # Template for required environment variables
-  .gitignore
+      store/
+      styles/
+    package.json
+  src-tauri/
+  scripts/
+    dev.ps1
+    dev.sh
+  .env.example
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Python 3.11+** and `pip`
-- **Node.js 18+** and `npm`
-- **Rust toolchain** (for Tauri desktop builds — optional for dev)
+- Python 3.11+
+- Node.js 18+
+- npm
+- Rust toolchain (only for Tauri desktop development/builds)
 
 ### 1. Clone and configure
 
 ```bash
-git clone https://github.com/<your-username>/noteguy.git
+git clone https://github.com/chaserwacer/noteguy.git
 cd noteguy
 cp .env.example .env
-# Edit .env and add your API keys
 ```
 
-### 2. Start the backend
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+### 2. Install dependencies
 
 ```bash
 cd backend
 pip install -r requirements.txt
-python -m uvicorn app.main:app --reload
+cd ../frontend
+npm install
 ```
 
-The API will be available at `http://127.0.0.1:8000`. Check `http://127.0.0.1:8000/health` to verify.
+### 3. Run development servers
 
-### 3. Start the frontend
+Script-based startup:
+
+Linux/macOS:
+
+```bash
+./scripts/dev.sh
+```
+
+Windows PowerShell:
+
+```powershell
+./scripts/dev.ps1
+```
+
+Manual startup:
+
+Backend:
+
+```bash
+cd backend
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Frontend:
 
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
 
-The dev server starts at `http://localhost:5173` with API requests proxied to the backend.
+Default local URLs:
+- Frontend: `http://localhost:5173`
+- Backend: `http://127.0.0.1:8000`
+- Health check: `http://127.0.0.1:8000/health`
 
-### 4. (Optional) Build the desktop app
+### 4. Optional Tauri desktop run
 
 ```bash
-cd src-tauri
-cargo tauri dev      # development mode
-cargo tauri build    # production build
+cargo tauri dev
 ```
 
-## Keyboard Shortcuts
+## Configuration
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+N` | Create new note |
-| `Ctrl+Shift+P` | Toggle markdown preview |
-| `Ctrl+Shift+H` | Toggle version history panel |
-| `Ctrl+Shift+C` | Toggle chat pane |
+Settings are loaded from `.env` in the project root.
+
+Reference file: `.env.example`
+
+### Required variables
+
+| Variable | Why it is required |
+|---|---|
+| `OPENAI_API_KEY` | Required for embedding generation used by Chroma retrieval |
+
+### Provider-specific variables
+
+| Variable | Needed when |
+|---|---|
+| `ANTHROPIC_API_KEY` | You use Anthropic provider routes (`provider=anthropic`) |
+
+### Optional variables
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `DATABASE_URL` | `sqlite:///./noteguy.db` | SQLModel connection string |
+| `CHROMA_PERSIST_DIR` | `./chroma_data` | Chroma persistence path |
+| `VAULT_PATH` | `~/NoteGuy` | Root folder for markdown note files |
+| `BACKEND_HOST` | `127.0.0.1` | Backend bind host |
+| `BACKEND_PORT` | `8000` | Backend bind port |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL |
+| `OLLAMA_MODEL` | `llama3.2` | Ollama model name for local routing |
+
+### Provider behavior notes
+
+- `provider=auto` can route selected light tasks to local Ollama if available.
+- Heavy orchestration/query tasks remain on cloud providers.
+- Local generation does not remove the embedding requirement; retrieval currently depends on OpenAI embeddings.
 
 ## API Overview
 
-### Notes & Folders
+### Core Notes and Folders
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/notes` | List notes (optional `folder_id` filter) |
-| `POST` | `/api/notes` | Create a note |
-| `GET` | `/api/notes/{id}` | Get a note |
-| `PATCH` | `/api/notes/{id}` | Update a note |
-| `DELETE` | `/api/notes/{id}` | Delete a note |
-| `GET` | `/api/folders` | List all folders |
-| `POST` | `/api/folders` | Create a folder |
-| `PATCH` | `/api/folders/{id}` | Rename or move a folder |
-| `DELETE` | `/api/folders/{id}` | Delete folder and contents recursively |
+- `GET /api/notes`
+- `POST /api/notes`
+- `GET /api/notes/{note_id}`
+- `PATCH /api/notes/{note_id}`
+- `PUT /api/notes/{note_id}`
+- `DELETE /api/notes/{note_id}`
+- `GET /api/folders`
+- `POST /api/folders`
+- `GET /api/folders/{folder_id}/notes`
+- `PATCH /api/folders/{folder_id}`
+- `DELETE /api/folders/{folder_id}`
 
-### Version History
+### Search, Chat, and Context
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/notes/{id}/history` | Commit history for a note |
-| `GET` | `/api/notes/{id}/versions/{sha}` | Note content at a specific commit |
-| `GET` | `/api/notes/{id}/diff/{sha}` | Unified diff for a commit |
-| `POST` | `/api/notes/{id}/restore` | Restore note to a previous version |
-
-### Chat & Search
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/chat` | Send a chat message (non-streaming) |
-| `POST` | `/api/chat/stream` | Streaming SSE chat with source attribution |
-| `POST` | `/api/search` | Semantic search over notes |
-| `GET` | `/api/context/{folder_id}` | Folder context for scoped search |
+- `POST /api/search`
+- `POST /api/chat`
+- `POST /api/chat/stream`
+- `GET /api/context/{folder_id}`
 
 ### Ingestion
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/ingest/note/{id}` | Re-index a single note |
-| `POST` | `/api/ingest/all` | Re-index all notes |
-| `POST` | `/api/ingest/upload` | Upload a `.docx` file as a new note |
+- `POST /api/ingest/note/{note_id}`
+- `POST /api/ingest/all`
+- `POST /api/ingest/upload` (multipart `.docx`)
 
-## Environment Variables
+### History
 
-All secrets are loaded from a `.env` file in the project root. **Never commit this file.**
+- `GET /api/notes/{note_id}/history`
+- `GET /api/notes/{note_id}/versions/{sha}`
+- `GET /api/notes/{note_id}/diff/{sha}`
+- `POST /api/notes/{note_id}/restore`
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ANTHROPIC_API_KEY` | Anthropic API key for Claude | — |
-| `OPENAI_API_KEY` | OpenAI API key for embeddings and optional GPT | — |
-| `DATABASE_URL` | SQLite connection string | `sqlite:///./noteguy.db` |
-| `CHROMA_PERSIST_DIR` | ChromaDB storage directory | `./chroma_data` |
-| `VAULT_PATH` | Directory where note `.md` files are stored | `~/NoteGuy` |
-| `BACKEND_HOST` | Backend server host | `127.0.0.1` |
-| `BACKEND_PORT` | Backend server port | `8000` |
+### Extended AI Endpoints
 
-See [.env.example](.env.example) for the full template.
+- Base path: `/api/ai`
+- Families: `langchain`, `llama-index`, `crewai`, `dspy`, `instructor`, `mem0`, `pydantic-ai`
+- Discovery routes:
+  - `GET /api/ai/frameworks`
+  - `GET /api/ai/routing-info`
+
+## Troubleshooting
+
+- Authentication errors on chat/search: confirm API keys in `.env`.
+- Empty retrieval results: re-run ingestion with `POST /api/ingest/all`.
+- Local Ollama not selected with `provider=auto`: verify daemon availability at `OLLAMA_BASE_URL`.
+- Missing file writes: confirm `VAULT_PATH` is valid and writable.
 
 ## License
 
