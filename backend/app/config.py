@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     database_url: str = "sqlite:///./noteguy.db"
     chroma_persist_dir: str = "./chroma_data"
+    chroma_tenant: str = "default_tenant"
+    chroma_database: str = "default_database"
     backend_host: str = "127.0.0.1"
     backend_port: int = 8000
     vault_path: str = str(Path.home() / "NoteGuy")
