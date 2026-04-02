@@ -95,3 +95,28 @@ def test_create_persistent_client_recovers_from_incompatible_store(tmp_path, app
     assert call_count["value"] == 2
     assert persist_dir.exists()
     assert any(candidate.is_dir() for candidate in tmp_path.glob("chroma_data_backup_*"))
+
+
+def test_embedding_adapter_supports_query_and_input_keywords(app_modules, monkeypatch) -> None:
+    """Embedding adapter should support both legacy and current Chroma query signatures."""
+
+    class _FakeProvider:
+        def embed(self, texts: list[str]) -> list[list[float]]:
+            return [[float(len(text))] for text in texts]
+
+        def embed_query(self, text: str) -> list[float]:
+            return [float(len(text))]
+
+    monkeypatch.setattr(
+        app_modules.vector_store,
+        "get_embedding_provider",
+        lambda: _FakeProvider(),
+    )
+
+    adapter = app_modules.vector_store._build_embedding_function()
+
+    assert adapter(["ab", "abcd"]) == [[2.0], [4.0]]
+    assert adapter("abc") == [[3.0]]
+    assert adapter.embed_query("hello") == [5.0]
+    assert adapter.embed_query(query="hello") == [5.0]
+    assert adapter.embed_query(input="hello") == [5.0]

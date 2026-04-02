@@ -135,10 +135,15 @@ def _build_embedding_function():
 
     class _EmbeddingAdapter:
         def __call__(self, input):
-            return provider.embed(input)
+            if isinstance(input, str):
+                return provider.embed([input])
+            return provider.embed(list(input))
 
-        def embed_query(self, query: str):
-            return provider.embed([query])[0]
+        def embed_query(self, query: str | None = None, *, input: str | None = None, **_kwargs):
+            text = input if input is not None else query
+            if text is None:
+                raise ValueError("embed_query requires either query or input")
+            return provider.embed_query(text)
 
         def name(self) -> str:
             return "noteguy-embedding-adapter"
