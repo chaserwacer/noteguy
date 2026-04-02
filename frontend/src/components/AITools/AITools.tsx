@@ -49,17 +49,6 @@ const LIGHT_TASKS = new Set([
   "pydantic_enhance",
 ]);
 
-// Tasks that can route to Ollama when provider is "auto"
-const ROUTABLE_FRAMEWORKS: Record<string, string[]> = {
-  dspy: ["dspy_summarise", "dspy_topics"],
-  instructor: ["instructor_tags", "instructor_entities"],
-  pydantic_ai: ["pydantic_enhance"],
-};
-
-function frameworkHasLocalTasks(frameworkId: string): boolean {
-  return frameworkId in ROUTABLE_FRAMEWORKS;
-}
-
 // ── Tool card ────────────────────────────────────────────────────────────
 
 interface ToolAction {
