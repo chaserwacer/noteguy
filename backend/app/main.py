@@ -1,10 +1,12 @@
 """NoteGuy backend — FastAPI application entry point."""
 
 from contextlib import asynccontextmanager
+import logging
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from git.exc import GitError
 
 from app.config import get_settings
 from app.database import init_db
@@ -17,6 +19,8 @@ from app.rag import router as search_router
 from app.context import router as context_router
 from app.ai.router import router as ai_router
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,8 +32,8 @@ async def lifespan(app: FastAPI):
     # Flush any staged but uncommitted git changes on shutdown
     try:
         get_git_service().flush_staged()
-    except Exception:
-        pass
+    except (GitError, OSError) as exc:
+        logger.warning("Failed to flush staged git changes on shutdown: %s", exc)
 
 
 app = FastAPI(

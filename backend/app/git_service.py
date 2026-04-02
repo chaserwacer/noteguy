@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import Optional
 
 import git
-from git import Repo, InvalidGitRepositoryError
+from git import Repo
+from git.exc import BadName, GitCommandError, InvalidGitRepositoryError
 
 from app.config import get_settings
 
@@ -59,6 +60,20 @@ class GitService:
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         return (today, rel_path)
 
+    def _has_staged_changes(self) -> bool:
+        """Return True when the index contains staged changes."""
+        if not self.repo:
+            return False
+
+        try:
+            if self.repo.head.is_valid():
+                return bool(self.repo.index.diff("HEAD"))
+            # On a fresh repo (unborn HEAD), inspect index entries directly.
+            return bool(self.repo.index.entries)
+        except (BadName, GitCommandError, ValueError, OSError):
+            logger.exception("Failed to inspect staged changes")
+            return bool(self.repo.index.entries)
+
     def commit_note(self, abs_path: Path, message: str) -> Optional[str]:
         """Stage and commit a single note file. Returns the commit SHA."""
         if not self.repo:
@@ -68,7 +83,7 @@ class GitService:
             self.repo.index.add([rel])
             commit = self.repo.index.commit(message)
             return commit.hexsha
-        except Exception:
+        except (GitCommandError, ValueError, OSError):
             logger.exception("Git commit failed for %s", abs_path)
             return None
 
@@ -95,7 +110,7 @@ class GitService:
             commit = self.repo.index.commit(message)
             self._committed_today[key] = True
             return commit.hexsha
-        except Exception:
+        except (GitCommandError, ValueError, OSError):
             logger.exception("Git batched commit failed for %s", abs_path)
             return None
 
@@ -108,12 +123,11 @@ class GitService:
         if not self.repo:
             return None
         try:
-            # Check if there are staged changes
-            if not self.repo.index.diff("HEAD"):
+            if not self._has_staged_changes():
                 return None
             commit = self.repo.index.commit("[auto] Batch save")
             return commit.hexsha
-        except Exception:
+        except (GitCommandError, ValueError, OSError):
             logger.exception("Git flush failed")
             return None
 
@@ -123,13 +137,16 @@ class GitService:
             return None
         try:
             rel = self._rel(abs_path)
-            try:
-                self.repo.index.remove([rel])
-            except Exception:
+            self.repo.index.remove([rel], working_tree=False, ignore_unmatch=True)
+            if not self._has_staged_changes():
+                logger.info(
+                    "Skipping delete commit for %s because no staged changes were detected",
+                    rel,
+                )
                 return None
             commit = self.repo.index.commit(message)
             return commit.hexsha
-        except Exception:
+        except (GitCommandError, ValueError, OSError):
             logger.exception("Git delete-commit failed for %s", abs_path)
             return None
 
@@ -145,14 +162,18 @@ class GitService:
         try:
             old_rel = self._rel(old_path)
             new_rel = self._rel(new_path)
-            try:
-                self.repo.index.remove([old_rel])
-            except Exception:
-                pass
+            self.repo.index.remove([old_rel], working_tree=False, ignore_unmatch=True)
             self.repo.index.add([new_rel])
+            if not self._has_staged_changes():
+                logger.info(
+                    "Skipping move commit for %s -> %s because no staged changes were detected",
+                    old_rel,
+                    new_rel,
+                )
+                return None
             commit = self.repo.index.commit(message)
             return commit.hexsha
-        except Exception:
+        except (GitCommandError, ValueError, OSError):
             logger.exception("Git move-commit failed for %s -> %s", old_path, new_path)
             return None
 
@@ -181,7 +202,7 @@ class GitService:
                 }
                 for c in commits
             ]
-        except Exception:
+        except (GitCommandError, ValueError, OSError):
             logger.exception("Failed to get history for %s", abs_path)
             return []
 
@@ -194,7 +215,7 @@ class GitService:
             commit = self.repo.commit(sha)
             blob = commit.tree / rel
             return blob.data_stream.read().decode("utf-8")
-        except Exception:
+        except (BadName, KeyError, GitCommandError, UnicodeDecodeError, ValueError, OSError):
             logger.exception("Failed to read %s at %s", abs_path, sha)
             return None
 
@@ -215,7 +236,7 @@ class GitService:
             if diffs:
                 return diffs[0].diff.decode("utf-8", errors="replace")
             return None
-        except Exception:
+        except (BadName, GitCommandError, UnicodeDecodeError, ValueError, OSError):
             logger.exception("Failed to get diff for %s at %s", abs_path, sha)
             return None
 

@@ -9,6 +9,7 @@ from pathlib import Path
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 from chromadb.api.shared_system_client import SharedSystemClient
+from chromadb.errors import ChromaError, NotFoundError, UniqueConstraintError
 
 from app.config import get_settings
 from app.embeddings import get_embedding_provider
@@ -46,6 +47,33 @@ def _backup_corrupt_persist_dir(persist_path: str) -> None:
     )
 
 
+def _ensure_tenant_and_database(
+    admin: chromadb.AdminClient,
+    tenant: str,
+    database: str,
+) -> None:
+    """Ensure configured tenant/database exist before creating a client."""
+    try:
+        admin.get_tenant(name=tenant)
+    except NotFoundError:
+        try:
+            admin.create_tenant(name=tenant)
+        except UniqueConstraintError:
+            _LOGGER.debug("Chroma tenant '%s' already exists", tenant)
+
+    try:
+        admin.get_database(name=database, tenant=tenant)
+    except NotFoundError:
+        try:
+            admin.create_database(name=database, tenant=tenant)
+        except UniqueConstraintError:
+            _LOGGER.debug(
+                "Chroma database '%s' already exists in tenant '%s'",
+                database,
+                tenant,
+            )
+
+
 def _create_persistent_client() -> chromadb.ClientAPI:
     """Create a persistent Chroma client, repairing missing default tenancy if needed."""
     settings = get_settings()
@@ -68,7 +96,7 @@ def _create_persistent_client() -> chromadb.ClientAPI:
 
     try:
         return _new_client()
-    except BaseException as exc:
+    except Exception as exc:
         SharedSystemClient.clear_system_cache()
         if not _is_tenant_error(exc):
             if _is_recoverable_chroma_error(exc):
@@ -80,18 +108,18 @@ def _create_persistent_client() -> chromadb.ClientAPI:
 
         admin = chromadb.AdminClient(settings=client_settings)
         try:
-            admin.get_tenant(name=tenant)
-        except Exception:
-            admin.create_tenant(name=tenant)
-
-        try:
-            admin.get_database(name=database, tenant=tenant)
-        except Exception:
-            admin.create_database(name=database, tenant=tenant)
+            _ensure_tenant_and_database(admin, tenant, database)
+        except ChromaError:
+            _LOGGER.exception(
+                "Failed to ensure Chroma tenant/database for tenant='%s' database='%s'",
+                tenant,
+                database,
+            )
+            raise
 
         try:
             return _new_client()
-        except BaseException as retry_exc:
+        except Exception as retry_exc:
             SharedSystemClient.clear_system_cache()
             if _is_recoverable_chroma_error(retry_exc):
                 _backup_corrupt_persist_dir(persist_path)

@@ -258,18 +258,34 @@ def ingest_all_endpoint(background_tasks: BackgroundTasks):
 
 
 @router.post("/ingest/upload")
-async def upload_docx(
+async def upload_document(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     folder_id: Optional[str] = Form(default=None),
     session: Session = Depends(get_session),
 ):
-    """Upload a .docx file, convert to a new note, and trigger ingestion."""
-    if not file.filename or not file.filename.endswith(".docx"):
-        raise HTTPException(status_code=400, detail="Only .docx files are supported")
+    """Upload a .docx or .md file, create a note, and trigger ingestion."""
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Missing filename")
 
+    filename_lower = file.filename.lower()
     file_bytes = await file.read()
-    md_content = docx_to_markdown(file_bytes)
+
+    if filename_lower.endswith(".docx"):
+        md_content = docx_to_markdown(file_bytes)
+    elif filename_lower.endswith(".md"):
+        try:
+            md_content = file_bytes.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail="Markdown files must be UTF-8 encoded",
+            ) from exc
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Only .docx and .md files are supported",
+        )
 
     # Derive title from filename
     title = file.filename.rsplit(".", 1)[0]

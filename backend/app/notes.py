@@ -6,10 +6,12 @@ SQLite tracks metadata and the folder tree; the files are the source of truth.
 
 import shutil
 from datetime import datetime, timezone
+import logging
 from pathlib import Path
 from typing import Optional, List
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from git.exc import GitCommandError
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
@@ -19,6 +21,7 @@ from app.git_service import get_git_service
 from app.models import Note, Folder
 
 router = APIRouter(prefix="/api", tags=["notes"])
+logger = logging.getLogger(__name__)
 
 
 # ── Background helpers ─────────────────────────────────────────────────────
@@ -417,5 +420,9 @@ def delete_folder(folder_id: str, session: Session = Depends(get_session)):
             rels = [gs._rel(p) for p in deleted_note_paths]
             gs.repo.index.remove(rels, working_tree=False, ignore_unmatch=True)
             gs.repo.index.commit(f"[delete-folder] {folder.name}")
-        except Exception:
-            pass
+        except (GitCommandError, ValueError, OSError) as exc:
+            logger.warning(
+                "Failed to commit git folder deletion for '%s': %s",
+                folder.path,
+                exc,
+            )
