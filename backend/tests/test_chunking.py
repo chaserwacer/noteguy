@@ -192,3 +192,22 @@ class TestDocxToMarkdown:
         assert "## Sub Heading" in md
         assert "Body text here." in md
         assert "More content." in md
+
+    def test_handles_missing_paragraph_style(self, monkeypatch):
+        """Paragraphs with missing style metadata should still convert."""
+        from types import SimpleNamespace
+
+        fake_doc = SimpleNamespace(
+            paragraphs=[
+                SimpleNamespace(text="Styled heading", style=SimpleNamespace(name="Heading 1")),
+                SimpleNamespace(text="Plain paragraph", style=None),
+                SimpleNamespace(text="No style name", style=SimpleNamespace()),
+            ]
+        )
+
+        monkeypatch.setattr("app.ingestion.DocxDocument", lambda _: fake_doc)
+
+        md = docx_to_markdown(b"fake-docx")
+        assert "# Styled heading" in md
+        assert "Plain paragraph" in md
+        assert "No style name" in md

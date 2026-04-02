@@ -214,7 +214,9 @@ def docx_to_markdown(file_bytes: bytes) -> str:
         if not text:
             lines.append("")
             continue
-        prefix = _DOCX_HEADING_MAP.get(para.style.name, "")
+        style = getattr(para, "style", None)
+        style_name = getattr(style, "name", None)
+        prefix = _DOCX_HEADING_MAP.get(style_name or "", "")
         lines.append(f"{prefix}{text}")
     return "\n\n".join(lines)
 
