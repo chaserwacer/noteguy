@@ -13,7 +13,7 @@ Provides endpoints grouped by framework:
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -23,7 +23,6 @@ from sqlmodel import Session, select
 from app.database import get_session
 from app.models import Note
 from app.rag import retrieve_context
-from app.ai.model_router import is_ollama_available, model_name_for, resolve_provider, routing_info
 
 router = APIRouter(prefix="/api/ai", tags=["ai-frameworks"])
 
@@ -34,27 +33,27 @@ router = APIRouter(prefix="/api/ai", tags=["ai-frameworks"])
 class AskRequest(BaseModel):
     question: str
     folder_scope: Optional[str] = None
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
 
 
 class NoteContentRequest(BaseModel):
     note_id: str
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
 
 
 class ContentRequest(BaseModel):
     content: str
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
 
 
 class CrewResearchRequest(BaseModel):
     question: str
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
 
 
 class CrewWriteRequest(BaseModel):
     topic: str
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
 
 
 class MemoryAddRequest(BaseModel):
@@ -72,12 +71,23 @@ class MemoryChatRequest(BaseModel):
     message: str
     user_id: str = "default"
     conversation_history: list[dict] = []
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
 
 
 class ConnectionRequest(BaseModel):
     note_id: str
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
+
+
+def _openai_meta(task: str) -> dict:
+    """Return consistent provider metadata for OpenAI-only endpoints."""
+    return {
+        "provider_requested": "openai",
+        "provider_used": "openai",
+        "model_used": "gpt-4o",
+        "local_inference": False,
+        "task": task,
+    }
 
 
 # ── Helper to get note content ─────────────────────────────────────────────
@@ -164,27 +174,23 @@ def list_frameworks():
 
 @router.get("/routing-info")
 def get_routing_info():
-    """Return the current model routing configuration and Ollama status."""
-    from app.ai.model_router import HEAVY_TASKS, LIGHT_TASKS
-    settings_obj = __import__("app.config", fromlist=["get_settings"]).get_settings()
-    ollama_up = is_ollama_available()
+    """Return the current model routing configuration."""
     return {
         "ollama": {
-            "available": ollama_up,
-            "base_url": settings_obj.ollama_base_url,
-            "model": settings_obj.ollama_model,
+            "available": False,
+            "base_url": "",
+            "model": "",
         },
         "routing": {
-            "light_tasks": sorted(LIGHT_TASKS),
-            "heavy_tasks": sorted(HEAVY_TASKS),
+            "light_tasks": [],
+            "heavy_tasks": [],
             "auto_description": (
-                "Light tasks route to Ollama when available, "
-                "saving cloud tokens. Heavy tasks always use a cloud model."
+                "All AI endpoints are pinned to OpenAI. "
+                "Provider auto-routing is disabled."
             ),
         },
         "cloud_models": {
-            "anthropic": model_name_for("anthropic"),
-            "openai": model_name_for("openai"),
+            "openai": "gpt-4o",
         },
     }
 
@@ -314,9 +320,8 @@ def dspy_summarise_endpoint(
     """Summarise a note using DSPy's structured output module."""
     from app.ai.dspy_rag import dspy_summarise
     content = _get_note_content(body.note_id, session)
-    resolved = resolve_provider(body.provider, "dspy_summarise")
-    result = dspy_summarise(content=content, provider=resolved)
-    return {**result, **routing_info(body.provider, resolved, "dspy_summarise")}
+    result = dspy_summarise(content=content, provider=body.provider)
+    return {**result, **_openai_meta("dspy_summarise")}
 
 
 @router.post("/dspy/topics")
@@ -327,9 +332,8 @@ def dspy_topics_endpoint(
     """Extract topics from a note using DSPy."""
     from app.ai.dspy_rag import dspy_extract_topics
     content = _get_note_content(body.note_id, session)
-    resolved = resolve_provider(body.provider, "dspy_topics")
-    result = dspy_extract_topics(content=content, provider=resolved)
-    return {**result, **routing_info(body.provider, resolved, "dspy_topics")}
+    result = dspy_extract_topics(content=content, provider=body.provider)
+    return {**result, **_openai_meta("dspy_topics")}
 
 
 # ── Instructor endpoints ──────────────────────────────────────────────────
@@ -343,9 +347,8 @@ def instructor_tags_endpoint(
     """Extract structured tags and metadata from a note."""
     from app.ai.structured import extract_tags
     content = _get_note_content(body.note_id, session)
-    resolved = resolve_provider(body.provider, "instructor_tags")
-    result = extract_tags(content=content, provider=resolved)
-    return {**result, **routing_info(body.provider, resolved, "instructor_tags")}
+    result = extract_tags(content=content, provider=body.provider)
+    return {**result, **_openai_meta("instructor_tags")}
 
 
 @router.post("/instructor/entities")
@@ -356,9 +359,8 @@ def instructor_entities_endpoint(
     """Extract named entities from a note."""
     from app.ai.structured import extract_entities
     content = _get_note_content(body.note_id, session)
-    resolved = resolve_provider(body.provider, "instructor_entities")
-    result = extract_entities(content=content, provider=resolved)
-    return {**result, **routing_info(body.provider, resolved, "instructor_entities")}
+    result = extract_entities(content=content, provider=body.provider)
+    return {**result, **_openai_meta("instructor_entities")}
 
 
 @router.post("/instructor/summary")
@@ -443,9 +445,8 @@ def pydantic_ai_enhance_endpoint(
     """Enhance a note using the PydanticAI enhancement agent."""
     from app.ai.pydantic_agent import note_enhancement_agent
     content = _get_note_content(body.note_id, session)
-    resolved = resolve_provider(body.provider, "pydantic_enhance")
-    result = note_enhancement_agent(content=content, provider=resolved)
-    return {**result, **routing_info(body.provider, resolved, "pydantic_enhance")}
+    result = note_enhancement_agent(content=content, provider=body.provider)
+    return {**result, **_openai_meta("pydantic_enhance")}
 
 
 @router.post("/pydantic-ai/connections")

@@ -19,7 +19,6 @@ from __future__ import annotations
 
 from enum import Enum
 
-import anthropic
 import instructor
 import openai
 from pydantic import BaseModel, Field
@@ -121,18 +120,9 @@ class StructuredSummary(BaseModel):
 # ── Instructor client factory ──────────────────────────────────────────────
 
 
-def _get_instructor_client(provider: str = "anthropic"):
-    """Return an instructor-patched LLM client."""
+def _get_instructor_client(provider: str = "openai"):
+    """Return an instructor-patched OpenAI client."""
     settings = get_settings()
-    if provider == "ollama":
-        raw_client = openai.OpenAI(
-            base_url=f"{settings.ollama_base_url}/v1",
-            api_key="ollama",
-        )
-        return instructor.from_openai(raw_client, mode=instructor.Mode.JSON), settings.ollama_model
-    if provider == "anthropic":
-        raw_client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-        return instructor.from_anthropic(raw_client), "claude-sonnet-4-20250514"
     raw_client = openai.OpenAI(api_key=settings.openai_api_key)
     return instructor.from_openai(raw_client), "gpt-4o"
 
@@ -142,7 +132,7 @@ def _get_instructor_client(provider: str = "anthropic"):
 
 def extract_tags(
     content: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Analyse a note and extract structured tags and metadata.
 
@@ -150,39 +140,25 @@ def extract_tags(
     """
     client, model = _get_instructor_client(provider)
 
-    if provider == "anthropic":
-        result = client.messages.create(
-            model=model,
-            max_tokens=1024,
-            messages=[{
-                "role": "user",
-                "content": (
-                    "Analyse the following note and extract structured metadata.\n\n"
-                    f"Note content:\n{content}"
-                ),
-            }],
-            response_model=NoteAnalysis,
-        )
-    else:  # openai or ollama
-        result = client.chat.completions.create(
-            model=model,
-            max_tokens=1024,
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a note analysis assistant. Extract structured metadata from the note.",
-                },
-                {"role": "user", "content": content},
-            ],
-            response_model=NoteAnalysis,
-        )
+    result = client.chat.completions.create(
+        model=model,
+        max_tokens=1024,
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a note analysis assistant. Extract structured metadata from the note.",
+            },
+            {"role": "user", "content": content},
+        ],
+        response_model=NoteAnalysis,
+    )
 
     return {**result.model_dump(), "framework": "instructor"}
 
 
 def extract_entities(
     content: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Extract named entities and key concepts from note content.
 
@@ -190,39 +166,25 @@ def extract_entities(
     """
     client, model = _get_instructor_client(provider)
 
-    if provider == "anthropic":
-        result = client.messages.create(
-            model=model,
-            max_tokens=1024,
-            messages=[{
-                "role": "user",
-                "content": (
-                    "Extract all named entities and key concepts from this note.\n\n"
-                    f"Note content:\n{content}"
-                ),
-            }],
-            response_model=EntityExtraction,
-        )
-    else:  # openai or ollama
-        result = client.chat.completions.create(
-            model=model,
-            max_tokens=1024,
-            messages=[
-                {
-                    "role": "system",
-                    "content": "Extract named entities and key concepts from the text.",
-                },
-                {"role": "user", "content": content},
-            ],
-            response_model=EntityExtraction,
-        )
+    result = client.chat.completions.create(
+        model=model,
+        max_tokens=1024,
+        messages=[
+            {
+                "role": "system",
+                "content": "Extract named entities and key concepts from the text.",
+            },
+            {"role": "user", "content": content},
+        ],
+        response_model=EntityExtraction,
+    )
 
     return {**result.model_dump(), "framework": "instructor"}
 
 
 def extract_summary(
     content: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Generate a structured summary with action items.
 
@@ -230,32 +192,17 @@ def extract_summary(
     """
     client, model = _get_instructor_client(provider)
 
-    if provider == "anthropic":
-        result = client.messages.create(
-            model=model,
-            max_tokens=1024,
-            messages=[{
-                "role": "user",
-                "content": (
-                    "Create a comprehensive structured summary of this note, "
-                    "including action items and related topics.\n\n"
-                    f"Note content:\n{content}"
-                ),
-            }],
-            response_model=StructuredSummary,
-        )
-    else:  # openai or ollama
-        result = client.chat.completions.create(
-            model=model,
-            max_tokens=1024,
-            messages=[
-                {
-                    "role": "system",
-                    "content": "Create a structured summary with action items and related topics.",
-                },
-                {"role": "user", "content": content},
-            ],
-            response_model=StructuredSummary,
-        )
+    result = client.chat.completions.create(
+        model=model,
+        max_tokens=1024,
+        messages=[
+            {
+                "role": "system",
+                "content": "Create a structured summary with action items and related topics.",
+            },
+            {"role": "user", "content": content},
+        ],
+        response_model=StructuredSummary,
+    )
 
     return {**result.model_dump(), "framework": "instructor"}

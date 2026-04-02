@@ -28,27 +28,14 @@ from app.config import get_settings
 # ── DSPy LM configuration ──────────────────────────────────────────────────
 
 
-def _configure_dspy(provider: str = "anthropic") -> None:
-    """Configure the global DSPy language model."""
+def _configure_dspy(provider: str = "openai") -> None:
+    """Configure the global DSPy language model (OpenAI only)."""
     settings = get_settings()
-    if provider == "ollama":
-        lm = dspy.LM(
-            model=f"ollama_chat/{settings.ollama_model}",
-            api_base=settings.ollama_base_url,
-            max_tokens=1024,
-        )
-    elif provider == "anthropic":
-        lm = dspy.LM(
-            model="anthropic/claude-sonnet-4-20250514",
-            api_key=settings.anthropic_api_key,
-            max_tokens=1024,
-        )
-    else:
-        lm = dspy.LM(
-            model="openai/gpt-4o",
-            api_key=settings.openai_api_key,
-            max_tokens=1024,
-        )
+    lm = dspy.LM(
+        model="openai/gpt-4o",
+        api_key=settings.openai_api_key,
+        max_tokens=1024,
+    )
     dspy.configure(lm=lm)
 
 
@@ -122,7 +109,7 @@ class TopicExtractionModule(dspy.Module):
 def dspy_ask(
     question: str,
     context_chunks: list[dict],
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Answer a question using DSPy's ChainOfThought RAG module.
 
@@ -133,7 +120,7 @@ def dspy_ask(
     context_chunks : list[dict]
         Retrieved context chunks (each with ``content`` and ``note_title``).
     provider : str
-        LLM provider (``"anthropic"`` or ``"openai"``).
+        LLM provider (``"openai"``).
 
     Returns
     -------
@@ -159,7 +146,7 @@ def dspy_ask(
 
 def dspy_summarise(
     content: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Summarise content using DSPy's structured output module.
 
@@ -183,7 +170,7 @@ def dspy_summarise(
 
 def dspy_extract_topics(
     content: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Extract topics and themes using DSPy.
 

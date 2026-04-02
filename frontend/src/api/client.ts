@@ -219,7 +219,7 @@ export interface AIRoutingInfo {
     heavy_tasks: string[];
     auto_description: string;
   };
-  cloud_models: { anthropic: string; openai: string };
+  cloud_models: { openai: string };
 }
 
 export interface AIRoutingMeta {
@@ -242,7 +242,7 @@ export function fetchAIRoutingInfo(): Promise<AIRoutingInfo> {
 export function langchainAsk(
   question: string,
   folderScope?: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIAskResponse> {
   return request("/api/ai/langchain/ask", {
     method: "POST",
@@ -254,7 +254,7 @@ export function langchainAsk(
 export function llamaIndexQuery(
   question: string,
   folderScope?: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIAskResponse> {
   return request("/api/ai/llama-index/query", {
     method: "POST",
@@ -265,7 +265,7 @@ export function llamaIndexQuery(
 // CrewAI
 export function crewaiResearch(
   question: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AICrewResponse> {
   return request("/api/ai/crewai/research", {
     method: "POST",
@@ -275,7 +275,7 @@ export function crewaiResearch(
 
 export function crewaiSummarise(
   noteId: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AICrewResponse> {
   return request("/api/ai/crewai/summarise", {
     method: "POST",
@@ -285,7 +285,7 @@ export function crewaiSummarise(
 
 export function crewaiWrite(
   topic: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AICrewResponse> {
   return request("/api/ai/crewai/write", {
     method: "POST",
@@ -297,7 +297,7 @@ export function crewaiWrite(
 export function dspyAsk(
   question: string,
   folderScope?: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIAskResponse> {
   return request("/api/ai/dspy/ask", {
     method: "POST",
@@ -307,7 +307,7 @@ export function dspyAsk(
 
 export function dspySummarise(
   noteId: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<Record<string, string>> {
   return request("/api/ai/dspy/summarise", {
     method: "POST",
@@ -317,7 +317,7 @@ export function dspySummarise(
 
 export function dspyTopics(
   noteId: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<Record<string, string>> {
   return request("/api/ai/dspy/topics", {
     method: "POST",
@@ -328,7 +328,7 @@ export function dspyTopics(
 // Instructor
 export function instructorTags(
   noteId: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIAnalysisResponse> {
   return request("/api/ai/instructor/tags", {
     method: "POST",
@@ -338,7 +338,7 @@ export function instructorTags(
 
 export function instructorEntities(
   noteId: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIAnalysisResponse> {
   return request("/api/ai/instructor/entities", {
     method: "POST",
@@ -348,7 +348,7 @@ export function instructorEntities(
 
 export function instructorSummary(
   noteId: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIAnalysisResponse> {
   return request("/api/ai/instructor/summary", {
     method: "POST",
@@ -381,7 +381,7 @@ export function mem0Search(
 export function mem0Chat(
   message: string,
   userId = "default",
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<{ answer: string; memories_used: unknown[]; framework: string }> {
   return request("/api/ai/mem0/chat", {
     method: "POST",
@@ -393,7 +393,7 @@ export function mem0Chat(
 export function pydanticAiAsk(
   question: string,
   folderScope?: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIAskResponse & { confidence: number; follow_up_questions: string[] }> {
   return request("/api/ai/pydantic-ai/ask", {
     method: "POST",
@@ -403,7 +403,7 @@ export function pydanticAiAsk(
 
 export function pydanticAiEnhance(
   noteId: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIEnhanceResponse> {
   return request("/api/ai/pydantic-ai/enhance", {
     method: "POST",
@@ -413,7 +413,7 @@ export function pydanticAiEnhance(
 
 export function pydanticAiConnections(
   noteId: string,
-  provider = "anthropic",
+  provider = "openai",
 ): Promise<AIConnectionResponse> {
   return request("/api/ai/pydantic-ai/connections", {
     method: "POST",

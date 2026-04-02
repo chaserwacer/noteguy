@@ -120,3 +120,5 @@ def test_embedding_adapter_supports_query_and_input_keywords(app_modules, monkey
     assert adapter.embed_query("hello") == [5.0]
     assert adapter.embed_query(query="hello") == [5.0]
     assert adapter.embed_query(input="hello") == [5.0]
+    # ChromaDB passes a list to embed_query — must handle without wrapping in another list
+    assert adapter.embed_query(input=["hello", "world"]) == [[5.0], [5.0]]

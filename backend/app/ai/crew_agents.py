@@ -29,15 +29,9 @@ from app.config import get_settings
 # ── LLM configuration ──────────────────────────────────────────────────────
 
 
-def _get_crew_llm(provider: str = "anthropic") -> LLM:
-    """Return a CrewAI-compatible LLM instance."""
+def _get_crew_llm(provider: str = "openai") -> LLM:
+    """Return a CrewAI-compatible OpenAI LLM instance."""
     settings = get_settings()
-    if provider == "anthropic":
-        return LLM(
-            model="anthropic/claude-sonnet-4-20250514",
-            api_key=settings.anthropic_api_key,
-            max_tokens=1024,
-        )
     return LLM(
         model="openai/gpt-4o",
         api_key=settings.openai_api_key,
@@ -99,7 +93,7 @@ def _make_writer(llm: LLM) -> Agent:
 def run_research_crew(
     question: str,
     notes_context: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Run a research crew that analyses notes to answer a question.
 
@@ -153,7 +147,7 @@ def run_research_crew(
 
 def run_summary_crew(
     content: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Run a summarisation crew on the given content.
 
@@ -192,7 +186,7 @@ def run_summary_crew(
 def run_writing_crew(
     topic: str,
     notes_context: str = "",
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Run a writing crew to generate new note content on a topic.
 

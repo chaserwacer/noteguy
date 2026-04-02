@@ -9,6 +9,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Central configuration sourced from .env at the project root."""
 
+    # Retained only for backward compatibility with existing .env files.
     anthropic_api_key: str = ""
     openai_api_key: str = ""
     database_url: str = "sqlite:///./noteguy.db"

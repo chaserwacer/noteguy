@@ -34,10 +34,10 @@ def _get_memory_config() -> dict:
     settings = get_settings()
     return {
         "llm": {
-            "provider": "anthropic",
+            "provider": "openai",
             "config": {
-                "model": "claude-sonnet-4-20250514",
-                "api_key": settings.anthropic_api_key,
+                "model": "gpt-4o",
+                "api_key": settings.openai_api_key,
                 "max_tokens": 1024,
             },
         },
@@ -148,7 +148,7 @@ def chat_with_memory(
     message: str,
     user_id: str = "default",
     conversation_history: list[dict] | None = None,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Chat with memory-augmented context.
 
@@ -157,7 +157,6 @@ def chat_with_memory(
 
     Returns ``{"answer": str, "memories_used": list, "framework": "mem0"}``.
     """
-    import anthropic
     import openai as openai_mod
 
     settings = get_settings()
@@ -179,34 +178,18 @@ def chat_with_memory(
         )
     system_prompt += "Use these memories to provide personalised responses."
 
-    # Generate response
-    if provider == "anthropic":
-        client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-        messages = []
-        if conversation_history:
-            messages.extend(conversation_history)
-        messages.append({"role": "user", "content": message})
+    client = openai_mod.OpenAI(api_key=settings.openai_api_key)
+    messages = [{"role": "system", "content": system_prompt}]
+    if conversation_history:
+        messages.extend(conversation_history)
+    messages.append({"role": "user", "content": message})
 
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1024,
-            system=system_prompt,
-            messages=messages,
-        )
-        answer = response.content[0].text
-    else:
-        client = openai_mod.OpenAI(api_key=settings.openai_api_key)
-        messages = [{"role": "system", "content": system_prompt}]
-        if conversation_history:
-            messages.extend(conversation_history)
-        messages.append({"role": "user", "content": message})
-
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=messages,
-            max_tokens=1024,
-        )
-        answer = response.choices[0].message.content
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=messages,
+        max_tokens=1024,
+    )
+    answer = response.choices[0].message.content
 
     # Store this interaction as a memory
     memory.add(

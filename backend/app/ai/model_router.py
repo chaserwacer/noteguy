@@ -1,11 +1,7 @@
-"""Dynamic AI model router.
+"""OpenAI-only model router helpers.
 
-Decides whether a given task should run on a local Ollama model or a cloud
-provider (Anthropic / OpenAI).  The key insight is that several tasks in
-NoteGuy are self-contained inference jobs — they receive note content directly
-and produce structured output without needing retrieval, multi-step reasoning,
-or complex tool use.  These *light* tasks run just as well (and far cheaper)
-on a capable local model.
+AI endpoints are pinned to OpenAI. These helpers keep a stable API shape for
+metadata and compatibility with existing UI code paths.
 
 Task classification
 -------------------
@@ -26,10 +22,8 @@ HEAVY  — must stay on a cloud provider
          * pydantic_ask      — confidence + source attribution
          * pydantic_connections — cross-vault semantic linking
 
-When provider == "auto":
-    light task + Ollama running  → "ollama"
-    light task + Ollama absent   → cloud fallback
-    heavy task                   → cloud provider (always)
+Provider behavior:
+    any requested provider -> "openai"
 
 Public API
 ----------
@@ -39,8 +33,6 @@ Public API
 """
 
 from __future__ import annotations
-
-import httpx
 
 from app.config import get_settings
 
@@ -72,13 +64,8 @@ HEAVY_TASKS: frozenset[str] = frozenset({
 # ── Ollama availability check ─────────────────────────────────────────────
 
 def is_ollama_available() -> bool:
-    """Return True if the Ollama daemon is reachable at the configured URL."""
-    settings = get_settings()
-    try:
-        r = httpx.get(f"{settings.ollama_base_url}/api/tags", timeout=2.0)
-        return r.status_code == 200
-    except Exception:
-        return False
+    """Return False because AI endpoint routing is OpenAI-only."""
+    return False
 
 
 # ── Provider resolution ────────────────────────────────────────────────────
@@ -89,35 +76,15 @@ def resolve_provider(requested: str, task: str) -> str:
     Parameters
     ----------
     requested : str
-        Value supplied by the caller: ``"auto"``, ``"anthropic"``, or
-        ``"openai"``.
+        Value supplied by the caller. Ignored in OpenAI-only mode.
     task : str
         Logical task name (one of the keys in LIGHT_TASKS / HEAVY_TASKS).
 
     Returns
     -------
     str
-        ``"ollama"``, ``"anthropic"``, or ``"openai"``.
+        ``"openai"``.
     """
-    if requested != "auto":
-        return requested
-
-    # Heavy tasks always go to the cloud.
-    if task not in LIGHT_TASKS:
-        return _cloud_fallback()
-
-    # Light tasks go local when Ollama is available.
-    if is_ollama_available():
-        return "ollama"
-
-    return _cloud_fallback()
-
-
-def _cloud_fallback() -> str:
-    """Return the best available cloud provider."""
-    settings = get_settings()
-    if settings.anthropic_api_key:
-        return "anthropic"
     return "openai"
 
 
@@ -125,11 +92,7 @@ def _cloud_fallback() -> str:
 
 def model_name_for(provider: str) -> str:
     """Return a human-readable model identifier for the given provider."""
-    settings = get_settings()
-    if provider == "ollama":
-        return settings.ollama_model
-    if provider == "anthropic":
-        return "claude-sonnet-4-20250514"
+    _ = get_settings()
     return "gpt-4o"
 
 
@@ -137,10 +100,11 @@ def model_name_for(provider: str) -> str:
 
 def routing_info(requested: str, resolved: str, task: str) -> dict:
     """Build a small dict that endpoints attach to their response."""
+    resolved_provider = "openai"
     return {
-        "provider_requested": requested,
-        "provider_used": resolved,
-        "model_used": model_name_for(resolved),
-        "local_inference": resolved == "ollama",
+        "provider_requested": "openai",
+        "provider_used": resolved_provider,
+        "model_used": model_name_for(resolved_provider),
+        "local_inference": False,
         "task": task,
     }

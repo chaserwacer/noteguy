@@ -6,7 +6,6 @@ on the ``folder_path`` metadata prefix stored in each chunk.
 
 from typing import Optional
 
-import anthropic
 import openai
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -46,16 +45,13 @@ def retrieve_context(
     """
     collection = get_collection()
 
-    where_filter = None
-    if folder_scope:
-        where_filter = {
-            "folder_path": {"$startsWith": folder_scope},  # type: ignore[dict-item]
-        }
+    # ChromaDB does not support $startsWith, so we fetch extra results
+    # and post-filter by folder_path prefix when scoping is requested.
+    fetch_k = top_k if not folder_scope else top_k * 3
 
     results = collection.query(
         query_texts=[query],
-        n_results=top_k,
-        where=where_filter,
+        n_results=fetch_k,
     )
 
     if not results["documents"] or not results["documents"][0]:
@@ -67,17 +63,21 @@ def retrieve_context(
         results["metadatas"][0],
         results["distances"][0],
     ):
-        # ChromaDB distances are L2 by default; convert to a 0-1 similarity
+        fp = meta.get("folder_path", "")
+        if folder_scope and not fp.startswith(folder_scope):
+            continue
         score = 1.0 / (1.0 + distance)
         chunks.append(
             {
                 "content": doc,
                 "note_title": meta.get("note_title", ""),
                 "note_id": meta.get("note_id", ""),
-                "folder_path": meta.get("folder_path", ""),
+                "folder_path": fp,
                 "score": round(score, 4),
             }
         )
+        if len(chunks) >= top_k:
+            break
     return chunks
 
 
@@ -116,7 +116,7 @@ def ask(
     question: str,
     folder_id: Optional[str] = None,
     folder_scope: Optional[str] = None,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Answer a user question using retrieved context.
 
@@ -149,10 +149,7 @@ def ask(
         f"Context from my notes:\n\n{context_block}\n\n---\n\nQuestion: {question}"
     )
 
-    if provider == "anthropic":
-        answer = _ask_anthropic(system_prompt, user_prompt)
-    else:
-        answer = _ask_openai(system_prompt, user_prompt)
+    answer = _ask_openai(system_prompt, user_prompt)
 
     sources = list({c["note_id"] for c in chunks})
     return {"answer": answer, "sources": sources}
@@ -164,7 +161,7 @@ def ask_stream(
     folder_id: Optional[str] = None,
     folder_scope: Optional[str] = None,
     active_note_id: Optional[str] = None,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ):
     """Stream an answer using retrieved context.  Yields SSE-formatted strings.
 
@@ -202,10 +199,7 @@ def ask_stream(
             messages.append({"role": msg["role"], "content": msg["content"]})
     messages.append({"role": "user", "content": question})
 
-    if provider == "anthropic":
-        yield from _stream_anthropic(system_prompt, messages)
-    else:
-        yield from _stream_openai(system_prompt, messages)
+    yield from _stream_openai(system_prompt, messages)
 
     # Emit source notes
     seen = set()
@@ -223,34 +217,6 @@ def ask_stream(
             )
     yield f"data: {json.dumps({'type': 'source_notes', 'notes': source_notes})}\n\n"
     yield f"data: {json.dumps({'type': 'done'})}\n\n"
-
-
-def _ask_anthropic(system: str, user: str) -> str:
-    settings = get_settings()
-    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-    message = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1024,
-        system=system,
-        messages=[{"role": "user", "content": user}],
-    )
-    return message.content[0].text
-
-
-def _stream_anthropic(system: str, messages: list[dict]):
-    """Yield SSE text_delta events from Anthropic streaming."""
-    import json
-
-    settings = get_settings()
-    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-    with client.messages.stream(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1024,
-        system=system,
-        messages=messages,
-    ) as stream:
-        for text in stream.text_stream:
-            yield f"data: {json.dumps({'type': 'text_delta', 'delta': text})}\n\n"
 
 
 def _ask_openai(system: str, user: str) -> str:

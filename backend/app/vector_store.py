@@ -143,6 +143,9 @@ def _build_embedding_function():
             text = input if input is not None else query
             if text is None:
                 raise ValueError("embed_query requires either query or input")
+            # ChromaDB may pass a list of strings; handle both cases
+            if isinstance(text, list):
+                return provider.embed(text)
             return provider.embed_query(text)
 
         def name(self) -> str:

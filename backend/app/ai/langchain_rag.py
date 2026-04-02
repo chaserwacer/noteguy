@@ -7,7 +7,7 @@ chain abstractions.  Uses:
 - ``Chroma`` as a LangChain-compatible vector store wrapper
 - ``RetrievalQA`` chain for end-to-end RAG
 - ``ChatPromptTemplate`` for structured prompt engineering
-- ``ChatAnthropic`` / ``ChatOpenAI`` as swappable LLM backends
+- ``ChatOpenAI`` as the LLM backend
 
 This module exposes two public helpers consumed by the AI router:
 
@@ -22,7 +22,6 @@ from typing import Optional, Generator
 
 from langchain.chains import RetrievalQA
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_anthropic import ChatAnthropic
 from langchain_community.vectorstores import Chroma
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.documents import Document
@@ -69,17 +68,9 @@ def get_langchain_vectorstore() -> Chroma:
 
 # ── LLM factory ────────────────────────────────────────────────────────────
 
-def _get_llm(provider: str = "anthropic", streaming: bool = False, callbacks=None):
-    """Return a LangChain chat model for the given provider."""
+def _get_llm(provider: str = "openai", streaming: bool = False, callbacks=None):
+    """Return a LangChain chat model for OpenAI."""
     settings = get_settings()
-    if provider == "anthropic":
-        return ChatAnthropic(
-            model="claude-sonnet-4-20250514",
-            anthropic_api_key=settings.anthropic_api_key,
-            max_tokens=1024,
-            streaming=streaming,
-            callbacks=callbacks,
-        )
     return ChatOpenAI(
         model="gpt-4o",
         openai_api_key=settings.openai_api_key,
@@ -108,7 +99,7 @@ _RAG_PROMPT = ChatPromptTemplate.from_messages([
 def langchain_ask(
     question: str,
     folder_scope: Optional[str] = None,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Answer a question using a LangChain RetrievalQA chain.
 
@@ -160,7 +151,7 @@ def langchain_ask_stream(
     question: str,
     conversation_history: list[dict] | None = None,
     folder_scope: Optional[str] = None,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> Generator[str, None, None]:
     """Stream an answer via LangChain RetrievalQA, yielding SSE events."""
     vectorstore = get_langchain_vectorstore()

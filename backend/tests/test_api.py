@@ -80,7 +80,7 @@ def test_chat_and_stream_request_contract(client, app_modules, monkeypatch) -> N
 
     chat_response = client.post(
         "/api/chat",
-        json={"message": "Hi", "folder_id": "folder-1", "provider": "anthropic"},
+        json={"message": "Hi", "folder_id": "folder-1", "provider": "openai"},
     )
     assert chat_response.status_code == 200
     assert chat_response.json() == {"answer": "ok", "sources": ["note-1"]}
@@ -92,7 +92,7 @@ def test_chat_and_stream_request_contract(client, app_modules, monkeypatch) -> N
             "conversation_history": [{"role": "user", "content": "previous"}],
             "folder_scope": "school/math",
             "active_note_id": "note-2",
-            "provider": "anthropic",
+            "provider": "openai",
         },
     )
     assert stream_response.status_code == 200

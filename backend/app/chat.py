@@ -1,6 +1,6 @@
 """Chat API routes — exposes the RAG pipeline over HTTP."""
 
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
@@ -18,7 +18,7 @@ class ChatRequest(BaseModel):
 
     message: str
     folder_id: Optional[str] = None
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
 
 
 class ChatStreamRequest(BaseModel):
@@ -28,7 +28,7 @@ class ChatStreamRequest(BaseModel):
     conversation_history: list[dict] = []
     folder_scope: Optional[str] = None
     active_note_id: Optional[str] = None
-    provider: str = "anthropic"
+    provider: Literal["openai"] = "openai"
 
 
 class ChatResponse(BaseModel):

@@ -21,7 +21,6 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
-from pydantic_ai.models.anthropic import AnthropicModel
 from pydantic_ai.models.openai import OpenAIModel
 
 from app.config import get_settings
@@ -96,21 +95,9 @@ ConnectionResult.model_rebuild()
 # ── Model factory ──────────────────────────────────────────────────────────
 
 
-def _get_model(provider: str = "anthropic"):
+def _get_model(provider: str = "openai"):
     """Return a PydanticAI model instance."""
     settings = get_settings()
-    if provider == "ollama":
-        # Ollama exposes an OpenAI-compatible /v1 endpoint
-        return OpenAIModel(
-            settings.ollama_model,
-            base_url=f"{settings.ollama_base_url}/v1",
-            api_key="ollama",
-        )
-    if provider == "anthropic":
-        return AnthropicModel(
-            "claude-sonnet-4-20250514",
-            api_key=settings.anthropic_api_key,
-        )
     return OpenAIModel(
         "gpt-4o",
         api_key=settings.openai_api_key,
@@ -121,7 +108,7 @@ def _get_model(provider: str = "anthropic"):
 
 
 _qa_agent = Agent(
-    "anthropic:claude-sonnet-4-20250514",
+    "openai:gpt-4o",
     deps_type=NoteContext,
     result_type=QAResult,
     system_prompt=(
@@ -141,7 +128,7 @@ def _add_note_context(ctx):
 def note_qa_agent(
     question: str,
     notes_context: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Answer a question using the PydanticAI QA agent.
 
@@ -163,7 +150,7 @@ def note_qa_agent(
 
 
 _enhancement_agent = Agent(
-    "anthropic:claude-sonnet-4-20250514",
+    "openai:gpt-4o",
     deps_type=NoteContext,
     result_type=EnhancementResult,
     system_prompt=(
@@ -180,7 +167,7 @@ _enhancement_agent = Agent(
 
 def note_enhancement_agent(
     content: str,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Enhance a note's content using the PydanticAI enhancement agent.
 
@@ -202,7 +189,7 @@ def note_enhancement_agent(
 
 
 _connection_agent = Agent(
-    "anthropic:claude-sonnet-4-20250514",
+    "openai:gpt-4o",
     deps_type=NoteContext,
     result_type=ConnectionResult,
     system_prompt=(
@@ -228,7 +215,7 @@ def _add_vault_titles(ctx):
 def note_connection_agent(
     content: str,
     all_titles: list[str] | None = None,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Find connections between a note and the rest of the vault.
 

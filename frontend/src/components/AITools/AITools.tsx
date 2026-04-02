@@ -41,14 +41,6 @@ const FrameworkIcon: FC<{ id: string }> = ({ id }) => {
   );
 };
 
-// ── Provider badge ────────────────────────────────────────────────────────
-
-const LIGHT_TASKS = new Set([
-  "dspy_summarise", "dspy_topics",
-  "instructor_tags", "instructor_entities",
-  "pydantic_enhance",
-]);
-
 // ── Tool card ────────────────────────────────────────────────────────────
 
 interface ToolAction {
@@ -203,7 +195,7 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [provider, setProvider] = useState<string>("auto");
+  const provider = "openai";
 
   const activeNoteId = useNoteStore((s) => s.activeNoteId);
 
@@ -276,30 +268,10 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {/* Ollama status */}
-            {routingInfo && (
-              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium ${
-                routingInfo.ollama.available
-                  ? "bg-green-500/10 text-green-400"
-                  : "bg-vault-surface-hover text-vault-muted"
-              }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${routingInfo.ollama.available ? "bg-green-400" : "bg-vault-muted"}`} />
-                {routingInfo.ollama.available
-                  ? `Ollama · ${routingInfo.ollama.model}`
-                  : "Ollama offline"}
-              </div>
-            )}
-            {/* Provider selector */}
-            <select
-              value={provider}
-              onChange={(e) => setProvider(e.target.value)}
-              className="text-[11px] bg-vault-bg border border-vault-border rounded-md px-2 py-1 text-vault-text-secondary focus:outline-none focus:ring-1 focus:ring-vault-accent"
-              title="Select AI provider. 'Auto' routes light tasks to local Ollama when available."
-            >
-              <option value="auto">Auto (smart routing)</option>
-              <option value="anthropic">Anthropic (cloud)</option>
-              <option value="openai">OpenAI (cloud)</option>
-            </select>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium bg-vault-accent-subtle text-vault-accent">
+              <span className="w-1.5 h-1.5 rounded-full bg-vault-accent" />
+              OpenAI · gpt-4o
+            </div>
             <button
               onClick={onClose}
               className="p-1.5 rounded-md text-vault-muted hover:text-vault-text hover:bg-vault-surface-hover transition-colors"
@@ -369,8 +341,6 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
                 {/* Actions */}
                 <div className="px-5 py-3 border-b border-vault-border/30 flex flex-wrap gap-2">
                   {actions.map((action) => {
-                    const isLocalRoutable = provider === "auto" && action.taskKey && LIGHT_TASKS.has(action.taskKey);
-                    const ollamaUp = routingInfo?.ollama.available;
                     return (
                       <button
                         key={action.label}
@@ -382,9 +352,6 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
                         {action.label}
                         {action.requiresNote && (
                           <span className="text-[9px] opacity-60">(note)</span>
-                        )}
-                        {isLocalRoutable && ollamaUp && (
-                          <span className="text-[9px] bg-green-500/20 text-green-400 px-1 rounded">local</span>
                         )}
                       </button>
                     );

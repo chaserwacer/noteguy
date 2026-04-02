@@ -68,7 +68,7 @@ The backend treats markdown files in your vault as the source of truth, while SQ
 | Backend | Python, FastAPI, SQLModel, ChromaDB, GitPython |
 | Frontend | React, TypeScript, Vite, Zustand, Tailwind |
 | Embeddings | Ollama `all-minilm` (default) with optional OpenAI fallback |
-| LLM providers | Anthropic, OpenAI, optional local Ollama routing |
+| LLM providers | OpenAI (`gpt-4o`) for all AI endpoints |
 | Desktop shell | Tauri v2 |
 
 ## Repository Structure
@@ -190,13 +190,7 @@ Reference file: `.env.example`
 
 | Variable | Why it is required |
 |---|---|
-| `OPENAI_API_KEY` | Required only when using OpenAI embeddings or fallback |
-
-### Provider-specific variables
-
-| Variable | Needed when |
-|---|---|
-| `ANTHROPIC_API_KEY` | You use Anthropic provider routes (`provider=anthropic`) |
+| `OPENAI_API_KEY` | Required for AI endpoints and OpenAI embeddings/fallback |
 
 ### Optional variables
 
@@ -218,8 +212,7 @@ Reference file: `.env.example`
 
 ### Provider behavior notes
 
-- `provider=auto` can route selected light tasks to local Ollama if available.
-- Heavy orchestration/query tasks remain on cloud providers.
+- All AI endpoints are pinned to OpenAI.
 - Embeddings default to local Ollama (`all-minilm`) and can automatically fall back to OpenAI when enabled.
 - Embedding provider selection is centralized and swappable without changing ingestion or retrieval code.
 
@@ -271,7 +264,6 @@ Reference file: `.env.example`
 
 - Authentication errors on chat/search: confirm API keys in `.env`.
 - Empty retrieval results: re-run ingestion with `POST /api/ingest/all`.
-- Local Ollama not selected with `provider=auto`: verify daemon availability at `OLLAMA_BASE_URL`.
 - Missing file writes: confirm `VAULT_PATH` is valid and writable.
 
 ## License

@@ -28,7 +28,6 @@ from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core.prompts import PromptTemplate
 from llama_index.core.response_synthesizers import ResponseMode
 from llama_index.embeddings.openai import OpenAIEmbedding
-from llama_index.llms.anthropic import Anthropic as AnthropicLLM
 from llama_index.llms.openai import OpenAI as OpenAILLM
 from llama_index.vector_stores.chroma import ChromaVectorStore
 
@@ -39,7 +38,7 @@ from app.config import get_settings
 # ── Settings bootstrap ──────────────────────────────────────────────────────
 
 
-def _configure_llama_settings(provider: str = "anthropic") -> None:
+def _configure_llama_settings(provider: str = "openai") -> None:
     """Set global LlamaIndex settings for the embedding model and LLM."""
     settings = get_settings()
 
@@ -54,18 +53,11 @@ def _configure_llama_settings(provider: str = "anthropic") -> None:
         separator="\n\n",
     )
 
-    if provider == "anthropic":
-        Settings.llm = AnthropicLLM(
-            model="claude-sonnet-4-20250514",
-            api_key=settings.anthropic_api_key,
-            max_tokens=1024,
-        )
-    else:
-        Settings.llm = OpenAILLM(
-            model="gpt-4o",
-            api_key=settings.openai_api_key,
-            max_tokens=1024,
-        )
+    Settings.llm = OpenAILLM(
+        model="gpt-4o",
+        api_key=settings.openai_api_key,
+        max_tokens=1024,
+    )
 
 
 # ── Vector store ────────────────────────────────────────────────────────────
@@ -110,7 +102,7 @@ _QA_TEMPLATE = PromptTemplate(
 def llama_index_query(
     question: str,
     folder_scope: Optional[str] = None,
-    provider: str = "anthropic",
+    provider: str = "openai",
 ) -> dict:
     """Query the note vault using a LlamaIndex query engine.
 

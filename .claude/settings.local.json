@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/code/noteguy/backend -type f -name *.py)",
+      "Bash(find /c/code/noteguy -maxdepth 2 -name .env* -o -name *.env)",
+      "Bash(python -m pytest tests/test_embeddings.py tests/test_chunking.py -v --tb=short)",
+      "Bash(python -m pytest tests/test_integration_pipeline.py -v --tb=short)",
+      "Bash(.venv/Scripts/python -m pytest tests/test_embeddings.py tests/test_chunking.py -v --tb=short)",
+      "Bash(.venv/Scripts/python -m pytest tests/test_integration_pipeline.py -v --tb=short)",
+      "Bash(C:/code/noteguy/.venv/Scripts/pytest.exe tests/test_integration_pipeline.py -v --tb=short)",
+      "Bash(C:/code/noteguy/.venv/Scripts/pytest.exe tests/ -v --tb=short)"
+    ]
+  }
+}
