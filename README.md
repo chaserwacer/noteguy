@@ -1,56 +1,65 @@
 # NoteGuy
 
-NoteGuy is a local-first markdown workspace with semantic retrieval, git-backed note history, and a multi-framework AI layer for question answering, structured extraction, and persistent memory.
+NoteGuy is a local-first markdown workspace with LightRAG-powered retrieval, git-backed note history, and optional multimodal processing via RAG-Anything.
 
 The project is organized as a FastAPI backend, a React frontend, and an optional Tauri desktop shell.
 
 ## Features
 
 - Fast markdown editing with folder organization
-- Retrieval-augmented chat grounded in your notes
-- Semantic search across your vault
+- LightRAG-powered chat, extraction, and deep analysis over your vault
+- Unified LightRAG retrieval across chat and AI tools
 - Git-backed version history with diff and restore
-- Seven AI framework integrations for extended workflows
-- File import support for `.md` and `.docx`
+- File import support for `.md`, `.txt`, and `.docx`
+- Optional multimodal document ingestion (PDF, PPTX, XLSX, images) via RAG-Anything
 
 ## AI Architecture
 
-The AI layer is a pipeline: embed → chunk → retrieve → generate. Seven framework integrations sit above the core RAG path, each targeting a distinct use case.
+NoteGuy uses a single retrieval path centered on LightRAG.
 
-### Embedding and ingestion
+### LightRAG ingestion and query
 
-Notes are split at markdown headings, then subdivided into ~400-token paragraph chunks. Each chunk is stored in ChromaDB with source metadata so retrieval results always link back to the originating note.
+For note retrieval and AI operations, note content is indexed into the LightRAG knowledge graph. All primary RAG behavior in the application now resolves through LightRAG query modes (`naive`, `local`, `global`, `hybrid`, `mix`).
 
 Embeddings use a provider abstraction with automatic fallback:
 
 | Provider | Model | Role |
 |---|---|---|
-| Ollama (local) | `all-minilm` | Default — private, no API cost |
-| OpenAI | `text-embedding-3-small` | Automatic fallback if Ollama is unavailable |
+| OpenAI | `text-embedding-3-large` | Default provider |
+| Ollama (local) | `all-minilm` | Optional fallback when enabled |
 
-### Core RAG
+### Unified AI router (LightRAG)
 
-Chat queries retrieve the most semantically similar chunks (optionally scoped to a folder) and pass them as context to `gpt-4o`. The streaming endpoint emits tokens, source attribution, and a completion signal over SSE so the UI can render progressively.
+The primary AI API is exposed through `/api/ai/*` and powered by LightRAG.
 
-### Framework integrations
+| Endpoint | Purpose |
+|---|---|
+| `/api/ai/status` | Runtime capabilities and AI config |
+| `/api/ai/query` | Knowledge-graph query (`naive`, `local`, `global`, `hybrid`, `mix`) |
+| `/api/ai/query/stream` | Streaming graph query (SSE) |
+| `/api/ai/ingest/note` | Index a note into the knowledge graph |
+| `/api/ai/ingest/all` | Re-index entire vault into the knowledge graph |
+| `/api/ai/ingest/document` | Ingest text/multimodal documents |
+| `/api/ai/extract` | Entity and relationship extraction |
+| `/api/ai/analyze` | Cross-document deep analysis (global mode) |
+| `/api/ai/kg/stats` | Knowledge graph statistics |
+| `/api/ai/kg/document` | Delete document graph data |
 
-Seven frameworks are available as independent endpoints, each bringing a different paradigm to note-aware AI:
+The chat route (`/api/chat` and `/api/chat/stream`) is also LightRAG-backed.
 
-**LangChain** — standard `RetrievalQA` chain backed by the same ChromaDB index, useful as a well-understood baseline.
+### Optional multimodal processing (RAG-Anything)
 
-**LlamaIndex** — maintains its own index with a dedicated query engine and response synthesis, independent of the core retrieval path.
+When `raganything` is installed, document ingestion can process multimodal content and feed the LightRAG knowledge graph. If unavailable, NoteGuy still supports text workflows (`.md`, `.txt`, `.docx`).
 
-**CrewAI** — multi-agent orchestration. Sequential agent crews (Researcher → Summariser, Researcher → Writer) collaborate to produce research summaries and long-form content from note context.
+## API Surface (High Level)
 
-**DSPy** — declarative prompt programming. QA, summarization, and topic extraction are expressed as typed signatures and wrapped with chain-of-thought reasoning. Prompts are optimizable via DSPy's teleprompter framework without manual rewriting.
-
-**Instructor** — structured extraction with guaranteed schema compliance. Extracts tags, entities, and summaries into validated Pydantic models, automatically retrying on malformed responses.
-
-**Mem0** — persistent, user-scoped memory stored in a dedicated vector collection. The AI accumulates facts across sessions and uses them to personalize responses over time.
-
-**PydanticAI** — type-safe agents with dependency injection. Context (active note, vault titles) is passed into agents through a typed dataclass, and responses carry confidence scores, source references, and suggested follow-up questions.
-
-A model router classifies tasks as light (local-capable) or heavy (cloud-required), providing a clear integration point for routing summarization and extraction tasks to a local model in the future.
+| Group | Routes |
+|---|---|
+| Notes/Folders | CRUD routes under `/api/notes` and `/api/folders` |
+| History | Git-backed version endpoints under `/api/notes/{id}/...` |
+| Chat | `/api/chat`, `/api/chat/stream` |
+| Ingestion | `/api/ingest/note/{id}`, `/api/ingest/all`, `/api/ingest/upload` |
+| AI Tools | `/api/ai/*` (LightRAG + optional RAG-Anything) |
 
 ## Architecture
 
@@ -61,7 +70,8 @@ A model router classifies tasks as light (local-capable) or heavy (cloud-require
 | FastAPI backend | API surface, note/folder CRUD, ingestion jobs, RAG chat, history routes |
 | SQLite | Metadata for notes, folders, and app state |
 | Vault filesystem | Persistent markdown content |
-| ChromaDB | Vector index for retrieval and semantic search |
+| LightRAG | Knowledge graph build, hybrid query, extraction, deep analysis |
+| RAG-Anything (optional) | Multimodal document parsing and ingestion |
 | Git service | Versioning, diffs, and restore for note files |
 | React frontend | Editor, sidebar, chat panel, and history views |
 | Tauri (optional) | Native desktop packaging |
@@ -70,20 +80,21 @@ A model router classifies tasks as light (local-capable) or heavy (cloud-require
 
 1. User edits a note in the frontend.
 2. Backend updates metadata in SQLite and writes markdown to the vault.
-3. Background ingestion re-chunks the note and updates the ChromaDB index.
-4. Git service stages and commits the change for history tracking.
-5. Chat and search routes retrieve relevant chunks and call the configured model.
-6. Streaming responses are sent to the UI through SSE.
+3. Background ingestion indexes note content into the LightRAG knowledge graph.
+4. AI ingestion routes can index notes/documents into LightRAG's knowledge graph.
+5. Git service stages and commits the change for history tracking.
+6. Chat and AI routes query the configured retrieval path and call the configured model.
+7. Streaming responses are sent to the UI through SSE.
 
 ## Technology Stack
 
 | Layer | Technologies |
 |---|---|
-| Backend | Python 3.11+, FastAPI, SQLModel, ChromaDB, GitPython |
+| Backend | Python 3.11+, FastAPI, SQLModel, GitPython |
 | Frontend | React 19, TypeScript, Vite, Zustand, Tailwind CSS |
-| Embeddings | Ollama `all-minilm` (default) with OpenAI fallback |
+| Embeddings | OpenAI `text-embedding-3-large` (default) with optional Ollama fallback (`all-minilm`) |
 | LLM | OpenAI `gpt-4o` |
-| AI frameworks | LangChain, LlamaIndex, CrewAI, DSPy, Instructor, Mem0, PydanticAI |
+| AI frameworks | LightRAG, RAG-Anything (optional) |
 | Desktop shell | Tauri v2 (optional) |
 
 ## Repository Structure
@@ -92,7 +103,7 @@ A model router classifies tasks as light (local-capable) or heavy (cloud-require
 noteguy/
   backend/
     app/
-      ai/         # Framework integrations and model router
+      ai/         # LightRAG and RAG-Anything services + unified AI router
       ...         # Core modules: notes, chat, RAG, ingestion, history, git
     requirements.txt
   frontend/
@@ -141,6 +152,8 @@ cd ../frontend
 npm install
 ```
 
+Optional: install and run Ollama if you want local embedding fallback.
+
 ### 3. Run development servers
 
 Script-based startup:
@@ -179,7 +192,11 @@ Install [Ollama](https://ollama.com) and pull the embedding model:
 ollama pull all-minilm
 ```
 
-If Ollama is not running, the backend falls back to OpenAI embeddings automatically.
+If Ollama is not running, the backend falls back to OpenAI embeddings automatically (when fallback is enabled).
+
+### 6. Optional — multimodal document ingestion
+
+`raganything` is included in backend dependencies. If multimodal parsing dependencies are unavailable in your environment, text-based ingestion still works.
 
 ## Configuration
 
@@ -195,21 +212,31 @@ Settings are loaded from `.env` in the project root. Reference: `.env.example`.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `VAULT_PATH` | `~/NoteGuy` | Root folder for markdown note files |
+| `VAULT_PATH` | `~/NoteGuy` (or `./NoteGuy` in `.env.example`) | Root folder for markdown note files |
 | `DATABASE_URL` | `sqlite:///./noteguy.db` | SQLModel connection string |
-| `CHROMA_PERSIST_DIR` | `./chroma_data` | ChromaDB persistence path |
-| `EMBEDDING_PROVIDER` | `ollama` | Primary embedding provider (`ollama` or `openai`) |
+| `EMBEDDING_PROVIDER` | `openai` | Primary embedding provider (`openai` or `ollama`) |
+| `EMBEDDING_FALLBACK_PROVIDER` | `ollama` | Fallback embedding provider |
 | `EMBEDDING_ALLOW_FALLBACK` | `true` | Enable automatic fallback on embedding errors |
+| `EMBEDDING_TIMEOUT_SECONDS` | `8` | Timeout for Ollama embedding requests |
 | `EMBEDDING_OLLAMA_MODEL` | `all-minilm` | Ollama embedding model |
-| `EMBEDDING_OPENAI_MODEL` | `text-embedding-3-small` | OpenAI embedding model |
+| `EMBEDDING_OPENAI_MODEL` | `text-embedding-3-large` | OpenAI embedding model |
+| `EMBEDDING_DIMENSION` | `3072` | Embedding vector dimension |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL |
+| `LLM_MODEL` | `gpt-4o` | Primary chat/completion model |
+| `LLM_MAX_TOKENS` | `2048` | Maximum tokens per completion |
+| `LIGHTRAG_WORKING_DIR` | `./lightrag_data` | LightRAG persistent working directory |
+| `LIGHTRAG_QUERY_MODE` | `hybrid` | Default LightRAG query mode |
+| `RAGANYTHING_OUTPUT_DIR` | `./raganything_output` | Output directory for multimodal processing |
+| `RAGANYTHING_PARSER` | `mineru` | Multimodal parser backend |
 
 ## Troubleshooting
 
 - **Auth errors on chat or search:** confirm `OPENAI_API_KEY` is set in `.env`.
-- **Empty retrieval results:** re-run full ingestion via the API or the ingest button in the UI.
+- **Sparse or stale retrieval results:** re-run `/api/ingest/all` or `/api/ai/ingest/all` to rebuild LightRAG indexes.
+- **AI tools return sparse graph answers:** run `/api/ai/ingest/all` to rebuild the knowledge graph.
 - **Missing file writes:** confirm `VAULT_PATH` exists and is writable.
 - **Ollama not available:** set `EMBEDDING_ALLOW_FALLBACK=true` to fall back to OpenAI embeddings automatically.
+- **Multimodal upload fails:** verify `raganything` and its parser dependencies are installed in your environment.
 
 ## License
 

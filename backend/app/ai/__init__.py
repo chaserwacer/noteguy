@@ -1,12 +1,9 @@
-"""AI framework integrations for NoteGuy.
+"""AI integrations for NoteGuy.
 
-This package provides modular integrations with modern AI/ML frameworks:
+Built on two complementary frameworks from HKUDS:
 
-- **LangChain** — RAG pipeline with chains, retrievers, and prompt templates
-- **LlamaIndex** — Document indexing and query engine for note retrieval
-- **CrewAI** — Multi-agent system for research, summarization, and writing
-- **DSPy** — Programmatic RAG optimization with learnable modules
-- **Instructor** — Structured data extraction (tags, entities, summaries)
-- **Mem0** — Persistent memory layer for conversational context
-- **PydanticAI** — Type-safe agent framework with structured schemas
+- **LightRAG** — Graph-augmented retrieval with knowledge graph construction,
+  supporting hybrid (local + global) query modes over entity relationships.
+- **RAG-Anything** — Multimodal document processing that extends LightRAG
+  with vision-language models for images, tables, and equations.
 """

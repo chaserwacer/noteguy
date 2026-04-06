@@ -28,13 +28,13 @@ logger = logging.getLogger(__name__)
 
 
 def _schedule_ingest(background_tasks: BackgroundTasks, note_id: str) -> None:
-    """Schedule async ingestion of a note into the vector store."""
+    """Schedule async ingestion of a note into the LightRAG graph."""
     from app.ingestion import _bg_ingest_note
     background_tasks.add_task(_bg_ingest_note, note_id)
 
 
 def _bg_remove_chunks(note_id: str) -> None:
-    """Remove all vector chunks for a deleted note."""
+    """Remove all LightRAG data for a deleted note."""
     from app.ingestion import remove_note_chunks
     remove_note_chunks(note_id)
 

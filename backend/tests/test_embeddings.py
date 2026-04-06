@@ -19,7 +19,20 @@ from app.embeddings import (
     OpenAIEmbeddingProvider,
     FallbackEmbeddingProvider,
     _normalize_provider_name,
+    get_embedding_model_name,
+    get_embedding_provider,
 )
+from app.config import get_settings
+
+
+@pytest.fixture(autouse=True)
+def _clear_settings_and_provider_cache():
+    """Ensure env-driven settings are fresh for every test."""
+    get_settings.cache_clear()
+    get_embedding_provider.cache_clear()
+    yield
+    get_settings.cache_clear()
+    get_embedding_provider.cache_clear()
 
 
 # ── Provider name normalization ─────────────────────────────────────────────
@@ -34,6 +47,18 @@ class TestNormalizeProviderName:
 
     def test_combined(self):
         assert _normalize_provider_name("  Ollama ") == "ollama"
+
+
+class TestEmbeddingConfigHelpers:
+    def test_get_embedding_model_name_uses_primary_provider(self, monkeypatch):
+        monkeypatch.setenv("EMBEDDING_PROVIDER", "ollama")
+        monkeypatch.setenv("EMBEDDING_OLLAMA_MODEL", "all-minilm")
+        assert get_embedding_model_name() == "all-minilm"
+
+    def test_get_embedding_model_name_openai(self, monkeypatch):
+        monkeypatch.setenv("EMBEDDING_PROVIDER", "openai")
+        monkeypatch.setenv("EMBEDDING_OPENAI_MODEL", "text-embedding-3-large")
+        assert get_embedding_model_name() == "text-embedding-3-large"
 
 
 # ── Ollama provider ────────────────────────────────────────────────────────

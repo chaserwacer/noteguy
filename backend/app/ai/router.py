@@ -1,223 +1,184 @@
-"""FastAPI router exposing all AI framework integrations.
+"""Unified AI router — single entry point for all AI operations.
 
-Provides endpoints grouped by framework:
+Exposes a streamlined API built on LightRAG (graph-augmented RAG) and
+RAG-Anything (multimodal document processing). Replaces the previous
+seven-framework router with a focused set of capabilities:
 
-    /api/ai/langchain/*    — LangChain RAG pipeline
-    /api/ai/llama-index/*  — LlamaIndex query engine
-    /api/ai/crewai/*       — CrewAI multi-agent crews
-    /api/ai/dspy/*         — DSPy optimised modules
-    /api/ai/instructor/*   — Instructor structured extraction
-    /api/ai/mem0/*         — Mem0 memory layer
-    /api/ai/pydantic-ai/*  — PydanticAI typed agents
+    /api/ai/query         — hybrid knowledge graph query
+    /api/ai/query/stream  — streaming hybrid query (SSE)
+    /api/ai/ingest/note   — index a note into the knowledge graph
+    /api/ai/ingest/all    — re-index entire vault
+    /api/ai/ingest/document — process multimodal document
+    /api/ai/extract       — entity / relationship extraction
+    /api/ai/analyze       — deep global analysis
+    /api/ai/kg/stats      — knowledge graph statistics
+    /api/ai/status        — system capabilities and status
 """
 
 from __future__ import annotations
 
+import json
+import logging
 from typing import Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlmodel import Session, select
 
 from app.database import get_session
-from app.models import Note
-from app.rag import retrieve_context
+from app.models import Note, Folder
 
-router = APIRouter(prefix="/api/ai", tags=["ai-frameworks"])
-
-
-# ── Shared request / response schemas ──────────────────────────────────────
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/api/ai", tags=["ai"])
 
 
-class AskRequest(BaseModel):
+# ── Request / Response schemas ────────────────────────────────────────────────
+
+QueryMode = Literal["naive", "local", "global", "hybrid", "mix"]
+
+
+class QueryRequest(BaseModel):
     question: str
-    folder_scope: Optional[str] = None
-    provider: Literal["openai"] = "openai"
+    mode: QueryMode = "hybrid"
+    conversation_history: list[dict] = Field(default_factory=list)
+    response_type: str = "Multiple Paragraphs"
+    top_k: Optional[int] = None
 
 
-class NoteContentRequest(BaseModel):
-    note_id: str
-    provider: Literal["openai"] = "openai"
+class QueryResponse(BaseModel):
+    answer: str
+    mode: str
 
 
-class ContentRequest(BaseModel):
-    content: str
-    provider: Literal["openai"] = "openai"
-
-
-class CrewResearchRequest(BaseModel):
+class StreamQueryRequest(BaseModel):
     question: str
-    provider: Literal["openai"] = "openai"
+    mode: QueryMode = "hybrid"
+    conversation_history: list[dict] = Field(default_factory=list)
+    response_type: str = "Multiple Paragraphs"
+    top_k: Optional[int] = None
 
 
-class CrewWriteRequest(BaseModel):
-    topic: str
-    provider: Literal["openai"] = "openai"
-
-
-class MemoryAddRequest(BaseModel):
-    content: str
-    user_id: str = "default"
-
-
-class MemorySearchRequest(BaseModel):
-    query: str
-    user_id: str = "default"
-    limit: int = 5
-
-
-class MemoryChatRequest(BaseModel):
-    message: str
-    user_id: str = "default"
-    conversation_history: list[dict] = []
-    provider: Literal["openai"] = "openai"
-
-
-class ConnectionRequest(BaseModel):
+class IngestNoteRequest(BaseModel):
     note_id: str
-    provider: Literal["openai"] = "openai"
 
 
-def _openai_meta(task: str) -> dict:
-    """Return consistent provider metadata for OpenAI-only endpoints."""
+class IngestAllRequest(BaseModel):
+    pass
+
+
+class ExtractRequest(BaseModel):
+    question: str
+    mode: QueryMode = "local"
+
+
+class AnalyzeRequest(BaseModel):
+    question: str
+    response_type: str = "Multiple Paragraphs"
+    top_k: Optional[int] = None
+
+
+class AnalyzeResponse(BaseModel):
+    answer: str
+    context: str | dict
+
+
+class KGStatsResponse(BaseModel):
+    entities: int
+    relations: int
+
+
+class DeleteDocRequest(BaseModel):
+    doc_id: str
+
+
+# ── Status endpoint ───────────────────────────────────────────────────────────
+
+
+@router.get("/status")
+async def ai_status():
+    """Return current AI system capabilities and configuration."""
+    from app.ai.raganything_service import is_available as ra_available
+    from app.config import get_settings
+
+    settings = get_settings()
+
     return {
-        "provider_requested": "openai",
-        "provider_used": "openai",
-        "model_used": "gpt-4o",
-        "local_inference": False,
-        "task": task,
-    }
-
-
-# ── Helper to get note content ─────────────────────────────────────────────
-
-
-def _get_note_content(note_id: str, session: Session) -> str:
-    note = session.get(Note, note_id)
-    if not note:
-        raise HTTPException(status_code=404, detail="Note not found")
-    return note.content or ""
-
-
-def _get_notes_context(question: str, folder_scope: Optional[str] = None) -> str:
-    """Retrieve context chunks and format as a text block."""
-    chunks = retrieve_context(question, folder_scope=folder_scope)
-    return "\n\n---\n\n".join(
-        f"[{c['note_title']}]\n{c['content']}" for c in chunks
-    )
-
-
-# ── Frameworks info endpoint ───────────────────────────────────────────────
-
-
-@router.get("/frameworks")
-def list_frameworks():
-    """List all available AI framework integrations and their capabilities."""
-    return {
-        "frameworks": [
+        "engine": "lightrag",
+        "version": "1.0",
+        "capabilities": [
             {
-                "id": "langchain",
-                "name": "LangChain",
-                "description": "RAG pipeline with composable chains and retrievers",
-                "capabilities": ["ask", "stream", "ingest"],
-                "category": "orchestration",
+                "id": "chat",
+                "name": "Chat",
+                "description": "Conversational Q&A powered by graph-augmented retrieval",
+                "icon": "chat",
             },
             {
-                "id": "llama_index",
-                "name": "LlamaIndex",
-                "description": "Document indexing and query engine",
-                "capabilities": ["query", "ingest"],
-                "category": "data_layer",
+                "id": "ingest",
+                "name": "Document Ingestion",
+                "description": "Index notes and documents into the knowledge graph",
+                "icon": "upload",
             },
             {
-                "id": "crewai",
-                "name": "CrewAI",
-                "description": "Multi-agent system for research, summarisation, and writing",
-                "capabilities": ["research", "summarise", "write"],
-                "category": "orchestration",
+                "id": "extract",
+                "name": "Entity Extraction",
+                "description": "Extract entities and relationships from your notes",
+                "icon": "extract",
             },
             {
-                "id": "dspy",
-                "name": "DSPy",
-                "description": "Programmatic RAG optimisation with learnable modules",
-                "capabilities": ["ask", "summarise", "extract_topics"],
-                "category": "orchestration",
+                "id": "analyze",
+                "name": "Deep Analysis",
+                "description": "Cross-document analysis using global knowledge graph traversal",
+                "icon": "analyze",
             },
             {
-                "id": "instructor",
-                "name": "Instructor",
-                "description": "Structured data extraction with Pydantic validation",
-                "capabilities": ["tags", "entities", "summary"],
-                "category": "data_layer",
+                "id": "knowledge_graph",
+                "name": "Knowledge Graph",
+                "description": "Explore the entity-relationship graph built from your vault",
+                "icon": "graph",
             },
-            {
-                "id": "mem0",
-                "name": "Mem0",
-                "description": "Persistent memory layer for conversational context",
-                "capabilities": ["add", "search", "chat", "clear"],
-                "category": "data_layer",
-            },
-            {
-                "id": "pydantic_ai",
-                "name": "PydanticAI",
-                "description": "Type-safe agent framework with structured schemas",
-                "capabilities": ["qa", "enhance", "connections"],
-                "category": "orchestration",
-            },
-        ]
-    }
-
-
-# ── Routing info endpoint ─────────────────────────────────────────────────
-
-
-@router.get("/routing-info")
-def get_routing_info():
-    """Return the current model routing configuration."""
-    return {
-        "ollama": {
-            "available": False,
-            "base_url": "",
-            "model": "",
-        },
-        "routing": {
-            "light_tasks": [],
-            "heavy_tasks": [],
-            "auto_description": (
-                "All AI endpoints are pinned to OpenAI. "
-                "Provider auto-routing is disabled."
-            ),
-        },
-        "cloud_models": {
-            "openai": "gpt-4o",
+        ],
+        "config": {
+            "llm_model": settings.llm_model,
+            "embedding_model": settings.embedding_openai_model,
+            "embedding_dimension": settings.embedding_dimension,
+            "query_mode": settings.lightrag_query_mode,
+            "raganything_available": ra_available(),
+            "raganything_parser": settings.raganything_parser if ra_available() else None,
         },
     }
 
 
-# ── LangChain endpoints ───────────────────────────────────────────────────
+# ── Query endpoints ───────────────────────────────────────────────────────────
 
 
-@router.post("/langchain/ask")
-def langchain_ask_endpoint(body: AskRequest):
-    """Answer a question using the LangChain RetrievalQA chain."""
-    from app.ai.langchain_rag import langchain_ask
-    return langchain_ask(
+@router.post("/query", response_model=QueryResponse)
+async def query_endpoint(body: QueryRequest):
+    """Query the knowledge graph using hybrid retrieval."""
+    from app.ai.lightrag_service import query
+
+    answer = await query(
         question=body.question,
-        folder_scope=body.folder_scope,
-        provider=body.provider,
+        mode=body.mode,
+        conversation_history=body.conversation_history,
+        response_type=body.response_type,
+        top_k=body.top_k,
     )
+    return QueryResponse(answer=answer, mode=body.mode)
 
 
-@router.post("/langchain/stream")
-def langchain_stream_endpoint(body: AskRequest):
-    """Stream an answer using LangChain with SSE."""
-    from app.ai.langchain_rag import langchain_ask_stream
+@router.post("/query/stream")
+async def query_stream_endpoint(body: StreamQueryRequest):
+    """Stream a knowledge graph query response via SSE."""
+    from app.ai.lightrag_service import query_stream
+
     return StreamingResponse(
-        langchain_ask_stream(
+        query_stream(
             question=body.question,
-            folder_scope=body.folder_scope,
-            provider=body.provider,
+            mode=body.mode,
+            conversation_history=body.conversation_history,
+            response_type=body.response_type,
+            top_k=body.top_k,
         ),
         media_type="text/event-stream",
         headers={
@@ -228,242 +189,254 @@ def langchain_stream_endpoint(body: AskRequest):
     )
 
 
-# ── LlamaIndex endpoints ──────────────────────────────────────────────────
+# ── Ingestion endpoints ──────────────────────────────────────────────────────
 
 
-@router.post("/llama-index/query")
-def llama_index_query_endpoint(body: AskRequest):
-    """Query notes using the LlamaIndex query engine."""
-    from app.ai.llama_index_query import llama_index_query
-    return llama_index_query(
-        question=body.question,
-        folder_scope=body.folder_scope,
-        provider=body.provider,
-    )
-
-
-@router.post("/llama-index/ingest")
-def llama_index_ingest_endpoint(
-    body: NoteContentRequest,
+@router.post("/ingest/note")
+async def ingest_note_endpoint(
+    body: IngestNoteRequest,
     session: Session = Depends(get_session),
 ):
-    """Ingest a note into the LlamaIndex vector store."""
-    from app.ai.llama_index_query import llama_index_ingest_note
-    content = _get_note_content(body.note_id, session)
+    """Index a single note into the LightRAG knowledge graph."""
+    from app.ai.lightrag_service import insert_note
+
     note = session.get(Note, body.note_id)
-    metadata = {
-        "note_title": note.title if note else "Untitled",
-        "note_id": body.note_id,
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    result = await insert_note(
+        note_id=note.id,
+        title=note.title,
+        content=note.content or "",
+    )
+    return result
+
+
+@router.post("/ingest/all")
+async def ingest_all_endpoint(
+    background_tasks: BackgroundTasks,
+    session: Session = Depends(get_session),
+):
+    """Re-index the entire vault into the knowledge graph (runs in background)."""
+    from app.ai.lightrag_service import insert_notes_batch
+
+    notes = session.exec(select(Note)).all()
+    note_dicts = [
+        {"note_id": n.id, "title": n.title, "content": n.content or ""}
+        for n in notes
+    ]
+
+    async def _bg_ingest():
+        result = await insert_notes_batch(note_dicts)
+        logger.info("Vault re-index complete: %s", result)
+
+    import asyncio
+
+    background_tasks.add_task(asyncio.run, _bg_ingest())
+    return {"status": "queued", "total_notes": len(note_dicts)}
+
+
+@router.post("/ingest/document")
+async def ingest_document_endpoint(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    folder_id: Optional[str] = Form(default=None),
+    session: Session = Depends(get_session),
+):
+    """Upload and process a multimodal document via RAG-Anything.
+
+    Supports: PDF, DOCX, PPTX, XLSX, images (JPG/PNG), MD, TXT.
+    The document is saved, a note is created, and multimodal content
+    is extracted and indexed into the knowledge graph.
+    """
+    from app.ai.raganything_service import is_available, process_document
+    from app.ai.lightrag_service import insert_note
+    import tempfile
+    import os
+
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Missing filename")
+
+    filename_lower = file.filename.lower()
+    file_bytes = await file.read()
+
+    # For simple text formats, use LightRAG directly
+    if filename_lower.endswith((".md", ".txt")):
+        try:
+            content = file_bytes.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise HTTPException(status_code=400, detail="File must be UTF-8 encoded") from exc
+
+        title = file.filename.rsplit(".", 1)[0]
+        note = Note(title=title, content=content, folder_id=folder_id)
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+
+        from app.notes import _write_note_file
+        _write_note_file(note, session)
+
+        result = await insert_note(note_id=note.id, title=note.title, content=content)
+        return {**result, "note_id": note.id, "title": title}
+
+    # For .docx, convert to markdown and index as text
+    if filename_lower.endswith(".docx"):
+        from app.ingestion import docx_to_markdown
+        content = docx_to_markdown(file_bytes)
+        title = file.filename.rsplit(".", 1)[0]
+
+        note = Note(title=title, content=content, folder_id=folder_id)
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+
+        from app.notes import _write_note_file
+        _write_note_file(note, session)
+
+        # If RAG-Anything is available, also process for multimodal entities
+        if is_available():
+            with tempfile.NamedTemporaryFile(
+                suffix=".docx", delete=False
+            ) as tmp:
+                tmp.write(file_bytes)
+                tmp_path = tmp.name
+
+            async def _bg_process():
+                try:
+                    await process_document(tmp_path)
+                finally:
+                    os.unlink(tmp_path)
+
+            import asyncio
+            background_tasks.add_task(asyncio.run, _bg_process())
+        else:
+            result = await insert_note(note_id=note.id, title=note.title, content=content)
+
+        return {"status": "indexed", "note_id": note.id, "title": title}
+
+    # For multimodal documents (PDF, PPTX, images, etc.), use RAG-Anything
+    if not is_available():
+        raise HTTPException(
+            status_code=400,
+            detail=f"RAG-Anything is not installed. Only .md, .txt, and .docx files are supported. "
+                   f"Install raganything for {file.filename.rsplit('.', 1)[-1]} support.",
+        )
+
+    # Save to temp file for processing
+    suffix = "." + file.filename.rsplit(".", 1)[-1]
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+        tmp.write(file_bytes)
+        tmp_path = tmp.name
+
+    title = file.filename.rsplit(".", 1)[0]
+
+    # Create a note entry for tracking
+    note = Note(
+        title=title,
+        content=f"[Multimodal document: {file.filename}]",
+        folder_id=folder_id,
+    )
+    session.add(note)
+    session.commit()
+    session.refresh(note)
+
+    async def _bg_process_multimodal():
+        try:
+            await process_document(tmp_path)
+        finally:
+            import os
+            os.unlink(tmp_path)
+
+    import asyncio
+    background_tasks.add_task(asyncio.run, _bg_process_multimodal())
+
+    return {
+        "status": "queued",
+        "note_id": note.id,
+        "title": title,
+        "processing": "multimodal",
     }
-    count = llama_index_ingest_note(body.note_id, content, metadata)
-    return {"status": "ingested", "chunks": count, "framework": "llama_index"}
 
 
-# ── CrewAI endpoints ──────────────────────────────────────────────────────
+# ── Entity extraction endpoint ────────────────────────────────────────────────
 
 
-@router.post("/crewai/research")
-def crewai_research_endpoint(body: CrewResearchRequest):
-    """Run a CrewAI research crew to analyse notes."""
-    from app.ai.crew_agents import run_research_crew
-    context = _get_notes_context(body.question)
-    return run_research_crew(
+@router.post("/extract")
+async def extract_endpoint(body: ExtractRequest):
+    """Extract entities and relationships relevant to a query.
+
+    Uses local graph search to find specific entities and their
+    immediate neighborhood in the knowledge graph.
+    """
+    from app.ai.lightrag_service import extract_entities
+
+    result = await extract_entities(
         question=body.question,
-        notes_context=context,
-        provider=body.provider,
+        mode=body.mode,
     )
+    return result
 
 
-@router.post("/crewai/summarise")
-def crewai_summarise_endpoint(
-    body: NoteContentRequest,
+@router.post("/extract/note")
+async def extract_note_entities(
+    body: IngestNoteRequest,
     session: Session = Depends(get_session),
 ):
-    """Run a CrewAI summarisation crew on a note."""
-    from app.ai.crew_agents import run_summary_crew
-    content = _get_note_content(body.note_id, session)
-    return run_summary_crew(content=content, provider=body.provider)
+    """Extract entities from a specific note's content."""
+    from app.ai.lightrag_service import extract_entities
 
+    note = session.get(Note, body.note_id)
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
 
-@router.post("/crewai/write")
-def crewai_write_endpoint(body: CrewWriteRequest):
-    """Run a CrewAI writing crew to generate new content."""
-    from app.ai.crew_agents import run_writing_crew
-    context = _get_notes_context(body.topic)
-    return run_writing_crew(
-        topic=body.topic,
-        notes_context=context,
-        provider=body.provider,
+    content = note.content or ""
+    if not content.strip():
+        return {"query": note.title, "mode": "local", "context": "", "note_id": body.note_id}
+
+    result = await extract_entities(
+        question=f"What are the key entities, concepts, and relationships in: {note.title}",
+        mode="local",
     )
+    result["note_id"] = body.note_id
+    return result
 
 
-# ── DSPy endpoints ─────────────────────────────────────────────────────────
+# ── Deep analysis endpoint ────────────────────────────────────────────────────
 
 
-@router.post("/dspy/ask")
-def dspy_ask_endpoint(body: AskRequest):
-    """Answer a question using the DSPy ChainOfThought RAG module."""
-    from app.ai.dspy_rag import dspy_ask
-    chunks = retrieve_context(body.question, folder_scope=body.folder_scope)
-    return dspy_ask(
+@router.post("/analyze", response_model=AnalyzeResponse)
+async def analyze_endpoint(body: AnalyzeRequest):
+    """Perform deep cross-document analysis using global graph traversal.
+
+    Uses the global query mode to leverage high-level community structures
+    across the entire knowledge graph for comprehensive analysis.
+    """
+    from app.ai.lightrag_service import query_with_context
+
+    result = await query_with_context(
         question=body.question,
-        context_chunks=chunks,
-        provider=body.provider,
+        mode="global",
+        top_k=body.top_k,
+    )
+    return AnalyzeResponse(
+        answer=result["answer"],
+        context=result["context"],
     )
 
 
-@router.post("/dspy/summarise")
-def dspy_summarise_endpoint(
-    body: NoteContentRequest,
-    session: Session = Depends(get_session),
-):
-    """Summarise a note using DSPy's structured output module."""
-    from app.ai.dspy_rag import dspy_summarise
-    content = _get_note_content(body.note_id, session)
-    result = dspy_summarise(content=content, provider=body.provider)
-    return {**result, **_openai_meta("dspy_summarise")}
+# ── Knowledge graph endpoints ─────────────────────────────────────────────────
 
 
-@router.post("/dspy/topics")
-def dspy_topics_endpoint(
-    body: NoteContentRequest,
-    session: Session = Depends(get_session),
-):
-    """Extract topics from a note using DSPy."""
-    from app.ai.dspy_rag import dspy_extract_topics
-    content = _get_note_content(body.note_id, session)
-    result = dspy_extract_topics(content=content, provider=body.provider)
-    return {**result, **_openai_meta("dspy_topics")}
+@router.get("/kg/stats", response_model=KGStatsResponse)
+async def kg_stats_endpoint():
+    """Return knowledge graph statistics."""
+    from app.ai.lightrag_service import get_knowledge_graph_stats
+    stats = await get_knowledge_graph_stats()
+    return KGStatsResponse(**stats)
 
 
-# ── Instructor endpoints ──────────────────────────────────────────────────
-
-
-@router.post("/instructor/tags")
-def instructor_tags_endpoint(
-    body: NoteContentRequest,
-    session: Session = Depends(get_session),
-):
-    """Extract structured tags and metadata from a note."""
-    from app.ai.structured import extract_tags
-    content = _get_note_content(body.note_id, session)
-    result = extract_tags(content=content, provider=body.provider)
-    return {**result, **_openai_meta("instructor_tags")}
-
-
-@router.post("/instructor/entities")
-def instructor_entities_endpoint(
-    body: NoteContentRequest,
-    session: Session = Depends(get_session),
-):
-    """Extract named entities from a note."""
-    from app.ai.structured import extract_entities
-    content = _get_note_content(body.note_id, session)
-    result = extract_entities(content=content, provider=body.provider)
-    return {**result, **_openai_meta("instructor_entities")}
-
-
-@router.post("/instructor/summary")
-def instructor_summary_endpoint(
-    body: NoteContentRequest,
-    session: Session = Depends(get_session),
-):
-    """Generate a structured summary with action items."""
-    from app.ai.structured import extract_summary
-    content = _get_note_content(body.note_id, session)
-    # instructor_summary is HEAVY — not routed to Ollama (nested ActionItem schema)
-    return extract_summary(content=content, provider=body.provider)
-
-
-# ── Mem0 endpoints ─────────────────────────────────────────────────────────
-
-
-@router.post("/mem0/add")
-def mem0_add_endpoint(body: MemoryAddRequest):
-    """Store a new memory."""
-    from app.ai.memory import add_memory
-    return add_memory(content=body.content, user_id=body.user_id)
-
-
-@router.post("/mem0/search")
-def mem0_search_endpoint(body: MemorySearchRequest):
-    """Search for relevant memories."""
-    from app.ai.memory import search_memories
-    results = search_memories(
-        query=body.query, user_id=body.user_id, limit=body.limit,
-    )
-    return {"memories": results, "framework": "mem0"}
-
-
-@router.get("/mem0/memories")
-def mem0_list_endpoint(user_id: str = "default"):
-    """List all memories for a user."""
-    from app.ai.memory import get_all_memories
-    results = get_all_memories(user_id=user_id)
-    return {"memories": results, "framework": "mem0"}
-
-
-@router.post("/mem0/chat")
-def mem0_chat_endpoint(body: MemoryChatRequest):
-    """Chat with memory-augmented context."""
-    from app.ai.memory import chat_with_memory
-    return chat_with_memory(
-        message=body.message,
-        user_id=body.user_id,
-        conversation_history=body.conversation_history,
-        provider=body.provider,
-    )
-
-
-@router.delete("/mem0/memories")
-def mem0_clear_endpoint(user_id: str = "default"):
-    """Clear all memories for a user."""
-    from app.ai.memory import clear_memories
-    return clear_memories(user_id=user_id)
-
-
-# ── PydanticAI endpoints ──────────────────────────────────────────────────
-
-
-@router.post("/pydantic-ai/ask")
-def pydantic_ai_ask_endpoint(body: AskRequest):
-    """Answer a question using the PydanticAI QA agent."""
-    from app.ai.pydantic_agent import note_qa_agent
-    context = _get_notes_context(body.question, body.folder_scope)
-    return note_qa_agent(
-        question=body.question,
-        notes_context=context,
-        provider=body.provider,
-    )
-
-
-@router.post("/pydantic-ai/enhance")
-def pydantic_ai_enhance_endpoint(
-    body: NoteContentRequest,
-    session: Session = Depends(get_session),
-):
-    """Enhance a note using the PydanticAI enhancement agent."""
-    from app.ai.pydantic_agent import note_enhancement_agent
-    content = _get_note_content(body.note_id, session)
-    result = note_enhancement_agent(content=content, provider=body.provider)
-    return {**result, **_openai_meta("pydantic_enhance")}
-
-
-@router.post("/pydantic-ai/connections")
-def pydantic_ai_connections_endpoint(
-    body: NoteContentRequest,
-    session: Session = Depends(get_session),
-):
-    """Find connections between a note and the rest of the vault."""
-    from app.ai.pydantic_agent import note_connection_agent
-    content = _get_note_content(body.note_id, session)
-
-    # Get all note titles for context
-    all_notes = session.exec(select(Note)).all()
-    titles = [n.title for n in all_notes if n.id != body.note_id]
-
-    return note_connection_agent(
-        content=content,
-        all_titles=titles,
-        provider=body.provider,
-    )
+@router.delete("/kg/document")
+async def kg_delete_document(body: DeleteDocRequest):
+    """Delete a document and its entities from the knowledge graph."""
+    from app.ai.lightrag_service import delete_document
+    return await delete_document(body.doc_id)

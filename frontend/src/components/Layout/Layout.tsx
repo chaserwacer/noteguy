@@ -55,7 +55,7 @@ export default function Layout() {
         }}
       />
 
-      {/* AI Framework Tools panel */}
+      {/* AI Tools panel (LightRAG + RAG-Anything) */}
       <AITools
         isOpen={aiToolsOpen}
         onClose={() => setAiToolsOpen(false)}

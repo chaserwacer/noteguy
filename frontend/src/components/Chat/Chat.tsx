@@ -112,7 +112,7 @@ const AttachButton: FC = () => {
       <input
         ref={inputRef}
         type="file"
-        accept=".md,.docx"
+        accept=".md,.txt,.docx,.pdf,.pptx,.xlsx,.jpg,.jpeg,.png"
         className="hidden"
         onChange={handleUpload}
       />
@@ -222,9 +222,9 @@ function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentP
               <p className="text-[11px] uppercase tracking-[0.12em] text-vault-muted">
                 Note Guy assistant
               </p>
-              <p className="text-sm font-semibold text-vault-text">Assistant UI chat</p>
+              <p className="text-sm font-semibold text-vault-text">LightRAG Chat</p>
               <p className="text-[11px] text-vault-text-secondary">
-                Powered by assistant-ui • Streaming responses
+                Graph-augmented retrieval • Streaming responses
               </p>
             </div>
           </div>

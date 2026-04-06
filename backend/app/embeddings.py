@@ -21,6 +21,24 @@ def _normalize_provider_name(provider_name: str) -> str:
     return provider_name.strip().lower()
 
 
+def get_primary_embedding_provider_name() -> str:
+    """Return the configured primary embedding provider name."""
+    settings = get_settings()
+    return _normalize_provider_name(settings.embedding_provider)
+
+
+def get_embedding_model_name(provider_name: str | None = None) -> str:
+    """Return the configured embedding model name for the selected provider."""
+    settings = get_settings()
+    normalized = _normalize_provider_name(provider_name or settings.embedding_provider)
+    if normalized == "ollama":
+        return settings.embedding_ollama_model
+    if normalized == "openai":
+        return settings.embedding_openai_model
+    raise ValueError(f"Unsupported embedding provider: {provider_name}")
+
+
+
 class EmbeddingProvider(ABC):
     """Abstract base for embedding providers."""
 
