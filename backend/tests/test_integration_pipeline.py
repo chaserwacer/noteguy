@@ -174,7 +174,7 @@ def test_ingest_and_search_returns_relevant_chunks(
     """Create a note, ingest it, and verify vector search returns it."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     resp = int_client.post(
         "/api/notes",
@@ -214,7 +214,7 @@ def test_ingest_multiple_notes_search_returns_both(
     """Ingest two notes, search should find both."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     note1_resp = int_client.post(
         "/api/notes",
@@ -255,7 +255,7 @@ def test_chat_endpoint_with_real_vector_search(
     """Chat endpoint should retrieve context from ChromaDB and call the LLM."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     resp = int_client.post(
         "/api/notes",
@@ -304,7 +304,7 @@ def test_chat_stream_endpoint_with_real_vector_search(
     """Streaming chat should retrieve real context and stream mocked LLM tokens."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     resp = int_client.post(
         "/api/notes",
@@ -354,7 +354,7 @@ def test_chat_with_openai_provider(
     """Chat endpoint should work with the OpenAI provider too."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     resp = int_client.post(
         "/api/notes",
@@ -392,7 +392,7 @@ def test_folder_scoped_search(int_client, integration_modules, monkeypatch):
     """Search with folder_scope filters results to the specified folder subtree."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     folder_resp = int_client.post("/api/folders", json={"name": "school"})
     assert folder_resp.status_code == 201
@@ -447,7 +447,7 @@ def test_context_endpoint_returns_folder_info(
     """Context endpoint should return folder metadata and note count."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     folder_resp = int_client.post("/api/folders", json={"name": "work"})
     folder_id = folder_resp.json()["id"]
@@ -478,7 +478,7 @@ def test_reingest_replaces_old_chunks(
     """Re-ingesting a note should replace old chunks, not duplicate them."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     resp = int_client.post(
         "/api/notes",
@@ -513,7 +513,7 @@ def test_delete_note_removes_chunks_from_vector_store(
     """Deleting a note should remove its chunks from ChromaDB."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
     monkeypatch.setattr(
         mods.notes,
         "_bg_remove_chunks",
@@ -609,7 +609,7 @@ def test_stream_with_conversation_history(
     """Streaming chat should forward conversation history to the LLM."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     resp = int_client.post(
         "/api/notes",
@@ -660,7 +660,7 @@ def test_ingest_note_endpoint(int_client, integration_modules, monkeypatch):
     """POST /api/ingest/note/{id} should accept valid note IDs."""
     mods = integration_modules
     _disable_git_side_effects(monkeypatch, mods)
-    monkeypatch.setattr(mods.notes, "_schedule_ingest", lambda *a, **kw: None)
+    monkeypatch.setattr(mods.notes, "_mark_dirty", lambda *a, **kw: None)
 
     resp = int_client.post(
         "/api/notes",

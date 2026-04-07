@@ -36,7 +36,18 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("LightRAG pre-warm failed (will retry on first use): %s", exc)
 
+    # Start the dirty-note ingestion sweep (debounces vector updates)
+    from app.ingestion_tracker import start_sweep, stop_sweep
+    start_sweep()
+    logger.info("Ingestion sweep started (dirty notes auto-indexed after inactivity)")
+
     yield
+
+    # Shutdown: stop ingestion sweep (flushes remaining dirty notes)
+    try:
+        await stop_sweep()
+    except Exception as exc:
+        logger.warning("Ingestion sweep shutdown error: %s", exc)
 
     # Shutdown: finalize LightRAG storages
     try:

@@ -1,0 +1,18 @@
+{
+  "74d3a70171a04bddaa68fe376bbc55a0": {
+    "status": "processing",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-378d3ee2b820cf13aa99de27f6bd9878"
+    ],
+    "content_summary": "# Tasting Journal of 2 Wines and 1 Paired with Food CB\n\nTasting Journal of 2 Wines and 1 Paired with Food\n\nHSPT.161.02 | Chase BalmerTop of Form\n\n# Instructions Bottom of Form\n\nAdd at least 3 descriptors per \"S\" box for the two wines you try. These t...",
+    "content_length": 1513,
+    "created_at": "2026-04-06T18:46:43.153168+00:00",
+    "updated_at": "2026-04-06T18:46:43.178040+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260406_144643_473a524c",
+    "metadata": {
+      "processing_start_time": 1775501203
+    }
+  }
+}

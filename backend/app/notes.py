@@ -27,10 +27,10 @@ logger = logging.getLogger(__name__)
 # ── Background helpers ─────────────────────────────────────────────────────
 
 
-def _schedule_ingest(background_tasks: BackgroundTasks, note_id: str) -> None:
-    """Schedule async ingestion of a note into the LightRAG graph."""
-    from app.ingestion import _bg_ingest_note
-    background_tasks.add_task(_bg_ingest_note, note_id)
+def _mark_dirty(note_id: str) -> None:
+    """Mark a note for deferred LightRAG ingestion (debounced)."""
+    from app.ingestion_tracker import mark_dirty
+    mark_dirty(note_id)
 
 
 def _bg_remove_chunks(note_id: str) -> None:
@@ -191,7 +191,7 @@ def create_note(
     session.commit()
     session.refresh(note)
     _write_note_file(note, session)
-    _schedule_ingest(background_tasks, note.id)
+    _mark_dirty(note.id)
 
     # Git: commit the new note (always commit creates immediately, in background)
     disk_path = _note_disk_path(note, session)
@@ -238,7 +238,7 @@ def _do_update_note(
     session.commit()
     session.refresh(note)
     _write_note_file(note, session)
-    _schedule_ingest(background_tasks, note.id)
+    _mark_dirty(note.id)
 
     # Git: commit in background
     new_disk_path = _note_disk_path(note, session)
@@ -294,6 +294,10 @@ def delete_note(
     _delete_note_file(note, session)
     session.delete(note)
     session.commit()
+
+    # Remove from dirty set (no point ingesting a deleted note) and from KG
+    from app.ingestion_tracker import get_tracker
+    get_tracker().clear(note_id)
     background_tasks.add_task(_bg_remove_chunks, note_id)
 
     # Git: commit the deletion in background

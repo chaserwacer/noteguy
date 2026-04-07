@@ -156,7 +156,9 @@ async def ai_status():
 async def query_endpoint(body: QueryRequest):
     """Query the knowledge graph using hybrid retrieval."""
     from app.ai.lightrag_service import query
+    from app.ingestion_tracker import ensure_all_indexed
 
+    await ensure_all_indexed()
     answer = await query(
         question=body.question,
         mode=body.mode,
@@ -171,7 +173,9 @@ async def query_endpoint(body: QueryRequest):
 async def query_stream_endpoint(body: StreamQueryRequest):
     """Stream a knowledge graph query response via SSE."""
     from app.ai.lightrag_service import query_stream
+    from app.ingestion_tracker import ensure_all_indexed
 
+    await ensure_all_indexed()
     return StreamingResponse(
         query_stream(
             question=body.question,
@@ -369,7 +373,9 @@ async def extract_endpoint(body: ExtractRequest):
     immediate neighborhood in the knowledge graph.
     """
     from app.ai.lightrag_service import extract_entities
+    from app.ingestion_tracker import ensure_all_indexed
 
+    await ensure_all_indexed()
     result = await extract_entities(
         question=body.question,
         mode=body.mode,
@@ -384,7 +390,9 @@ async def extract_note_entities(
 ):
     """Extract entities from a specific note's content."""
     from app.ai.lightrag_service import extract_entities
+    from app.ingestion_tracker import ensure_all_indexed
 
+    await ensure_all_indexed()
     note = session.get(Note, body.note_id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
@@ -412,7 +420,9 @@ async def analyze_endpoint(body: AnalyzeRequest):
     across the entire knowledge graph for comprehensive analysis.
     """
     from app.ai.lightrag_service import query_with_context
+    from app.ingestion_tracker import ensure_all_indexed
 
+    await ensure_all_indexed()
     result = await query_with_context(
         question=body.question,
         mode="global",

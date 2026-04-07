@@ -34,7 +34,9 @@ class ChatResponse(BaseModel):
 async def chat(body: ChatRequest):
     """Answer a user question using LightRAG hybrid retrieval."""
     from app.ai.lightrag_service import query
+    from app.ingestion_tracker import ensure_all_indexed
 
+    await ensure_all_indexed()
     answer = await query(
         question=body.message,
         mode="hybrid",
@@ -46,7 +48,9 @@ async def chat(body: ChatRequest):
 async def chat_stream(body: ChatStreamRequest):
     """Stream an AI answer using LightRAG with SSE."""
     from app.ai.lightrag_service import query_stream
+    from app.ingestion_tracker import ensure_all_indexed
 
+    await ensure_all_indexed()
     return StreamingResponse(
         query_stream(
             question=body.message,

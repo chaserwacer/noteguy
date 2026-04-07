@@ -7,7 +7,7 @@ from pathlib import Path
 
 def _disable_note_background_side_effects(monkeypatch, app_modules) -> None:
     """Disable async ingestion/git side effects for deterministic API tests."""
-    monkeypatch.setattr(app_modules.notes, "_schedule_ingest", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(app_modules.notes, "_mark_dirty", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(app_modules.notes, "_bg_remove_chunks", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(app_modules.notes, "_bg_git_commit", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(app_modules.notes, "_bg_git_commit_batched", lambda *_args, **_kwargs: None)
