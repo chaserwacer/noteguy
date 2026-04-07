@@ -1,6 +1,6 @@
 /**
  * Custom assistant-ui runtime adapter that connects to the NoteGuy
- * /api/chat/stream SSE endpoint.
+ * /api/chat/stream SSE endpoint, powered by LightRAG.
  */
 
 import { useLocalRuntime, type ChatModelAdapter } from "@assistant-ui/react";
@@ -13,15 +13,10 @@ export interface SourceNote {
   folder_path: string;
 }
 
-/**
- * Stores source notes keyed by assistant message index so the UI can
- * render attribution pills after each response.
- */
 export type SourceNotesMap = Map<string, SourceNote[]>;
 
 export function useNoteGuyRuntime() {
   const sourceNotesRef = useRef<SourceNotesMap>(new Map());
-  // Track a version counter to notify consumers of changes
   const versionRef = useRef(0);
   const listenersRef = useRef<Set<() => void>>(new Set());
 
@@ -46,18 +41,8 @@ export function useNoteGuyRuntime() {
     () => ({
       async *run({ messages, abortSignal }) {
         const activeFolderId = useNoteStore.getState().activeFolderId;
-        const activeNoteId = useNoteStore.getState().activeNoteId;
 
-        // Get folder scope path if a folder is active
-        let folderScope: string | undefined;
-        if (activeFolderId) {
-          const folder = useNoteStore
-            .getState()
-            .folders.find((f) => f.id === activeFolderId);
-          folderScope = folder?.path;
-        }
-
-        // Build conversation history from prior messages (excluding the last user message)
+        // Build conversation history from prior messages
         const conversationHistory = messages.slice(0, -1).map((msg) => ({
           role: msg.role,
           content:
@@ -80,6 +65,15 @@ export function useNoteGuyRuntime() {
             .map((part) => part.text)
             .join("") ?? "";
 
+        // Get folder scope path if a folder is active
+        let folderScope: string | undefined;
+        if (activeFolderId) {
+          const folder = useNoteStore
+            .getState()
+            .folders.find((f) => f.id === activeFolderId);
+          folderScope = folder?.path;
+        }
+
         const response = await fetch("/api/chat/stream", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -87,7 +81,6 @@ export function useNoteGuyRuntime() {
             message: userMessage,
             conversation_history: conversationHistory,
             folder_scope: folderScope,
-            active_note_id: activeNoteId,
           }),
           signal: abortSignal,
         });
@@ -110,9 +103,8 @@ export function useNoteGuyRuntime() {
 
           buffer += decoder.decode(value, { stream: true });
 
-          // Parse SSE events from the buffer
           const lines = buffer.split("\n");
-          buffer = lines.pop() ?? ""; // Keep incomplete line in buffer
+          buffer = lines.pop() ?? "";
 
           for (const line of lines) {
             if (!line.startsWith("data: ")) continue;
@@ -129,7 +121,6 @@ export function useNoteGuyRuntime() {
               } else if (event.type === "source_notes") {
                 sourceNotes = event.notes;
               }
-              // "done" event — loop will end on reader.read()
             } catch {
               // Skip malformed JSON lines
             }
@@ -142,7 +133,6 @@ export function useNoteGuyRuntime() {
           setSources(msgId, sourceNotes);
         }
 
-        // Final yield with metadata (must yield, not return, for void return type)
         yield {
           content: [{ type: "text" as const, text: accumulatedText }],
           metadata: {

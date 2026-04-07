@@ -1,64 +1,68 @@
-"""Chat API routes — exposes the RAG pipeline over HTTP."""
+"""Chat API routes — LightRAG-powered conversational interface.
 
-from typing import Literal, Optional
+The chat endpoints use LightRAG's hybrid query mode for graph-augmented
+retrieval, providing richer answers that leverage entity relationships.
+"""
 
-from fastapi import APIRouter, Depends
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from sqlmodel import Session
-
-from app.database import get_session
-from app.rag import ask, ask_stream
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 
 class ChatRequest(BaseModel):
-    """Incoming chat message from the user."""
-
     message: str
     folder_id: Optional[str] = None
-    provider: Literal["openai"] = "openai"
 
 
 class ChatStreamRequest(BaseModel):
-    """Incoming streaming chat message."""
-
     message: str
     conversation_history: list[dict] = []
     folder_scope: Optional[str] = None
     active_note_id: Optional[str] = None
-    provider: Literal["openai"] = "openai"
 
 
 class ChatResponse(BaseModel):
-    """Response containing the AI-generated answer and source note IDs."""
-
     answer: str
     sources: list[str]
 
 
 @router.post("", response_model=ChatResponse)
-def chat(body: ChatRequest, session: Session = Depends(get_session)):
-    """Answer a user question using RAG over their notes."""
-    result = ask(
-        question=body.message,
-        folder_id=body.folder_id,
-        provider=body.provider,
-    )
-    return ChatResponse(**result)
+async def chat(body: ChatRequest):
+    """Answer a user question using LightRAG hybrid retrieval."""
+    from app.ai.lightrag_service import query
+    from app.ingestion_tracker import ensure_all_indexed
+
+    await ensure_all_indexed()
+    try:
+        answer = await query(
+            question=body.message,
+            mode="hybrid",
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return ChatResponse(answer=answer, sources=[])
 
 
 @router.post("/stream")
-def chat_stream(body: ChatStreamRequest):
-    """Stream an AI answer using Server-Sent Events."""
+async def chat_stream(body: ChatStreamRequest):
+    """Stream an AI answer using LightRAG with SSE."""
+    from app.ai.lightrag_service import query_stream
+    from app.ingestion_tracker import ensure_all_indexed
+
+    try:
+        await ensure_all_indexed()
+    except Exception:
+        pass  # query_stream will handle errors via SSE events
+
     return StreamingResponse(
-        ask_stream(
+        query_stream(
             question=body.message,
+            mode="hybrid",
             conversation_history=body.conversation_history,
-            folder_scope=body.folder_scope,
-            active_note_id=body.active_note_id,
-            provider=body.provider,
         ),
         media_type="text/event-stream",
         headers={

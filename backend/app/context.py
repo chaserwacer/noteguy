@@ -2,7 +2,7 @@
 
 Provides a ``FolderContext`` object that tells the frontend and RAG pipeline
 which folder is active, its path, and the suggested scope prefix for
-vector search filtering.
+query scoping.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -61,8 +61,8 @@ def get_folder_context(
 
     note_count = _count_notes_in_scope(folder_id, session)
 
-    # The suggested_scope is the folder's materialised path —
-    # used as a prefix filter on the folder_path metadata in ChromaDB.
+    # The suggested_scope is the folder's materialised path used for
+    # retrieval scoping in AI query endpoints.
     suggested_scope = folder.path or folder.name
 
     return FolderContext(

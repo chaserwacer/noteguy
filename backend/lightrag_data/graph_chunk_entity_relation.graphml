@@ -1,0 +1,2527 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d13" for="edge" attr.name="truncate" attr.type="string"/>
+<key id="d12" for="edge" attr.name="created_at" attr.type="long"/>
+<key id="d11" for="edge" attr.name="file_path" attr.type="string"/>
+<key id="d10" for="edge" attr.name="source_id" attr.type="string"/>
+<key id="d9" for="edge" attr.name="keywords" attr.type="string"/>
+<key id="d8" for="edge" attr.name="description" attr.type="string"/>
+<key id="d7" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d6" for="node" attr.name="truncate" attr.type="string"/>
+<key id="d5" for="node" attr.name="created_at" attr.type="long"/>
+<key id="d4" for="node" attr.name="file_path" attr.type="string"/>
+<key id="d3" for="node" attr.name="source_id" attr.type="string"/>
+<key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="entity_type" attr.type="string"/>
+<key id="d0" for="node" attr.name="entity_id" attr.type="string"/>
+<graph edgedefault="undirected"><node id="Rochester Institute Of Technology">
+  <data key="d0">Rochester Institute Of Technology</data>
+  <data key="d1">organization</data>
+  <data key="d2">Rochester Institute of Technology is an educational institution referred to in the context of being attended by the speaker.</data>
+  <data key="d3">chunk-7f7a00006e82813911d39ecd59232b6c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586733</data>
+  <data key="d6"></data>
+</node>
+<node id="RIT">
+  <data key="d0">RIT</data>
+  <data key="d1">organization</data>
+  <data key="d2">RIT is a commonly used acronym for Rochester Institute of Technology, the college referred to by the speaker.</data>
+  <data key="d3">chunk-7f7a00006e82813911d39ecd59232b6c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586733</data>
+  <data key="d6"></data>
+</node>
+<node id="Gym">
+  <data key="d0">Gym</data>
+  <data key="d1">concept</data>
+  <data key="d2">The Gym is a place or concept related to physical exercise and fitness routines.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586737</data>
+  <data key="d6"></data>
+</node>
+<node id="Split">
+  <data key="d0">Split</data>
+  <data key="d1">method</data>
+  <data key="d2">Split is a workout method that involves dividing exercises into different sessions based on muscle groups, such as push, pull, and legs.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586737</data>
+  <data key="d6"></data>
+</node>
+<node id="Push">
+  <data key="d0">Push</data>
+  <data key="d1">concept</data>
+  <data key="d2">Push refers to exercises targeting muscle groups responsible for pushing movements, such as the chest, shoulders, and triceps.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586738</data>
+  <data key="d6"></data>
+</node>
+<node id="Pull">
+  <data key="d0">Pull</data>
+  <data key="d1">concept</data>
+  <data key="d2">Pull refers to exercises targeting muscle groups involved in pulling movements, like the back and biceps.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586738</data>
+  <data key="d6"></data>
+</node>
+<node id="Legs">
+  <data key="d0">Legs</data>
+  <data key="d1">concept</data>
+  <data key="d2">Legs refer to exercises focusing on the lower body muscles, including the quadriceps, hamstrings, and calves.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586738</data>
+  <data key="d6"></data>
+</node>
+<node id="Chase Balmer">
+  <data key="d0">Chase Balmer</data>
+  <data key="d1">person</data>
+  <data key="d2">Chase Balmer is the individual conducting the wine-tasting journal exercise and responsible for writing the tasting notes.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586911</data>
+  <data key="d6"></data>
+</node>
+<node id="Ancient Peaks Cabernet Sauvignon">
+  <data key="d0">Ancient Peaks Cabernet Sauvignon</data>
+  <data key="d1">product</data>
+  <data key="d2">Ancient Peaks Cabernet Sauvignon is a 2021 wine from Paso Robles, California, made in Santa Margarita Ranch with an alcohol content of 14.3%.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586911</data>
+  <data key="d6"></data>
+</node>
+<node id="Bully Hill Vineyards Chardonnay Riesling Fusion">
+  <data key="d0">Bully Hill Vineyards Chardonnay Riesling Fusion</data>
+  <data key="d1">product</data>
+  <data key="d2">Bully Hill Vineyards Chardonnay Riesling Fusion is a non-vintage white wine from the Finger Lakes, composed of 60% Chardonnay and 40% Riesling, with an alcohol content of 11.5%.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586912</data>
+  <data key="d6"></data>
+</node>
+<node id="Paso Robles">
+  <data key="d0">Paso Robles</data>
+  <data key="d1">location</data>
+  <data key="d2">Paso Robles is the wine region in California where Ancient Peaks Cabernet Sauvignon originates.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586914</data>
+  <data key="d6"></data>
+</node>
+<node id="Santa Margarita Ranch">
+  <data key="d0">Santa Margarita Ranch</data>
+  <data key="d1">location</data>
+  <data key="d2">Santa Margarita Ranch is the specific vineyard location in Paso Robles where Ancient Peaks Cabernet Sauvignon is produced.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586914</data>
+  <data key="d6"></data>
+</node>
+<node id="Finger Lakes">
+  <data key="d0">Finger Lakes</data>
+  <data key="d1">location</data>
+  <data key="d2">Finger Lakes is the region associated with producing the Bully Hill Vineyards Chardonnay Riesling Fusion white wine.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586915</data>
+  <data key="d6"></data>
+</node>
+<node id="Prosciutto">
+  <data key="d0">Prosciutto</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Prosciutto is a type of Italian dry-cured ham used as a pairing with the Ancient Peaks Cabernet Sauvignon.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586915</data>
+  <data key="d6"></data>
+</node>
+<node id="Parmesan">
+  <data key="d0">Parmesan</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Parmesan is a type of cheese used as a pairing with the Ancient Peaks Cabernet Sauvignon, which enhanced the tasting experience.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586917</data>
+  <data key="d6"></data>
+</node>
+<node id="MyCourses Assignment">
+  <data key="d0">MyCourses Assignment</data>
+  <data key="d1">content</data>
+  <data key="d2">MyCourses Assignment is the platform to which the tasting journal and notes are submitted as part of Chase Balmer's exercise requirement.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586920</data>
+  <data key="d6"></data>
+</node>
+<node id="Wine Packaging Methods">
+  <data key="d0">Wine Packaging Methods</data>
+  <data key="d1">content</data>
+  <data key="d2">The academic report explores different wine packaging methods and their impacts on wine preservation, sensory quality, economics, and sustainability.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588735</data>
+  <data key="d6"></data>
+</node>
+<node id="Natural Cork">
+  <data key="d0">Natural Cork</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Natural cork is used as a wine bottle closure and is the most expensive per-unit closure in the wine industry.&lt;SEP&gt;Natural cork is a traditional wine closure with variable oxygen transmission rates, affecting wine preservation and sensory outcomes.&lt;SEP&gt;Natural Cork is a traditional wine bottle stopper known for TCA risk but better aging capacity compared to synthetic alternatives.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840&lt;SEP&gt;chunk-f2eb65b8154604ecd58b709ac758de03&lt;SEP&gt;chunk-8bf37b81d72a72b3c8a73e22a2f838b6&lt;SEP&gt;chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588735</data>
+  <data key="d6"></data>
+</node>
+<node id="Screw Cap">
+  <data key="d0">Screw Cap</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Screw caps, also known as Stelvin or ROPP closures, are wine bottle closures that use aluminum caps and liners to seal bottles.&lt;SEP&gt;Screw caps are wine closures with consistent oxygen transmission rates, used for aromatic white wines and early-drinking styles.&lt;SEP&gt;Screw Cap is a type of wine closure noted for its initial efficacy but with concerns over long-term viability due to liner brittleness.&lt;SEP&gt;A screw cap is a type of bottle closure that provides a seal to protect wine from external factors, offering advantages in terms of oxygen management and cost.&lt;SEP&gt;Screw cap is a type of wine closure that is being studied for its suitability for long-term wine aging, particularly for its performance with modern liner technology.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840&lt;SEP&gt;chunk-ca4e8a21b5cc7aa7758c6cb466cdece6&lt;SEP&gt;chunk-50be575105a383ed5c7c44e084f7f5df&lt;SEP&gt;chunk-f2eb65b8154604ecd58b709ac758de03&lt;SEP&gt;chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588736</data>
+  <data key="d6"></data>
+</node>
+<node id="Synthetic Closures">
+  <data key="d0">Synthetic Closures</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Synthetic closures are artificial wine stoppers that offer controlled oxygen ingress.&lt;SEP&gt;Synthetic Closures are wine bottle stoppers made from polymers, providing low protection against oxidation but eliminating TCA risk.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840&lt;SEP&gt;chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588738</data>
+  <data key="d6"></data>
+</node>
+<node id="Technical and Micro-Agglomerated Corks">
+  <data key="d0">Technical and Micro-Agglomerated Corks</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Technical and micro-agglomerated corks provide TCA-free performance with controlled oxygen ingress.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588738</data>
+  <data key="d6"></data>
+</node>
+<node id="Bag-in-Box Systems">
+  <data key="d0">Bag-in-Box Systems</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Bag-in-box systems are alternative wine packaging formats with significant environmental benefits, despite limitations in shelf life.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588740</data>
+  <data key="d6"></data>
+</node>
+<node id="Aluminum Cans">
+  <data key="d0">Aluminum Cans</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Aluminum cans are used for wine packaging, offering lower carbon footprints but perceived limitations.&lt;SEP&gt;Aluminum Cans are a fast-growing wine packaging segment, often lined with BPANI (Bisphenol A Non-Intent) coatings.&lt;SEP&gt;Aluminum cans used for canned wine are lined with polymer coatings, offering effective oxygen exclusion when properly lined and sealed.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840&lt;SEP&gt;chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed&lt;SEP&gt;chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588740</data>
+  <data key="d6"></data>
+</node>
+<node id="Carbon Footprint">
+  <data key="d0">Carbon Footprint</data>
+  <data key="d1">data</data>
+  <data key="d2">The carbon footprint is reduced by 35–84% when using bag-in-box and canned wine formats compared to glass bottles.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588741</data>
+  <data key="d6"></data>
+</node>
+<node id="Oxygen Transmission Rate (OTR)">
+  <data key="d0">Oxygen Transmission Rate (OTR)</data>
+  <data key="d1">concept</data>
+  <data key="d2">Oxygen transmission rate is a measure of the permeability of wine closures to oxygen, affecting wine preservation.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588745</data>
+  <data key="d6"></data>
+</node>
+<node id="TCA Contamination">
+  <data key="d0">TCA Contamination</data>
+  <data key="d1">concept</data>
+  <data key="d2">TCA contamination is a sensory defect associated with natural cork closures, affecting a small percentage of bottled wines.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588746</data>
+  <data key="d6"></data>
+</node>
+<node id="American Journal of Enology and Viticulture (AJEV)">
+  <data key="d0">American Journal of Enology and Viticulture (AJEV)</data>
+  <data key="d1">organization</data>
+  <data key="d2">The American Journal of Enology and Viticulture is a primary journal source referenced in the report.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588746</data>
+  <data key="d6"></data>
+</node>
+<node id="Australian Journal of Grape and Wine Research (AJGWR)">
+  <data key="d0">Australian Journal of Grape and Wine Research (AJGWR)</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Australian Journal of Grape and Wine Research is a primary journal source referenced in the report.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588748</data>
+  <data key="d6"></data>
+</node>
+<node id="Journal of Agricultural and Food Chemistry (JAFC)">
+  <data key="d0">Journal of Agricultural and Food Chemistry (JAFC)</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Journal of Agricultural and Food Chemistry is a primary journal source referenced in the report.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588749</data>
+  <data key="d6"></data>
+</node>
+<node id="Food Chemistry">
+  <data key="d0">Food Chemistry</data>
+  <data key="d1">organization</data>
+  <data key="d2">Food Chemistry is a primary journal source referenced in the report for wine packaging research.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588749</data>
+  <data key="d6"></data>
+</node>
+<node id="OENO One">
+  <data key="d0">OENO One</data>
+  <data key="d1">organization</data>
+  <data key="d2">OENO One is a journal referenced in the report for research on wine packaging impacts.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588749</data>
+  <data key="d6"></data>
+</node>
+<node id="Packaging Technology and Science">
+  <data key="d0">Packaging Technology and Science</data>
+  <data key="d1">organization</data>
+  <data key="d2">Packaging Technology and Science is a journal referenced for research in packaging engineering.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588750</data>
+  <data key="d6"></data>
+</node>
+<node id="Australian Wine Research Institute (AWRI)">
+  <data key="d0">Australian Wine Research Institute (AWRI)</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Australian Wine Research Institute provides industry data and research on wine closures.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588754</data>
+  <data key="d6"></data>
+</node>
+<node id="Cork Quality Council (CQC)">
+  <data key="d0">Cork Quality Council (CQC)</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Cork Quality Council is an organization involved in wine closure standards and research.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588755</data>
+  <data key="d6"></data>
+</node>
+<node id="International Organisation of Vine and Wine (OIV)">
+  <data key="d0">International Organisation of Vine and Wine (OIV)</data>
+  <data key="d1">organization</data>
+  <data key="d2">The International Organisation of Vine and Wine provides guidelines and research data for the wine industry.&lt;SEP&gt;The International Organisation of Vine and Wine publishes annual reports on the state of the global vine and wine sector.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840&lt;SEP&gt;chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588755</data>
+  <data key="d6"></data>
+</node>
+<node id="Sustainable Wine Roundtable">
+  <data key="d0">Sustainable Wine Roundtable</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Sustainable Wine Roundtable is an organization involved in promoting sustainability in wine production.&lt;SEP&gt;The Sustainable Wine Roundtable produces technical reports, including meta-analyses of wine packaging.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840&lt;SEP&gt;chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588758</data>
+  <data key="d6"></data>
+</node>
+<node id="Lopes et al. (2005)">
+  <data key="d0">Lopes et al. (2005)</data>
+  <data key="d1">data</data>
+  <data key="d2">Lopes et al. (2005) conducted a study on natural cork's oxygen transmission rates, published in the Journal of Agricultural and Food Chemistry.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588759</data>
+  <data key="d6"></data>
+</node>
+<node id="Godden et al. (2001)">
+  <data key="d0">Godden et al. (2001)</data>
+  <data key="d1">data</data>
+  <data key="d2">Godden et al. (2001) conducted research on closure trial data published in the Australian Journal of Grape and Wine Research.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588759</data>
+  <data key="d6"></data>
+</node>
+<node id="Smart Closures">
+  <data key="d0">Smart Closures</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Smart closures are innovative wine closures integrating digital traceability with technologies like NFC/RFID for enhanced sustainability.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588759</data>
+  <data key="d6"></data>
+</node>
+<node id="Biodegradable Plant-Based Stoppers">
+  <data key="d0">Biodegradable Plant-Based Stoppers</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Biodegradable plant-based stoppers are eco-friendly wine closures designed to reduce environmental impact.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588760</data>
+  <data key="d6"></data>
+</node>
+<node id="Flat-Bottle PET Formats">
+  <data key="d0">Flat-Bottle PET Formats</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Flat-bottle PET formats are new wine packaging solutions aimed at improving sustainability and efficiency.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588763</data>
+  <data key="d6"></data>
+</node>
+<node id="NFC/RFID Technology">
+  <data key="d0">NFC/RFID Technology</data>
+  <data key="d1">technology</data>
+  <data key="d2">NFC/RFID technology is used in smart closures for digital traceability of wine packaging.</data>
+  <data key="d3">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588764</data>
+  <data key="d6"></data>
+</node>
+<node id="Diam Closures">
+  <data key="d0">Diam Closures</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Diam closures are technical corks manufactured by Oeneo, TCA-free with different oxygen transfer rates for various aging criteria.&lt;SEP&gt;Diam Closures are a type of wine bottle closure known for their TCA-free reliability and sensory neutrality, making them popular among winemakers.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed&lt;SEP&gt;chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588764</data>
+  <data key="d6"></data>
+</node>
+<node id="Sullivan (2024)">
+  <data key="d0">Sullivan (2024)</data>
+  <data key="d1">content</data>
+  <data key="d2">Sullivan (2024) is a document or publication that discusses the adoption of Diam closures in the Pacific Northwest.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588766</data>
+  <data key="d6"></data>
+</node>
+<node id="Pacific Northwest">
+  <data key="d0">Pacific Northwest</data>
+  <data key="d1">location</data>
+  <data key="d2">The Pacific Northwest is a region where Diam closures have been rapidly adopted by winemakers.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588766</data>
+  <data key="d6"></data>
+</node>
+<node id="Diam Origine Line">
+  <data key="d0">Diam Origine Line</data>
+  <data key="d1">artifact</data>
+  <data key="d2">The Diam Origine Line is designed for wines intended for extended cellaring, challenging natural cork's dominance in aging.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588768</data>
+  <data key="d6"></data>
+</node>
+<node id="Diam's Price Range">
+  <data key="d0">Diam's Price Range</data>
+  <data key="d1">data</data>
+  <data key="d2">Diam closures are priced at approximately AUD 200–230 per thousand.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588769</data>
+  <data key="d6"></data>
+</node>
+<node id="1+1 Technical Corks">
+  <data key="d0">1+1 Technical Corks</data>
+  <data key="d1">artifact</data>
+  <data key="d2">1+1 Technical Corks are a type of cheaper wine closure priced at AUD 135–140 per thousand.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588769</data>
+  <data key="d6"></data>
+</node>
+<node id="Screw Caps">
+  <data key="d0">Screw Caps</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Screw Caps are a type of wine bottle closure priced at AUD 150 per thousand.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588772</data>
+  <data key="d6"></data>
+</node>
+<node id="High-Grade Natural Cork">
+  <data key="d0">High-Grade Natural Cork</data>
+  <data key="d1">artifact</data>
+  <data key="d2">High-Grade Natural Cork is a traditional wine closure priced at AUD 300–1,000 per thousand, representing a more expensive option.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588773</data>
+  <data key="d6"></data>
+</node>
+<node id="Bag-in-Box (BIB) Packaging">
+  <data key="d0">Bag-in-Box (BIB) Packaging</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Bag-in-Box Packaging is a wine storage method using a flexible polymer bag and dispensing tap within a cardboard box.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588773</data>
+  <data key="d6"></data>
+</node>
+<node id="Scholle Packaging">
+  <data key="d0">Scholle Packaging</data>
+  <data key="d1">organization</data>
+  <data key="d2">Scholle Packaging is the company that invented bag-in-box packaging in the 1950s.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588774</data>
+  <data key="d6"></data>
+</node>
+<node id="AWRI">
+  <data key="d0">AWRI</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Australian Wine Research Institute (AWRI) provides data on oxygen transfer rates (OTR) of wine closures including synthetic closures.&lt;SEP&gt;The Australian Wine Research Institute (AWRI) conducts closure trials tracking the performance of screw caps compared to natural cork over long periods.&lt;SEP&gt;AWRI is an organization that, along with other researchers, has documented the oxidation and SO₂ depletion in BIB wines.&lt;SEP&gt;The AWRI (Australian Wine Research Institute) conducts ongoing closure trials, representing the gold standard in research for wine aging.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed&lt;SEP&gt;chunk-ca4e8a21b5cc7aa7758c6cb466cdece6&lt;SEP&gt;chunk-50be575105a383ed5c7c44e084f7f5df&lt;SEP&gt;chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588774</data>
+  <data key="d6"></data>
+</node>
+<node id="Ghidossi">
+  <data key="d0">Ghidossi</data>
+  <data key="d1">person</data>
+  <data key="d2">Ghidossi is a researcher who found oxidation and loss of aromatic intensity in BIB wines over time.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588776</data>
+  <data key="d6"></data>
+</node>
+<node id="Giovanelli and Brenna (2007)">
+  <data key="d0">Giovanelli and Brenna (2007)</data>
+  <data key="d1">content</data>
+  <data key="d2">Giovanelli and Brenna (2007) is a study confirming that sensory degradation under BIB packaging is more pronounced in white and rosé wines.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588776</data>
+  <data key="d6"></data>
+</node>
+<node id="Scientific American">
+  <data key="d0">Scientific American</data>
+  <data key="d1">content</data>
+  <data key="d2">Scientific American is a publication that reported concerns over BPA contamination in box wine bags.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588776</data>
+  <data key="d6"></data>
+</node>
+<node id="Met-PET">
+  <data key="d0">Met-PET</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Met-PET is a metallized polyethylene terephthalate barrier film used in bag-in-box packaging to minimize oxygen exposure.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588778</data>
+  <data key="d6"></data>
+</node>
+<node id="EVOH">
+  <data key="d0">EVOH</data>
+  <data key="d1">artifact</data>
+  <data key="d2">EVOH is ethylene-vinyl alcohol used as a barrier film in bag-in-box packaging to preserve wine by minimizing oxygen exposure.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588779</data>
+  <data key="d6"></data>
+</node>
+<node id="Multi-layer Bags">
+  <data key="d0">Multi-layer Bags</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Multi-layer bags are modern bag-in-box packaging components that mitigate flavor scalping by using multiple layers of material.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588779</data>
+  <data key="d6"></data>
+</node>
+<node id="BPA">
+  <data key="d0">BPA</data>
+  <data key="d1">concept</data>
+  <data key="d2">BPA (Bisphenol A) is a chemical that has raised concerns due to potential contamination in bag-in-box wine packaging materials.</data>
+  <data key="d3">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588780</data>
+  <data key="d6"></data>
+</node>
+<node id="Aluminum Alloy Cap">
+  <data key="d0">Aluminum Alloy Cap</data>
+  <data key="d1">artifact</data>
+  <data key="d2">An aluminum alloy cap is part of screw caps that, along with a sleeve and an internal liner, serves as a closure for bottles.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588780</data>
+  <data key="d6"></data>
+</node>
+<node id="Internal Liner">
+  <data key="d0">Internal Liner</data>
+  <data key="d1">artifact</data>
+  <data key="d2">The internal liner of a screw cap serves as the functional seal and is the primary determinant of oxygen transmission.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588781</data>
+  <data key="d6"></data>
+</node>
+<node id="Saran-tin">
+  <data key="d0">Saran-tin</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Saran-tin is a type of liner composed of successive layers of polyethylene, Kraft paper, tin foil, and polyvinylidene chloride, providing low oxygen transmission rates.&lt;SEP&gt;Saran-tin is a type of liner for screw caps, made of layers including polyethylene and tin foil, noted for low OTR values.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6&lt;SEP&gt;chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588781</data>
+  <data key="d6"></data>
+</node>
+<node id="Saranex">
+  <data key="d0">Saranex</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Saranex is a type of liner with polyethylene layers covered on both sides with polyvinylidene chloride, known for low oxygen transmission rates.&lt;SEP&gt;Saranex is a liner type used in screw caps, made of polyethylene covered with polyvinylidene chloride, delivering low OTR values.&lt;SEP&gt;Saranex is a modern liner technology used in screw cap and technical closures, necessitating trials to assess its long-term effects on wine aging.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6&lt;SEP&gt;chunk-50be575105a383ed5c7c44e084f7f5df&lt;SEP&gt;chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588781</data>
+  <data key="d6"></data>
+</node>
+<node id="Amcor">
+  <data key="d0">Amcor</data>
+  <data key="d1">organization</data>
+  <data key="d2">Amcor is a supplier of liners offering products at various oxygen transmission rate levels to match wine styles.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588783</data>
+  <data key="d6"></data>
+</node>
+<node id="Loire Valley Producers">
+  <data key="d0">Loire Valley Producers</data>
+  <data key="d1">organization</data>
+  <data key="d2">Producers in the Loire Valley conducted a 2023 trial that showed screw-capped Chenin Blancs retain higher levels of free SO₂.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588784</data>
+  <data key="d6"></data>
+</node>
+<node id="Chenin Blanc">
+  <data key="d0">Chenin Blanc</data>
+  <data key="d1">product</data>
+  <data key="d2">Chenin Blanc is a type of wine that retained more free SO₂ under screw caps in a Loire Valley trial.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588784</data>
+  <data key="d6"></data>
+</node>
+<node id="Volatile Thiols">
+  <data key="d0">Volatile Thiols</data>
+  <data key="d1">compound</data>
+  <data key="d2">Volatile thiols are compounds associated with tropical fruit aromas like passionfruit and grapefruit, retained better under screw caps.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588787</data>
+  <data key="d6"></data>
+</node>
+<node id="TCA">
+  <data key="d0">TCA</data>
+  <data key="d1">compound</data>
+  <data key="d2">Trichloroanisole (TCA) is a compound that causes cork taint, a significant sensory defect in wines sealed with natural cork.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588787</data>
+  <data key="d6"></data>
+</node>
+<node id="Nicolau">
+  <data key="d0">Nicolau</data>
+  <data key="d1">person</data>
+  <data key="d2">Nicolau is a researcher who noted screw caps preserve the fruity bouquet of New Zealand Sauvignon Blanc by protecting oxidation-susceptible thiols.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588789</data>
+  <data key="d6"></data>
+</node>
+<node id="Jamie Goode">
+  <data key="d0">Jamie Goode</data>
+  <data key="d1">person</data>
+  <data key="d2">Jamie Goode is a wine scientist who argues that reductive faults under screw caps are mainly due to pre-existing wine conditions.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588789</data>
+  <data key="d6"></data>
+</node>
+<node id="Bekkerman and Brester">
+  <data key="d0">Bekkerman and Brester</data>
+  <data key="d1">author</data>
+  <data key="d2">Bekkerman and Brester published research in the Journal of Wine Economics on consumer preferences for wine closures.&lt;SEP&gt;Bekkerman and Brester published a report in 2019 on the comparative costs of different wine closures.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6&lt;SEP&gt;chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588789</data>
+  <data key="d6"></data>
+</node>
+<node id="Villa Maria">
+  <data key="d0">Villa Maria</data>
+  <data key="d1">organization</data>
+  <data key="d2">Villa Maria is a winery that underwent a costly conversion to screw caps in 2001.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588793</data>
+  <data key="d6"></data>
+</node>
+<node id="Penfolds">
+  <data key="d0">Penfolds</data>
+  <data key="d1">organization</data>
+  <data key="d2">Penfolds is an Australian wine estate that uses screw caps domestically but opts for natural cork in the U.S. market.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588794</data>
+  <data key="d6"></data>
+</node>
+<node id="Château Haut-Brion">
+  <data key="d0">Château Haut-Brion</data>
+  <data key="d1">organization</data>
+  <data key="d2">Château Haut-Brion conducted long-term observations of screw cap closures beginning in the 1970s.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588794</data>
+  <data key="d6"></data>
+</node>
+<node id="Jean-Bernard Delmas">
+  <data key="d0">Jean-Bernard Delmas</data>
+  <data key="d1">person</data>
+  <data key="d2">Jean-Bernard Delmas is a manager who commented on the performance of screw cap closures in a long-term observation experiment.&lt;SEP&gt;Jean-Bernard Delmas is the manager at Château Haut-Brion who reported on the performance of screw caps over a decade.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6&lt;SEP&gt;chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588796</data>
+  <data key="d6"></data>
+</node>
+<node id="International Wine Challenge">
+  <data key="d0">International Wine Challenge</data>
+  <data key="d1">event</data>
+  <data key="d2">The International Wine Challenge conducted reports in 2006 on sulphidisation concern in screw cap wines.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588796</data>
+  <data key="d6"></data>
+</node>
+<node id="Sulphidisation">
+  <data key="d0">Sulphidisation</data>
+  <data key="d1">concept</data>
+  <data key="d2">Sulphidisation refers to the development of sulfide-related off-aromas in wine, sometimes associated with very low oxygen transmission rates in screw cap uses.</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588798</data>
+  <data key="d6"></data>
+</node>
+<node id="Smart Packaging">
+  <data key="d0">Smart Packaging</data>
+  <data key="d1">concept</data>
+  <data key="d2">Smart packaging involves the integration of technologies like NFC and RFID into packaging for digital traceability and authenticity verification, with applications in wine closures and labels.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588798</data>
+  <data key="d6"></data>
+</node>
+<node id="NFC">
+  <data key="d0">NFC</data>
+  <data key="d1">technology</data>
+  <data key="d2">NFC (Near-Field Communication) technology is integrated into wine closures for digital traceability and authenticity verification.&lt;SEP&gt;Near-field communication (NFC) is a technology used in smart packaging to verify product authenticity by interacting with smartphones.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df&lt;SEP&gt;chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588798</data>
+  <data key="d6"></data>
+</node>
+<node id="RFID">
+  <data key="d0">RFID</data>
+  <data key="d1">technology</data>
+  <data key="d2">RFID (Radio-Frequency Identification) is used in wine packaging for digital traceability and monitoring.&lt;SEP&gt;Radio-frequency identification (RFID) is a technology used in smart packaging to enhance digital traceability of products.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df&lt;SEP&gt;chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588802</data>
+  <data key="d6"></data>
+</node>
+<node id="Freshness Indicators">
+  <data key="d0">Freshness Indicators</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Freshness indicators are colorimetric sensors in packaging that react to changes in pH, volatile organic compounds, or oxygen exposure to indicate freshness, particularly in food and beverage applications.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588803</data>
+  <data key="d6"></data>
+</node>
+<node id="Global Smart Packaging Market">
+  <data key="d0">Global Smart Packaging Market</data>
+  <data key="d1">category</data>
+  <data key="d2">The global smart packaging market encompasses the development and adoption of technology-integrated packaging solutions and is experiencing significant growth.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588803</data>
+  <data key="d6"></data>
+</node>
+<node id="China">
+  <data key="d0">China</data>
+  <data key="d1">location</data>
+  <data key="d2">China is a significant market where counterfeit wine poses a challenge, affecting up to 20% of premium bottles.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588805</data>
+  <data key="d6"></data>
+</node>
+<node id="Europe">
+  <data key="d0">Europe</data>
+  <data key="d1">location</data>
+  <data key="d2">Europe is a significant market where counterfeit wine poses a challenge, affecting up to 20% of premium bottles.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588805</data>
+  <data key="d6"></data>
+</node>
+<node id="Time-Temperature Indicators">
+  <data key="d0">Time-Temperature Indicators</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Time-temperature indicators (TTIs) are devices that monitor cold-chain compliance, especially during wine transport, and are under development for specific packaging formats.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588807</data>
+  <data key="d6"></data>
+</node>
+<node id="Nomacorcs Green Line">
+  <data key="d0">Nomacorcs Green Line</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Nomacorc’s Green Line is a line of plant-based and biodegradable closures made from sugarcane-derived bio-polyethylene, characterized as carbon-negative and recyclable.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588807</data>
+  <data key="d6"></data>
+</node>
+<node id="Vinventions">
+  <data key="d0">Vinventions</data>
+  <data key="d1">organization</data>
+  <data key="d2">Vinventions is an organization associated with Nomacorc's production of sugarcane-derived polyethylene stoppers.&lt;SEP&gt;Vinventions is a company that produces Nomacorc’s Green Line closures using bio-polyethylene from sugarcane.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df&lt;SEP&gt;chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588807</data>
+  <data key="d6"></data>
+</node>
+<node id="Diam">
+  <data key="d0">Diam</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Diam uses natural cork granules purified through supercritical CO₂ extraction, combining renewable materials with industrial processing.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588811</data>
+  <data key="d6"></data>
+</node>
+<node id="Polylactic Acid">
+  <data key="d0">Polylactic Acid</data>
+  <data key="d1">material</data>
+  <data key="d2">Polylactic acid (PLA) is a biopolymer being researched for creating fully compostable closures.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588812</data>
+  <data key="d6"></data>
+</node>
+<node id="Polyhydroxyalkanoates">
+  <data key="d0">Polyhydroxyalkanoates</data>
+  <data key="d1">material</data>
+  <data key="d2">Polyhydroxyalkanoates (PHA) are biopolymers under study for developing compostable closures for wine applications.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588812</data>
+  <data key="d6"></data>
+</node>
+<node id="Precision Oxygen Management">
+  <data key="d0">Precision Oxygen Management</data>
+  <data key="d1">concept</data>
+  <data key="d2">Precision oxygen management involves controlling the oxygen transmission rate (OTR) of closures to match wine style and aging trajectory, transforming closures into active components of winemaking.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588814</data>
+  <data key="d6"></data>
+</node>
+<node id="VinPerfects SmartCap">
+  <data key="d0">VinPerfects SmartCap</data>
+  <data key="d1">artifact</data>
+  <data key="d2">VinPerfect’s SmartCap is a closure with defined, selectable oxygen permeability, offering precise control over wine aging.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588814</data>
+  <data key="d6"></data>
+</node>
+<node id="Microplastic Migration">
+  <data key="d0">Microplastic Migration</data>
+  <data key="d1">concept</data>
+  <data key="d2">Microplastic migration refers to the movement of particles from synthetic closures, PET containers, and other packaging materials into wine, raising health and regulatory concerns.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588816</data>
+  <data key="d6"></data>
+</node>
+<node id="Chemical Migration">
+  <data key="d0">Chemical Migration</data>
+  <data key="d1">concept</data>
+  <data key="d2">Chemical migration involves the movement of substances like BPA from packaging materials into wine, necessitating systematic research and regulatory compliance.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588816</data>
+  <data key="d6"></data>
+</node>
+<node id="Lifecycle Impact">
+  <data key="d0">Lifecycle Impact</data>
+  <data key="d1">concept</data>
+  <data key="d2">Lifecycle impact assessments evaluate the environmental effects of packaging formats, including carbon footprint claims and end-of-life scenarios.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588816</data>
+  <data key="d6"></data>
+</node>
+<node id="Paper Bottles">
+  <data key="d0">Paper Bottles</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Paper bottles are an emerging packaging format under evaluation for environmental impacts and lifecycle assessment.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588820</data>
+  <data key="d6"></data>
+</node>
+<node id="Recycled PET Flat Bottles">
+  <data key="d0">Recycled PET Flat Bottles</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Recycled PET flat bottles are a new packaging innovation undergoing research for environmental lifecycle impacts.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588821</data>
+  <data key="d6"></data>
+</node>
+<node id="Smart-Label-Integrated Packaging">
+  <data key="d0">Smart-Label-Integrated Packaging</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Smart-label-integrated packaging is a cutting-edge format requiring lifecycle assessment for claims like carbon footprint reduction.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588821</data>
+  <data key="d6"></data>
+</node>
+<node id="Saran-Tin">
+  <data key="d0">Saran-Tin</data>
+  <data key="d1">material</data>
+  <data key="d2">Saran-Tin is a modern liner technology used in screw cap and technical closures, requiring extended trials for its long-term wine aging suitability.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588823</data>
+  <data key="d6"></data>
+</node>
+<node id="Technical Closures">
+  <data key="d0">Technical Closures</data>
+  <data key="d1">category</data>
+  <data key="d2">Technical closures are a category of wine closures being studied alongside screw caps for long-term aging suitability, with several modern liner technologies available.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588823</data>
+  <data key="d6"></data>
+</node>
+<node id="Wine Transport">
+  <data key="d0">Wine Transport</data>
+  <data key="d1">activity</data>
+  <data key="d2">Wine transport involves moving wine through the supply chain, often requiring monitoring of temperature and other conditions to maintain quality.</data>
+  <data key="d3">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588823</data>
+  <data key="d6"></data>
+</node>
+<node id="The Cork Quality Council">
+  <data key="d0">The Cork Quality Council</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Cork Quality Council is an organization involved in testing cork quality and documenting TCA contamination rates.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588827</data>
+  <data key="d6"></data>
+</node>
+<node id="Sullivan">
+  <data key="d0">Sullivan</data>
+  <data key="d1">person</data>
+  <data key="d2">Sullivan is a person who reported TCA contamination rates for Northwest Wine Report in 2023 and earlier years.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588827</data>
+  <data key="d6"></data>
+</node>
+<node id="Northwest Wine Report">
+  <data key="d0">Northwest Wine Report</data>
+  <data key="d1">organization</data>
+  <data key="d2">Northwest Wine Report is a publication for which Sullivan reported TCA contamination rates.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588830</data>
+  <data key="d6"></data>
+</node>
+<node id="APCOR">
+  <data key="d0">APCOR</data>
+  <data key="d1">organization</data>
+  <data key="d2">APCOR is a cork-industry group reporting contamination rates for corks.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588831</data>
+  <data key="d6"></data>
+</node>
+<node id="Wine Spectator">
+  <data key="d0">Wine Spectator</data>
+  <data key="d1">organization</data>
+  <data key="d2">Wine Spectator conducted a study in 2005 that found a 7% cork taint rate among 2,800 bottles.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588831</data>
+  <data key="d6"></data>
+</node>
+<node id="Zhou">
+  <data key="d0">Zhou</data>
+  <data key="d1">person</data>
+  <data key="d2">Zhou is an author who published research in Food Innovation and Advances regarding TCA and cork taint.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588831</data>
+  <data key="d6"></data>
+</node>
+<node id="Food Innovation and Advances">
+  <data key="d0">Food Innovation and Advances</data>
+  <data key="d1">publication</data>
+  <data key="d2">Food Innovation and Advances is a publication where Zhou published research about TCA.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588834</data>
+  <data key="d6"></data>
+</node>
+<node id="TCA (2,4,6-Trichloroanisole)">
+  <data key="d0">TCA (2,4,6-Trichloroanisole)</data>
+  <data key="d1">compound</data>
+  <data key="d2">TCA is a chemical compound responsible for most cork taint cases and affects the sensory perception of wine.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588834</data>
+  <data key="d6"></data>
+</node>
+<node id="Wine Industry">
+  <data key="d0">Wine Industry</data>
+  <data key="d1">industry</data>
+  <data key="d2">The Wine Industry is a global business affected by cork taint, resulting in significant financial losses.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588837</data>
+  <data key="d6"></data>
+</node>
+<node id="Journal of Wine Economics">
+  <data key="d0">Journal of Wine Economics</data>
+  <data key="d1">publication</data>
+  <data key="d2">The Journal of Wine Economics is a publication where Bekkerman and Brester discussed the economics of wine closures.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588837</data>
+  <data key="d6"></data>
+</node>
+<node id="ROSA Protocol">
+  <data key="d0">ROSA Protocol</data>
+  <data key="d1">method</data>
+  <data key="d2">ROSA Protocol is a quality control method involving steam-cleaning to reduce TCA levels in corks.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588837</data>
+  <data key="d6"></data>
+</node>
+<node id="GC-MS">
+  <data key="d0">GC-MS</data>
+  <data key="d1">method</data>
+  <data key="d2">Gas Chromatography-Mass Spectrometry (GC-MS) is a method used for analyzing corks to detect contamination.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588840</data>
+  <data key="d6"></data>
+</node>
+<node id="World Wildlife Fund">
+  <data key="d0">World Wildlife Fund</data>
+  <data key="d1">organization</data>
+  <data key="d2">The World Wildlife Fund advocates for the use of cork to preserve Mediterranean cork forest ecosystems.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588842</data>
+  <data key="d6"></data>
+</node>
+<node id="Wine Spectator Study 2005">
+  <data key="d0">Wine Spectator Study 2005</data>
+  <data key="d1">event</data>
+  <data key="d2">The 2005 Wine Spectator study analyzed 2,800 bottles of wine and reported a 7% cork taint rate.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588842</data>
+  <data key="d6"></data>
+</node>
+<node id="TBA (2,4,6-Tribromoanisole)">
+  <data key="d0">TBA (2,4,6-Tribromoanisole)</data>
+  <data key="d1">compound</data>
+  <data key="d2">TBA is a chemical compound that contributes to cork taint alongside TCA.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588842</data>
+  <data key="d6"></data>
+</node>
+<node id="TeCA (Tetrachloroanisole)">
+  <data key="d0">TeCA (Tetrachloroanisole)</data>
+  <data key="d1">compound</data>
+  <data key="d2">TeCA is a chemical compound mentioned as a contributor to cork taint, similar to TCA.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588845</data>
+  <data key="d6"></data>
+</node>
+<node id="PCA (Pentachloroanisole)">
+  <data key="d0">PCA (Pentachloroanisole)</data>
+  <data key="d1">compound</data>
+  <data key="d2">PCA is a chemical compound contributing to cork taint, along with TCA.</data>
+  <data key="d3">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588845</data>
+  <data key="d6"></data>
+</node>
+<node id="Victor Segalen Bordeaux 2 University">
+  <data key="d0">Victor Segalen Bordeaux 2 University</data>
+  <data key="d1">organization</data>
+  <data key="d2">Victor Segalen Bordeaux 2 University conducted a study on synthetic corks and their oxygen permeation levels.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588847</data>
+  <data key="d6"></data>
+</node>
+<node id="George Bittner">
+  <data key="d0">George Bittner</data>
+  <data key="d1">person</data>
+  <data key="d2">George Bittner is a researcher from the University of Texas who led a study on the estrogenic activity of synthetic corks.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588847</data>
+  <data key="d6"></data>
+</node>
+<node id="University of Texas">
+  <data key="d0">University of Texas</data>
+  <data key="d1">organization</data>
+  <data key="d2">The University of Texas is an institution where a study on synthetic corks' estrogenic activity was conducted.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588849</data>
+  <data key="d6"></data>
+</node>
+<node id="Nomacorc">
+  <data key="d0">Nomacorc</data>
+  <data key="d1">organization</data>
+  <data key="d2">Nomacorc is a company using sugarcane-derived polyethylene to produce plant-based synthetic wine closures.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588849</data>
+  <data key="d6"></data>
+</node>
+<node id="Oeneo">
+  <data key="d0">Oeneo</data>
+  <data key="d1">organization</data>
+  <data key="d2">Oeneo is a company that manufactures Diam closures employing supercritical CO₂ extraction to remove TCA.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588851</data>
+  <data key="d6"></data>
+</node>
+<node id="Micro-Agglomerated Corks">
+  <data key="d0">Micro-Agglomerated Corks</data>
+  <data key="d1">product</data>
+  <data key="d2">Micro-agglomerated corks are made from smaller cork granules bound with adhesives, engineered for specific oxygen transfer rates.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588852</data>
+  <data key="d6"></data>
+</node>
+<node id="Technical Corks">
+  <data key="d0">Technical Corks</data>
+  <data key="d1">product</data>
+  <data key="d2">Technical corks are composite closures made from cork granules bonded with adhesives and include types like Diam closures.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588854</data>
+  <data key="d6"></data>
+</node>
+<node id="Polyethylene">
+  <data key="d0">Polyethylene</data>
+  <data key="d1">material</data>
+  <data key="d2">Polyethylene is a polymer used in manufacturing synthetic wine closures.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588854</data>
+  <data key="d6"></data>
+</node>
+<node id="Two-Buck Chuck">
+  <data key="d0">Two-Buck Chuck</data>
+  <data key="d1">product</data>
+  <data key="d2">Two-Buck Chuck refers to affordable wines that commonly use technical or synthetic cork closures.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588857</data>
+  <data key="d6"></data>
+</node>
+<node id="OTR (Oxygen Transfer Rate)">
+  <data key="d0">OTR (Oxygen Transfer Rate)</data>
+  <data key="d1">concept</data>
+  <data key="d2">OTR (Oxygen Transfer Rate) describes the permeability of wine closures to oxygen, affecting wine preservation and quality.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588857</data>
+  <data key="d6"></data>
+</node>
+<node id="TCA (Trichloroanisole)">
+  <data key="d0">TCA (Trichloroanisole)</data>
+  <data key="d1">chemical</data>
+  <data key="d2">TCA (Trichloroanisole) is a compound that can contaminate natural cork, leading to a musty aroma in wine.</data>
+  <data key="d3">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588859</data>
+  <data key="d6"></data>
+</node>
+<node id="Canned Wine">
+  <data key="d0">Canned Wine</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Canned wine is a rapidly growing alternative packaging segment for wine, with a recommended shelf life of 12–18 months, or up to 24 months under optimal conditions.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588859</data>
+  <data key="d6"></data>
+</node>
+<node id="U.S. Market">
+  <data key="d0">U.S. Market</data>
+  <data key="d1">location</data>
+  <data key="d2">The U.S. market for canned wine experienced growth exceeding 59% in a single year.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588861</data>
+  <data key="d6"></data>
+</node>
+<node id="BPANI">
+  <data key="d0">BPANI</data>
+  <data key="d1">concept</data>
+  <data key="d2">BPANI (Bisphenol A Non-Intent) acrylic or polyester formulations are used in polymer coatings of cans to provide a barrier between wine and metal.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588861</data>
+  <data key="d6"></data>
+</node>
+<node id="Toxicological Sciences">
+  <data key="d0">Toxicological Sciences</data>
+  <data key="d1">organization</data>
+  <data key="d2">Toxicological Sciences published a 2023 study showing negligible endocrine activity in acrylic and polyester BPANI liners compared to BPS.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588864</data>
+  <data key="d6"></data>
+</node>
+<node id="Center for Environmental Health">
+  <data key="d0">Center for Environmental Health</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Center for Environmental Health conducted testing in 2024 showing that 95% of U.S. canned foods use non-BPA liners.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588864</data>
+  <data key="d6"></data>
+</node>
+<node id="Environmental Working Group">
+  <data key="d0">Environmental Working Group</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Environmental Working Group recommends minimizing consumption of canned foods and beverages due to potential chemical safety concerns.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588865</data>
+  <data key="d6"></data>
+</node>
+<node id="European Food Safety Authority">
+  <data key="d0">European Food Safety Authority</data>
+  <data key="d1">organization</data>
+  <data key="d2">The European Food Safety Authority has tightened intake thresholds for BPA.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588866</data>
+  <data key="d6"></data>
+</node>
+<node id="Vinolok">
+  <data key="d0">Vinolok</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Vinolok is a type of glass stopper that uses a glass plug with a polymer O-ring seal, offering low oxygen transmission rates and is TCA-free.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588868</data>
+  <data key="d6"></data>
+</node>
+<node id="Vino-Seal">
+  <data key="d0">Vino-Seal</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Vino-Seal is a type of glass stopper similar to Vinolok, providing resealability and aesthetic qualities.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588868</data>
+  <data key="d6"></data>
+</node>
+<node id="Frugalpac">
+  <data key="d0">Frugalpac</data>
+  <data key="d1">organization</data>
+  <data key="d2">Frugalpac conducted a lifecycle assessment of the Frugal Bottle in conjunction with Intertek.&lt;SEP&gt;Frugalpac produces the Frugal Bottle, which is composed mostly of recycled paperboard with an inner PET liner.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24&lt;SEP&gt;chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588870</data>
+  <data key="d6"></data>
+</node>
+<node id="Packamama">
+  <data key="d0">Packamama</data>
+  <data key="d1">organization</data>
+  <data key="d2">Packamama is a company that creates flat-format PET bottles for wine, increasing logistic efficiencies.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588870</data>
+  <data key="d6"></data>
+</node>
+<node id="Intertek">
+  <data key="d0">Intertek</data>
+  <data key="d1">organization</data>
+  <data key="d2">Intertek conducted an independent lifecycle assessment of the Frugal Bottle's carbon footprint.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24&lt;SEP&gt;chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588872</data>
+  <data key="d6"></data>
+</node>
+<node id="PET Bottles">
+  <data key="d0">PET Bottles</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Flat-format PET bottles are made from 100% recycled PET, offering efficient storage and logistic advantages.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588873</data>
+  <data key="d6"></data>
+</node>
+<node id="BIB">
+  <data key="d0">BIB</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Bag-in-box (BIB) is a type of wine packaging that is considered sustainable due to its low carbon emissions compared to other packaging types.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588875</data>
+  <data key="d6"></data>
+</node>
+<node id="Tetra Pak">
+  <data key="d0">Tetra Pak</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Tetra Pak is a multilayer aseptic carton that combines paperboard, polyethylene, and aluminum foil for lightweight and space-efficient wine packaging.</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588875</data>
+  <data key="d6"></data>
+</node>
+<node id="Anton Bekkerman">
+  <data key="d0">Anton Bekkerman</data>
+  <data key="d1">person</data>
+  <data key="d2">Anton Bekkerman is an author who co-wrote a study on price premiums for corks in the U.S. wine market.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588876</data>
+  <data key="d6"></data>
+</node>
+<node id="Gary W. Brester">
+  <data key="d0">Gary W. Brester</data>
+  <data key="d1">person</data>
+  <data key="d2">Gary W. Brester is an author involved in research regarding price premiums for corks in the U.S. wine market.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588876</data>
+  <data key="d6"></data>
+</node>
+<node id="Peter Godden">
+  <data key="d0">Peter Godden</data>
+  <data key="d1">person</data>
+  <data key="d2">Peter Godden is an author who researched wine bottle closures and their effects on wine.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588877</data>
+  <data key="d6"></data>
+</node>
+<node id="Paulo Lopes">
+  <data key="d0">Paulo Lopes</data>
+  <data key="d1">person</data>
+  <data key="d2">Paulo Lopes is an author who studied oxygen transmission through different closures into wine bottles.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588877</data>
+  <data key="d6"></data>
+</node>
+<node id="George Skouroumounis">
+  <data key="d0">George Skouroumounis</data>
+  <data key="d1">person</data>
+  <data key="d2">George Skouroumounis is an author who conducted a wine bottle closure trial to evaluate the effect on wine composition.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588880</data>
+  <data key="d6"></data>
+</node>
+<node id="Sean P. Sullivan">
+  <data key="d0">Sean P. Sullivan</data>
+  <data key="d1">person</data>
+  <data key="d2">Sean P. Sullivan is a writer for the Northwest Wine Report, focusing on DIAM closures and cork taint.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588880</data>
+  <data key="d6"></data>
+</node>
+<node id="Hans A. Sundell">
+  <data key="d0">Hans A. Sundell</data>
+  <data key="d1">person</data>
+  <data key="d2">Hans A. Sundell researched the stress on barrier films in bag-in-box wine packaging during transportation.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588883</data>
+  <data key="d6"></data>
+</node>
+<node id="Rémy Ghidossi">
+  <data key="d0">Rémy Ghidossi</data>
+  <data key="d1">person</data>
+  <data key="d2">Rémy Ghidossi conducted research on the influence of packaging on wine conservation.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588883</data>
+  <data key="d6"></data>
+</node>
+<node id="H. Zhou">
+  <data key="d0">H. Zhou</data>
+  <data key="d1">person</data>
+  <data key="d2">H. Zhou co-authored a study on the formation, analysis, and control of cork taint in wines.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588885</data>
+  <data key="d6"></data>
+</node>
+<node id="Christian Butzke">
+  <data key="d0">Christian Butzke</data>
+  <data key="d1">person</data>
+  <data key="d2">Christian Butzke researched cork taint prevalence at the Indy Wine Competition.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588885</data>
+  <data key="d6"></data>
+</node>
+<node id="Laura Nicolau">
+  <data key="d0">Laura Nicolau</data>
+  <data key="d1">person</data>
+  <data key="d2">Laura Nicolau studied the influence of wine bottle closures on the aromatic composition of Sauvignon Blanc.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588885</data>
+  <data key="d6"></data>
+</node>
+<node id="Oreste Brenna">
+  <data key="d0">Oreste Brenna</data>
+  <data key="d1">person</data>
+  <data key="d2">Oreste Brenna is a co-author of a study on the evolution of phenolic components, carotenoids, and chlorophylls in wine.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588888</data>
+  <data key="d6"></data>
+</node>
+<node id="Australian Wine Research Institute">
+  <data key="d0">Australian Wine Research Institute</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Australian Wine Research Institute conducts studies on wine bottle closures and oxygen transmission rates.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588889</data>
+  <data key="d6"></data>
+</node>
+<node id="California Wine Institute">
+  <data key="d0">California Wine Institute</data>
+  <data key="d1">organization</data>
+  <data key="d2">The California Wine Institute released a study on the carbon footprint of wine production.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588889</data>
+  <data key="d6"></data>
+</node>
+<node id="Cork Quality Council">
+  <data key="d0">Cork Quality Council</data>
+  <data key="d1">organization</data>
+  <data key="d2">The Cork Quality Council conducts TCA testing and reports on cork quality.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588891</data>
+  <data key="d6"></data>
+</node>
+<node id="Wine Bottle Closures">
+  <data key="d0">Wine Bottle Closures</data>
+  <data key="d1">concept</data>
+  <data key="d2">Wine bottle closures are designs and materials used to seal wine bottles, affecting wine composition and preservation.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588891</data>
+  <data key="d6"></data>
+</node>
+<node id="Cork Taint">
+  <data key="d0">Cork Taint</data>
+  <data key="d1">concept</data>
+  <data key="d2">Cork taint is caused by the presence of 2,4,6-Trichloroanisole in wines, impacting aroma and taste.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588892</data>
+  <data key="d6"></data>
+</node>
+<node id="Bag-In-Box Wine Packaging">
+  <data key="d0">Bag-In-Box Wine Packaging</data>
+  <data key="d1">concept</data>
+  <data key="d2">Bag-in-box wine packaging involves a plastic bag with a valve enclosed in a box, designed to preserve wine during transportation.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588892</data>
+  <data key="d6"></data>
+</node>
+<node id="Lifecycle Assessment">
+  <data key="d0">Lifecycle Assessment</data>
+  <data key="d1">method</data>
+  <data key="d2">Lifecycle assessment is a method used to evaluate the environmental impacts of a product's lifecycle, such as packaging.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588892</data>
+  <data key="d6"></data>
+</node>
+<node id="2,4,6-Trichloroanisole">
+  <data key="d0">2,4,6-Trichloroanisole</data>
+  <data key="d1">chemical</data>
+  <data key="d2">2,4,6-Trichloroanisole is a chemical compound known for causing cork taint in wines.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588894</data>
+  <data key="d6"></data>
+</node>
+<node id="Giovanelli Gabriella">
+  <data key="d0">Giovanelli Gabriella</data>
+  <data key="d1">person</data>
+  <data key="d2">Giovanelli Gabriella is a researcher who, along with Oreste Brenna, studied the evolution of phenolic components, carotenoids, and chlorophylls in wine.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588895</data>
+  <data key="d6"></data>
+</node>
+<node id="Gabriele Scozzafava">
+  <data key="d0">Gabriele Scozzafava</data>
+  <data key="d1">person</data>
+  <data key="d2">Gabriele Scozzafava is an author who explored consumer perceptions and preferences for bag-in-box wine packaging.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588895</data>
+  <data key="d6"></data>
+</node>
+<node id="Alan Pollnitz">
+  <data key="d0">Alan Pollnitz</data>
+  <data key="d1">person</data>
+  <data key="d2">Alan Pollnitz conducted research on the incidence of 2,4,6-Trichloroanisole across different cork products.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588896</data>
+  <data key="d6"></data>
+</node>
+<node id="New Zealand Winegrowers">
+  <data key="d0">New Zealand Winegrowers</data>
+  <data key="d1">organization</data>
+  <data key="d2">New Zealand Winegrowers published a study on how wine bottle closures affect the aromatic composition of Sauvignon Blanc.</data>
+  <data key="d3">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588896</data>
+  <data key="d6"></data>
+</node>
+<node id="Liners">
+  <data key="d0">Liners</data>
+  <data key="d3">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d2">Amcor offers liners with graduated oxygen transmission rates for different wine styles.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588924</data>
+  <data key="d6"></data>
+</node>
+<node id="Frugal Bottle">
+  <data key="d0">Frugal Bottle</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d2">Frugalpac manufactures the Frugal Bottle using recycled paperboard to reduce carbon footprint.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588962</data>
+  <data key="d6"></data>
+</node>
+<node id="Flat-Format PET Bottles">
+  <data key="d0">Flat-Format PET Bottles</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d2">Packamama's flat-format PET bottles improve storage and transportation efficiency for wine.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588967</data>
+  <data key="d6"></data>
+</node>
+<node id="Wine Closures">
+  <data key="d0">Wine Closures</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d2">NFC technology is used in wine closures for authenticity and digital traceability.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588969</data>
+  <data key="d6"></data>
+</node>
+<node id="Wine Packaging">
+  <data key="d0">Wine Packaging</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d2">RFID is used in wine packaging to facilitate digital traceability and logistical monitoring.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588971</data>
+  <data key="d6"></data>
+</node>
+<node id="Aseptic Cartons">
+  <data key="d0">Aseptic Cartons</data>
+  <data key="d3">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d2">Tetra Pak is a type of aseptic carton providing excellent packaging properties for wine.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775588976</data>
+  <data key="d6"></data>
+</node>
+<edge source="Gym" target="Split">
+  <data key="d7">1.0</data>
+  <data key="d8">The Gym is a setting where the split method is employed, organizing workouts into different exercise sessions.</data>
+  <data key="d9">exercise organization,routine design</data>
+  <data key="d10">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586742</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Split" target="Push">
+  <data key="d7">1.0</data>
+  <data key="d8">Split is a method that includes push exercises to work on specific muscle groups.</data>
+  <data key="d9">muscle targeting,workout schedule</data>
+  <data key="d10">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586743</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Split" target="Pull">
+  <data key="d7">1.0</data>
+  <data key="d8">Split is a method that includes pull exercises targeting particular muscles.</data>
+  <data key="d9">muscle targeting,workout schedule</data>
+  <data key="d10">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586746</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Split" target="Legs">
+  <data key="d7">1.0</data>
+  <data key="d8">Split is a method that incorporates leg exercises focusing on the leg muscles.</data>
+  <data key="d9">muscle targeting,workout schedule</data>
+  <data key="d10">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586748</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Chase Balmer" target="MyCourses Assignment">
+  <data key="d7">1.0</data>
+  <data key="d8">Chase Balmer is tasked with submitting the wine-tasting notes to the MyCourses Assignment section.</data>
+  <data key="d9">educational requirement,submission process</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586923</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Ancient Peaks Cabernet Sauvignon" target="Paso Robles">
+  <data key="d7">1.0</data>
+  <data key="d8">Ancient Peaks Cabernet Sauvignon is produced in Paso Robles, California.</data>
+  <data key="d9">origin,wine production</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586922</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Ancient Peaks Cabernet Sauvignon" target="Santa Margarita Ranch">
+  <data key="d7">1.0</data>
+  <data key="d8">The Ancient Peaks Cabernet Sauvignon is made in Santa Margarita Ranch within Paso Robles.</data>
+  <data key="d9">vineyard production,wine origination</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586926</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Ancient Peaks Cabernet Sauvignon" target="Prosciutto">
+  <data key="d7">1.0</data>
+  <data key="d8">Ancient Peaks Cabernet Sauvignon was paired with prosciutto, mellowing the wine's acidic bite but not significantly elevating the pairing.</data>
+  <data key="d9">tasting notes,wine pairing</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586928</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Ancient Peaks Cabernet Sauvignon" target="Parmesan">
+  <data key="d7">1.0</data>
+  <data key="d8">Ancient Peaks Cabernet Sauvignon was paired with Parmesan cheese, enhancing both the cheese's flavors and mellowing the wine's acidity.</data>
+  <data key="d9">flavor enhancement,wine pairing</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586929</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bully Hill Vineyards Chardonnay Riesling Fusion" target="Finger Lakes">
+  <data key="d7">1.0</data>
+  <data key="d8">Bully Hill Vineyards Chardonnay Riesling Fusion originates from the Finger Lakes region.</data>
+  <data key="d9">origin,wine production</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586922</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Wine Packaging Methods" target="Natural Cork">
+  <data key="d7">1.0</data>
+  <data key="d8">The report evaluates natural cork closures for their impact on wine preservation and sensory quality.</data>
+  <data key="d9">comparison,impact assessment</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588897</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Wine Packaging Methods" target="Screw Cap">
+  <data key="d7">1.0</data>
+  <data key="d8">The report evaluates screw caps for their consistency in oxygen transmission and suitability for specific wine styles.</data>
+  <data key="d9">comparison,impact assessment</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588899</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Wine Packaging Methods" target="American Journal of Enology and Viticulture (AJEV)">
+  <data key="d7">1.0</data>
+  <data key="d8">The report references research from the American Journal of Enology and Viticulture.</data>
+  <data key="d9">literature,reference source</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588902</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Wine Packaging Methods" target="Australian Journal of Grape and Wine Research (AJGWR)">
+  <data key="d7">1.0</data>
+  <data key="d8">The report references research from the Australian Journal of Grape and Wine Research.</data>
+  <data key="d9">literature,reference source</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588904</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Wine Packaging Methods" target="Journal of Agricultural and Food Chemistry (JAFC)">
+  <data key="d7">1.0</data>
+  <data key="d8">The report references research from the Journal of Agricultural and Food Chemistry.</data>
+  <data key="d9">literature,reference source</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588908</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Wine Packaging Methods" target="Smart Closures">
+  <data key="d7">1.0</data>
+  <data key="d8">The report discusses the role of smart closures in enhancing packaging with digital features like NFC/RFID for traceability.</data>
+  <data key="d9">digital traceability,innovation</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588912</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Wine Packaging Methods" target="Biodegradable Plant-Based Stoppers">
+  <data key="d7">1.0</data>
+  <data key="d8">Biodegradable plant-based stoppers are highlighted as sustainable options in wine packaging.</data>
+  <data key="d9">eco-friendly solutions,sustainability</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588915</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Wine Packaging Methods" target="Flat-Bottle PET Formats">
+  <data key="d7">1.0</data>
+  <data key="d8">Flat-bottle PET formats are discussed as innovative, sustainable wine packaging solutions.</data>
+  <data key="d9">innovation,sustainability</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588917</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Natural Cork" target="Oxygen Transmission Rate (OTR)">
+  <data key="d7">1.0</data>
+  <data key="d8">Natural corks have variable oxygen transmission rates affecting wine preservation.</data>
+  <data key="d9">impact,variability</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588899</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Natural Cork" target="TCA Contamination">
+  <data key="d7">1.0</data>
+  <data key="d8">Natural cork is associated with variable TCA contamination rates, impacting wine quality.</data>
+  <data key="d9">quality concern,sensory defect</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588903</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Natural Cork" target="Penfolds">
+  <data key="d7">1.0</data>
+  <data key="d8">Penfolds uses natural cork in the U.S. market despite using screw caps domestically due to consumer perceptions.</data>
+  <data key="d9">cultural perception,market preference</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588931</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Natural Cork" target="The Cork Quality Council">
+  <data key="d7">1.0</data>
+  <data key="d8">The Cork Quality Council tests and documents the quality of natural cork, including TCA contamination levels.</data>
+  <data key="d9">industry monitoring,quality control</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588945</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Natural Cork" target="APCOR">
+  <data key="d7">1.0</data>
+  <data key="d8">APCOR provides statistics on the contamination rates of natural cork.</data>
+  <data key="d9">contamination rates,industry statistics</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588950</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Natural Cork" target="Wine Industry">
+  <data key="d7">1.0</data>
+  <data key="d8">Natural cork is a significant product impacting the costs and economics of the wine industry.</data>
+  <data key="d9">closure cost,product impact</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588956</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Natural Cork" target="World Wildlife Fund">
+  <data key="d7">1.0</data>
+  <data key="d8">The World Wildlife Fund advocates for the use of natural cork due to its environmental benefits and sustainability.</data>
+  <data key="d9">environmental benefits,sustainability advocacy</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588958</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Natural Cork" target="OTR (Oxygen Transfer Rate)">
+  <data key="d7">1.0</data>
+  <data key="d8">Natural Cork has different OTR levels compared to synthetic closures, affecting long-term wine preservation and taste.</data>
+  <data key="d9">comparison,wine preservation</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588980</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="TCA">
+  <data key="d7">1.0</data>
+  <data key="d8">Screw caps eliminate the risk of TCA contamination prevalent in cork-sealed wines.</data>
+  <data key="d9">risk elimination,sensory defects</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588921</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Nicolau">
+  <data key="d7">1.0</data>
+  <data key="d8">Nicolau observed that screw caps better conserve the fruity bouquet of certain wines.</data>
+  <data key="d9">aroma preservation,research findings</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588924</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Jamie Goode">
+  <data key="d7">1.0</data>
+  <data key="d8">Jamie Goode clarified that pre-existing wine conditions contribute more to reductive faults under screw caps than the closure type itself.</data>
+  <data key="d9">fault clarification,wine science</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588928</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Villa Maria">
+  <data key="d7">1.0</data>
+  <data key="d8">Villa Maria invested significantly to convert to screw cap bottling.</data>
+  <data key="d9">bottling conversion,investment</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588932</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="AWRI">
+  <data key="d7">1.0</data>
+  <data key="d8">The AWRI conducted trials comparing screw cap and natural cork closures, showing advantages of screw caps in preserving wine qualities.</data>
+  <data key="d9">research,wine retention analysis</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588935</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Sulphidisation">
+  <data key="d7">1.0</data>
+  <data key="d8">Sulphidisation is occasionally reported in screw cap wines due to low oxygen transmission, although it involves pre-existing conditions and total package oxygen management.</data>
+  <data key="d9">limited occurrence,wine faults</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588939</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Saran-Tin">
+  <data key="d7">1.0</data>
+  <data key="d8">Screw caps using Saran-Tin require longer trials to determine their suitability for long-term wine aging.</data>
+  <data key="d9">aging suitability,liner technology</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588942</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Saranex">
+  <data key="d7">2.0</data>
+  <data key="d8">Saranex is a type of liner used in screw caps to provide low oxygen transmission rates.&lt;SEP&gt;Screw caps employing Saranex are under study for their potential in long-term wine aging.</data>
+  <data key="d9">aging suitability,liner technology,low OTR,product component</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df&lt;SEP&gt;chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588945</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Wine Industry">
+  <data key="d7">1.0</data>
+  <data key="d8">Screw caps serve as an alternative closure in the wine industry, offering a cost-effective solution compared to natural corks.</data>
+  <data key="d9">closure alternatives,cost comparison</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588953</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Saran-tin">
+  <data key="d7">1.0</data>
+  <data key="d8">Saran-tin is a liner in screw caps that helps achieve low oxygen transmission rates.</data>
+  <data key="d9">low OTR,product component</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588956</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Screw Cap" target="Jean-Bernard Delmas">
+  <data key="d7">1.0</data>
+  <data key="d8">Jean-Bernard Delmas provided insights on the performance of screw caps over a lengthy period.</data>
+  <data key="d9">long-term observation,performance evaluation</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588958</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Synthetic Closures" target="Victor Segalen Bordeaux 2 University">
+  <data key="d7">1.0</data>
+  <data key="d8">Victor Segalen Bordeaux 2 University conducted a study demonstrating high oxygen permeation rates in synthetic closures.</data>
+  <data key="d9">oxygen permeation,research study</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588953</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Synthetic Closures" target="AWRI">
+  <data key="d7">1.0</data>
+  <data key="d8">The AWRI provides data confirming oxygen transfer rates in synthetic closures.</data>
+  <data key="d9">data confirmation,oxygen transfer</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588955</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Synthetic Closures" target="Polyethylene">
+  <data key="d7">1.0</data>
+  <data key="d8">Synthetic Closures are made from polymers like polyethylene through injection molding or co-extrusion.</data>
+  <data key="d9">manufacturing,materials</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588959</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Synthetic Closures" target="Two-Buck Chuck">
+  <data key="d7">1.0</data>
+  <data key="d8">Two-Buck Chuck wines frequently use synthetic closures due to their cost effectiveness.</data>
+  <data key="d9">cost efficiency,usage in products</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588962</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Synthetic Closures" target="OTR (Oxygen Transfer Rate)">
+  <data key="d7">1.0</data>
+  <data key="d8">Synthetic Closures have moderate to high permeability affecting the OTR and rate of oxidation in wines.</data>
+  <data key="d9">oxidation,permeation level</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588969</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box Systems" target="Carbon Footprint">
+  <data key="d7">1.0</data>
+  <data key="d8">Bag-in-box systems have a significantly lower carbon footprint compared to glass bottles.</data>
+  <data key="d9">environmental impact,packaging</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588897</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Aluminum Cans" target="Carbon Footprint">
+  <data key="d7">1.0</data>
+  <data key="d8">Aluminum cans offer a reduced carbon footprint compared to glass bottles.</data>
+  <data key="d9">environmental impact,packaging</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588900</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Aluminum Cans" target="BPANI">
+  <data key="d7">1.0</data>
+  <data key="d8">Aluminum cans for wine are often lined with BPANI coatings to prevent interaction between the wine and metal.</data>
+  <data key="d9">chemical safety,polymer coatings</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588959</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Australian Wine Research Institute (AWRI)" target="Cork Quality Council (CQC)">
+  <data key="d7">1.0</data>
+  <data key="d8">Both organizations provide industry data and research findings on wine closures.</data>
+  <data key="d9">industry collaboration,research contribution</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588900</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Sustainable Wine Roundtable" target="Lifecycle Assessment">
+  <data key="d7">1.0</data>
+  <data key="d8">The Sustainable Wine Roundtable conducts lifecycle assessments of wine packaging to analyze environmental impacts.</data>
+  <data key="d9">environmental impact,evaluation</data>
+  <data key="d10">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588985</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Smart Closures" target="NFC/RFID Technology">
+  <data key="d7">1.0</data>
+  <data key="d8">Smart closures use NFC/RFID technology for digital traceability and enhanced packaging features.</data>
+  <data key="d9">integration,technology</data>
+  <data key="d10">chunk-08f3f1c8d96e46fade5e0b44bfa52840</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588915</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Diam Closures" target="Pacific Northwest">
+  <data key="d7">1.0</data>
+  <data key="d8">Diam Closures have been rapidly adopted in the Pacific Northwest, reflecting winemaker confidence in their sensory neutrality.</data>
+  <data key="d9">adoption,confidence</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588904</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Diam Closures" target="Oeneo">
+  <data key="d7">1.0</data>
+  <data key="d8">Oeneo manufactures Diam closures which are TCA-free through a specialized process.</data>
+  <data key="d9">TCA removal,product manufacturing</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588954</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Diam Closures" target="TCA (Trichloroanisole)">
+  <data key="d7">1.0</data>
+  <data key="d8">Diam Closures are TCA-free and avoid the contamination risk present with natural corks.</data>
+  <data key="d9">contamination prevention,quality assurance</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588958</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Diam Origine Line" target="High-Grade Natural Cork">
+  <data key="d7">1.0</data>
+  <data key="d8">The Diam Origine Line represents an effort to compete with high-grade natural cork for wines intended for long-term aging.</data>
+  <data key="d9">competition,market challenge</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588905</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box (BIB) Packaging" target="Scholle Packaging">
+  <data key="d7">1.0</data>
+  <data key="d8">Scholle Packaging invented Bag-in-Box packaging in the 1950s.</data>
+  <data key="d9">innovation,invention</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588908</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box (BIB) Packaging" target="AWRI">
+  <data key="d7">1.0</data>
+  <data key="d8">The AWRI documented oxidation and SO₂ depletion issues in BIB wines.</data>
+  <data key="d9">documentation,research</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588911</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box (BIB) Packaging" target="Ghidossi">
+  <data key="d7">1.0</data>
+  <data key="d8">Ghidossi researched and found oxidation and aroma loss in BIB wines compared to glass-bottled wines.</data>
+  <data key="d9">findings,research</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588913</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box (BIB) Packaging" target="Scientific American">
+  <data key="d7">1.0</data>
+  <data key="d8">Scientific American reported concerns about BPA contamination in certain BIB wine packaging.</data>
+  <data key="d9">BPA concerns,consumer health</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588917</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box (BIB) Packaging" target="EVOH">
+  <data key="d7">1.0</data>
+  <data key="d8">EVOH is used in bag-in-box packaging as a barrier film to preserve wine by minimizing oxygen exposure.</data>
+  <data key="d9">material usage,preservation</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588922</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box (BIB) Packaging" target="Met-PET">
+  <data key="d7">1.0</data>
+  <data key="d8">Met-PET is used in bag-in-box packaging as a metallized barrier film to minimize oxygen exposure.</data>
+  <data key="d9">material usage,preservation</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588928</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box (BIB) Packaging" target="Multi-layer Bags">
+  <data key="d7">1.0</data>
+  <data key="d8">Multi-layer bags in BIB packaging help protect against flavor scalping by incorporating multiple material layers.</data>
+  <data key="d9">flavor protection,packaging technology</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588932</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-in-Box (BIB) Packaging" target="BPA">
+  <data key="d7">1.0</data>
+  <data key="d8">There are health concerns regarding BPA contamination in some bag-in-box packaging materials.</data>
+  <data key="d9">contamination,health concerns</data>
+  <data key="d10">chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588936</data>
+  <data key="d13"></data>
+</edge>
+<edge source="AWRI" target="Precision Oxygen Management">
+  <data key="d7">1.0</data>
+  <data key="d8">The AWRI conducts trials that contribute to precision oxygen management research.</data>
+  <data key="d9">research,wine aging</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588941</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Aluminum Alloy Cap" target="Internal Liner">
+  <data key="d7">1.0</data>
+  <data key="d8">The aluminum alloy cap works with the internal liner to provide an airtight seal.</data>
+  <data key="d9">composition,functional purpose</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588917</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Saranex" target="Technical Closures">
+  <data key="d7">1.0</data>
+  <data key="d8">Technical closures with Saranex liners require further trials for their impact on wine longevity.</data>
+  <data key="d9">aging studies,modern liner</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588949</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Amcor" target="Liners">
+  <data key="d7">1.0</data>
+  <data key="d8">Amcor offers liners with graduated oxygen transmission rates for different wine styles.</data>
+  <data key="d9">permeability matching,product offering</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588927</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Loire Valley Producers" target="Chenin Blanc">
+  <data key="d7">1.0</data>
+  <data key="d8">Loire Valley producers used Chenin Blanc in trials showing higher free SO₂ retention under screw caps.</data>
+  <data key="d9">trial,wine production</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588922</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bekkerman and Brester" target="Journal of Wine Economics">
+  <data key="d7">1.0</data>
+  <data key="d8">Bekkerman and Brester published research in the Journal of Wine Economics regarding consumer willingness to pay for cork closures.</data>
+  <data key="d9">academic publication,consumer preferences</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588949</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Château Haut-Brion" target="Jean-Bernard Delmas">
+  <data key="d7">1.0</data>
+  <data key="d8">Jean-Bernard Delmas reported on Château Haut-Brion's experiment with screw caps.</data>
+  <data key="d9">experiment report,management</data>
+  <data key="d10">chunk-ca4e8a21b5cc7aa7758c6cb466cdece6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588930</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Smart Packaging" target="NFC">
+  <data key="d7">1.0</data>
+  <data key="d8">NFC technology is integrated into smart packaging for authentication and traceability purposes.</data>
+  <data key="d9">integration,technology use</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588932</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Smart Packaging" target="RFID">
+  <data key="d7">1.0</data>
+  <data key="d8">RFID technology is used in smart packaging to track and trace products digitally.</data>
+  <data key="d9">integration,technology use</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588935</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Smart Packaging" target="Global Smart Packaging Market">
+  <data key="d7">1.0</data>
+  <data key="d8">The smart packaging market is expanding with the adoption of technologies like NFC and RFID.</data>
+  <data key="d9">market growth,technology adoption</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588940</data>
+  <data key="d13"></data>
+</edge>
+<edge source="NFC" target="China">
+  <data key="d7">1.0</data>
+  <data key="d8">NFC technology is crucial in China to combat counterfeit wine issues.</data>
+  <data key="d9">authentication,market demand</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588936</data>
+  <data key="d13"></data>
+</edge>
+<edge source="NFC" target="Europe">
+  <data key="d7">1.0</data>
+  <data key="d8">NFC technology is important in Europe for protecting against counterfeit wine.</data>
+  <data key="d9">authentication,market demand</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588942</data>
+  <data key="d13"></data>
+</edge>
+<edge source="NFC" target="Wine Closures">
+  <data key="d7">1.0</data>
+  <data key="d8">NFC technology is used in wine closures for authenticity and digital traceability.</data>
+  <data key="d9">technological integration,traceability</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588977</data>
+  <data key="d13"></data>
+</edge>
+<edge source="RFID" target="Wine Packaging">
+  <data key="d7">1.0</data>
+  <data key="d8">RFID is used in wine packaging to facilitate digital traceability and logistical monitoring.</data>
+  <data key="d9">monitoring,technological integration</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588977</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Time-Temperature Indicators" target="Wine Transport">
+  <data key="d7">1.0</data>
+  <data key="d8">Time-temperature indicators are vital in ensuring compliance with cold-chain requirements during wine transport.</data>
+  <data key="d9">quality assurance,temperature monitoring</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588945</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Nomacorcs Green Line" target="Vinventions">
+  <data key="d7">1.0</data>
+  <data key="d8">Vinventions produces Nomacorc’s Green Line biodegradable closures.</data>
+  <data key="d9">eco-friendly,production</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588936</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Vinventions" target="Nomacorc">
+  <data key="d7">1.0</data>
+  <data key="d8">Nomacorc produces sugarcane-based synthetic closures under the organization Vinventions.</data>
+  <data key="d9">environmental advancement,production association</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588953</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Precision Oxygen Management" target="VinPerfects SmartCap">
+  <data key="d7">1.0</data>
+  <data key="d8">VinPerfect’s SmartCap exemplifies precision oxygen management in wine closures.</data>
+  <data key="d9">controlled oxygen,innovation</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588936</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Microplastic Migration" target="Chemical Migration">
+  <data key="d7">1.0</data>
+  <data key="d8">Both microplastic and chemical migration from packaging materials are significant concerns for safety and regulation.</data>
+  <data key="d9">packaging safety,regulatory concern</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588940</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Lifecycle Impact" target="Paper Bottles">
+  <data key="d7">1.0</data>
+  <data key="d8">Paper bottles undergo lifecycle impact assessments to verify environmental claims.</data>
+  <data key="d9">packaging,sustainability assessment</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588941</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Lifecycle Impact" target="Recycled PET Flat Bottles">
+  <data key="d7">1.0</data>
+  <data key="d8">Recycled PET flat bottles are evaluated for their environmental lifecycle impact.</data>
+  <data key="d9">packaging,sustainability assessment</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588944</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Lifecycle Impact" target="Smart-Label-Integrated Packaging">
+  <data key="d7">1.0</data>
+  <data key="d8">Smart-label-integrated packaging is subject to lifecycle assessment for sustainability claims.</data>
+  <data key="d9">environmental claims,packaging</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588950</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Saran-Tin" target="Technical Closures">
+  <data key="d7">1.0</data>
+  <data key="d8">Technical closures with Saran-Tin liners are subjected to long-term studies to assess aging effectiveness.</data>
+  <data key="d9">aging studies,modern liner</data>
+  <data key="d10">chunk-50be575105a383ed5c7c44e084f7f5df</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588945</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Sullivan" target="Northwest Wine Report">
+  <data key="d7">1.0</data>
+  <data key="d8">Sullivan reports contamination rates of TCA in corks for the Northwest Wine Report.</data>
+  <data key="d9">contamination data,journalistic reporting</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588947</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Zhou" target="Food Innovation and Advances">
+  <data key="d7">1.0</data>
+  <data key="d8">Zhou published research related to TCA in corks in Food Innovation and Advances.</data>
+  <data key="d9">academic research,publication</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588950</data>
+  <data key="d13"></data>
+</edge>
+<edge source="TCA (2,4,6-Trichloroanisole)" target="Wine Industry">
+  <data key="d7">1.0</data>
+  <data key="d8">TCA contamination results in significant financial losses for the wine industry due to cork taint.</data>
+  <data key="d9">contamination impact,financial loss</data>
+  <data key="d10">chunk-f2eb65b8154604ecd58b709ac758de03</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588951</data>
+  <data key="d13"></data>
+</edge>
+<edge source="George Bittner" target="University of Texas">
+  <data key="d7">1.0</data>
+  <data key="d8">George Bittner led a study at the University of Texas on synthetic corks’ estrogenic activity.</data>
+  <data key="d9">research association,study leadership</data>
+  <data key="d10">chunk-8bf37b81d72a72b3c8a73e22a2f838b6</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588955</data>
+  <data key="d13"></data>
+</edge>
+<edge source="U.S. Market" target="Center for Environmental Health">
+  <data key="d7">1.0</data>
+  <data key="d8">The Center for Environmental Health found non-BPA liners in 95% of U.S. canned foods through testing.</data>
+  <data key="d9">chemical testing,product safety</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588961</data>
+  <data key="d13"></data>
+</edge>
+<edge source="BPANI" target="Toxicological Sciences">
+  <data key="d7">1.0</data>
+  <data key="d8">Toxicological Sciences published a study about the endocrine activity of BPANI liners.</data>
+  <data key="d9">chemical safety,study</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588962</data>
+  <data key="d13"></data>
+</edge>
+<edge source="BPANI" target="Environmental Working Group">
+  <data key="d7">1.0</data>
+  <data key="d8">The Environmental Working Group advises minimizing canned consumption due to concerns around chemical safety.</data>
+  <data key="d9">chemical safety,recommendations</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588969</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Vinolok" target="Vino-Seal">
+  <data key="d7">1.0</data>
+  <data key="d8">Vinolok and Vino-Seal are both glass stopper solutions offering specific sealing benefits.</data>
+  <data key="d9">closure alternatives,glass stopers</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588962</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Frugalpac" target="Frugal Bottle">
+  <data key="d7">1.0</data>
+  <data key="d8">Frugalpac manufactures the Frugal Bottle using recycled paperboard to reduce carbon footprint.</data>
+  <data key="d9">production,sustainability</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588968</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Frugalpac" target="Intertek">
+  <data key="d7">1.0</data>
+  <data key="d8">Frugalpac collaborated with Intertek to conduct a lifecycle assessment of the Frugal Bottle.</data>
+  <data key="d9">collaboration,lifecycle assessment</data>
+  <data key="d10">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588990</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Packamama" target="Flat-Format PET Bottles">
+  <data key="d7">1.0</data>
+  <data key="d8">Packamama's flat-format PET bottles improve storage and transportation efficiency for wine.</data>
+  <data key="d9">logistic efficiency,packaging innovation</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588974</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Packamama" target="Wine Packaging">
+  <data key="d7">1.0</data>
+  <data key="d8">Packamama develops innovative wine packaging solutions focusing on logistic efficiency.</data>
+  <data key="d9">innovative formats,logistic efficiency</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588990</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Intertek" target="Frugal Bottle">
+  <data key="d7">1.0</data>
+  <data key="d8">Intertek assessed and determined the carbon footprint of the Frugal Bottle compared to traditional glass bottles.</data>
+  <data key="d9">carbon footprint,sustainability</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588980</data>
+  <data key="d13"></data>
+</edge>
+<edge source="BIB" target="Wine Packaging">
+  <data key="d7">1.0</data>
+  <data key="d8">BIB, when measured by carbon emissions per liter delivered, is considered among the most sustainable wine packaging options.</data>
+  <data key="d9">low carbon footprint,sustainability</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588985</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Tetra Pak" target="Aseptic Cartons">
+  <data key="d7">1.0</data>
+  <data key="d8">Tetra Pak is a type of aseptic carton providing excellent packaging properties for wine.</data>
+  <data key="d9">composition,packaging</data>
+  <data key="d10">chunk-af38ca1367cf55f446d24669a06d7c24</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588983</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Anton Bekkerman" target="Gary W. Brester">
+  <data key="d7">1.0</data>
+  <data key="d8">Anton Bekkerman and Gary W. Brester co-authored a study on wine price premiums for corks.</data>
+  <data key="d9">co-authorship,research collaboration</data>
+  <data key="d10">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588980</data>
+  <data key="d13"></data>
+</edge>
+<edge source="H. Zhou" target="Cork Taint">
+  <data key="d7">1.0</data>
+  <data key="d8">H. Zhou researched the formation, analysis, and control of cork taint in wines.</data>
+  <data key="d9">analysis,research</data>
+  <data key="d10">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588985</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Oreste Brenna" target="Giovanelli Gabriella">
+  <data key="d7">1.0</data>
+  <data key="d8">Giovanelli Gabriella and Oreste Brenna collaborated on research involving the evolution of certain components in wine.</data>
+  <data key="d9">co-authorship,research collaboration</data>
+  <data key="d10">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588986</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Australian Wine Research Institute" target="Wine Bottle Closures">
+  <data key="d7">1.0</data>
+  <data key="d8">The Australian Wine Research Institute conducts evaluations on wine bottle closures.</data>
+  <data key="d9">evaluation,research</data>
+  <data key="d10">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588985</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Cork Taint" target="Alan Pollnitz">
+  <data key="d7">1.0</data>
+  <data key="d8">Alan Pollnitz researched the occurrence of cork taint across various cork products.</data>
+  <data key="d9">incidence study,research</data>
+  <data key="d10">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588991</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bag-In-Box Wine Packaging" target="Gabriele Scozzafava">
+  <data key="d7">1.0</data>
+  <data key="d8">Gabriele Scozzafava studied consumer perceptions and preferences for bag-in-box wine packaging.</data>
+  <data key="d9">consumer preferences,research</data>
+  <data key="d10">chunk-718581bd1c05d8265dac9ade3977ec1c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775588986</data>
+  <data key="d13"></data>
+</edge>
+</graph></graphml>

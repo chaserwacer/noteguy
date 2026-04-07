@@ -10,8 +10,19 @@ import {
   useMessage,
   type ThreadConfig,
 } from "@assistant-ui/react";
+import type { TextContentPartProps } from "@assistant-ui/react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useNoteStore } from "@/store/useNoteStore";
 import { useNoteGuyRuntime, type SourceNote } from "./useNoteGuyRuntime";
+
+// ── Markdown text renderer for assistant messages ────────────────────────
+
+const MarkdownText: FC<TextContentPartProps> = ({ text }) => (
+  <div className="prose-vault text-sm">
+    <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
+  </div>
+);
 
 // ── Source pills shown below assistant messages ──────────────────────────
 
@@ -112,7 +123,7 @@ const AttachButton: FC = () => {
       <input
         ref={inputRef}
         type="file"
-        accept=".md,.docx"
+        accept=".md,.txt,.docx,.pdf,.pptx,.xlsx,.jpg,.jpeg,.png"
         className="hidden"
         onChange={handleUpload}
       />
@@ -195,7 +206,7 @@ function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentP
       assistantMessage: {
         allowCopy: true,
         allowReload: true,
-        components: { Footer: SourcePills },
+        components: { Text: MarkdownText, Footer: SourcePills },
       },
       composer: { allowAttachments: false },
       strings: {
@@ -222,9 +233,9 @@ function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentP
               <p className="text-[11px] uppercase tracking-[0.12em] text-vault-muted">
                 Note Guy assistant
               </p>
-              <p className="text-sm font-semibold text-vault-text">Assistant UI chat</p>
+              <p className="text-sm font-semibold text-vault-text">LightRAG Chat</p>
               <p className="text-[11px] text-vault-text-secondary">
-                Powered by assistant-ui • Streaming responses
+                Graph-augmented retrieval • Streaming responses
               </p>
             </div>
           </div>

@@ -40,7 +40,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return response.json();
 }
 
-// ── Notes ───────────────────────────────────────────────────────────────────
+// ── Notes ───────��───────────────────────────────────────────────────────────
 
 export function fetchNotes(folderId?: string): Promise<NoteData[]> {
   const query = folderId ? `?folder_id=${folderId}` : "";
@@ -144,7 +144,7 @@ export function restoreNoteVersion(
   });
 }
 
-// ── Chat ────────────────────────────────────────────────────────────────────
+// ── Chat ───────────────────────────────────────���────────────────────────────
 
 export function sendChatMessage(
   message: string,
@@ -156,267 +156,178 @@ export function sendChatMessage(
   });
 }
 
-// ── AI Frameworks ──────────────────────────────────────────────────────────
+// ── Unified AI API ──────��───────────────────────────────────────────────────
 
-export interface AIFrameworkInfo {
+export interface AICapability {
   id: string;
   name: string;
   description: string;
-  capabilities: string[];
-  category: string;
+  icon: string;
 }
 
-export interface AIAskResponse {
-  answer: string;
-  sources?: string[];
-  reasoning?: string;
-  framework: string;
-}
-
-export interface AIAnalysisResponse {
-  category?: string;
-  tags?: Array<{ name: string; confidence: number }>;
-  complexity?: number;
-  summary_sentence?: string;
-  entities?: Array<{ name: string; entity_type: string; context: string }>;
-  key_concepts?: string[];
-  title_suggestion?: string;
-  tldr?: string;
-  key_points?: string[];
-  action_items?: Array<{ task: string; priority: string; deadline?: string }>;
-  related_topics?: string[];
-  framework: string;
-}
-
-export interface AICrewResponse {
-  result: string;
-  framework: string;
-}
-
-export interface AIMemoryResponse {
-  memories: Array<{ memory: string; score?: number; metadata?: Record<string, unknown> }>;
-  framework: string;
-}
-
-export interface AIEnhanceResponse {
-  enhanced_content: string;
-  changes_made: string[];
-  readability_score: number;
-  framework: string;
-}
-
-export interface AIConnectionResponse {
-  connections: Array<{ related_title: string; relationship: string; strength: number }>;
-  suggested_tags: string[];
-  knowledge_gaps: string[];
-  framework: string;
-}
-
-export interface AIRoutingInfo {
-  ollama: { available: boolean; base_url: string; model: string };
-  routing: {
-    light_tasks: string[];
-    heavy_tasks: string[];
-    auto_description: string;
+export interface AIStatusResponse {
+  engine: string;
+  version: string;
+  capabilities: AICapability[];
+  config: {
+    llm_model: string;
+    embedding_model: string;
+    embedding_dimension: number;
+    raganything_available: boolean;
+    raganything_parser: string | null;
   };
-  cloud_models: { openai: string };
 }
 
-export interface AIRoutingMeta {
-  provider_requested: string;
-  provider_used: string;
-  model_used: string;
-  local_inference: boolean;
-  task: string;
+export interface AIQueryResponse {
+  answer: string;
+  mode: string;
 }
 
-export function fetchAIFrameworks(): Promise<{ frameworks: AIFrameworkInfo[] }> {
-  return request("/api/ai/frameworks");
+export interface AIAnalyzeResponse {
+  answer: string;
+  context: string | Record<string, unknown>;
 }
 
-export function fetchAIRoutingInfo(): Promise<AIRoutingInfo> {
-  return request("/api/ai/routing-info");
+export interface AIExtractResponse {
+  query: string;
+  mode: string;
+  context: string | Record<string, unknown>;
+  note_id?: string;
 }
 
-// LangChain
-export function langchainAsk(
+export interface AIKGStatsResponse {
+  entities: number;
+  relations: number;
+}
+
+export interface AIIngestResponse {
+  status: string;
+  note_id?: string;
+  doc_id?: string;
+  title?: string;
+  indexed?: number;
+  skipped?: number;
+  error?: string;
+}
+
+export function fetchAIStatus(): Promise<AIStatusResponse> {
+  return request("/api/ai/status");
+}
+
+export function aiQuery(
   question: string,
-  folderScope?: string,
-  provider = "openai",
-): Promise<AIAskResponse> {
-  return request("/api/ai/langchain/ask", {
+  conversationHistory: { role: string; content: string }[] = [],
+  responseType = "Multiple Paragraphs",
+  topK?: number,
+): Promise<AIQueryResponse> {
+  return request("/api/ai/query", {
     method: "POST",
-    body: JSON.stringify({ question, folder_scope: folderScope, provider }),
+    body: JSON.stringify({
+      question,
+      mode: "hybrid",
+      conversation_history: conversationHistory,
+      response_type: responseType,
+      top_k: topK,
+    }),
   });
 }
 
-// LlamaIndex
-export function llamaIndexQuery(
+export function aiAnalyze(
   question: string,
-  folderScope?: string,
-  provider = "openai",
-): Promise<AIAskResponse> {
-  return request("/api/ai/llama-index/query", {
+  responseType = "Multiple Paragraphs",
+  topK?: number,
+): Promise<AIAnalyzeResponse> {
+  return request("/api/ai/analyze", {
     method: "POST",
-    body: JSON.stringify({ question, folder_scope: folderScope, provider }),
+    body: JSON.stringify({
+      question,
+      response_type: responseType,
+      top_k: topK,
+    }),
   });
 }
 
-// CrewAI
-export function crewaiResearch(
-  question: string,
-  provider = "openai",
-): Promise<AICrewResponse> {
-  return request("/api/ai/crewai/research", {
+export function aiExtract(question: string): Promise<AIExtractResponse> {
+  return request("/api/ai/extract", {
     method: "POST",
-    body: JSON.stringify({ question, provider }),
+    body: JSON.stringify({ question, mode: "local" }),
   });
 }
 
-export function crewaiSummarise(
-  noteId: string,
-  provider = "openai",
-): Promise<AICrewResponse> {
-  return request("/api/ai/crewai/summarise", {
+export function aiExtractNote(noteId: string): Promise<AIExtractResponse> {
+  return request("/api/ai/extract/note", {
     method: "POST",
-    body: JSON.stringify({ note_id: noteId, provider }),
+    body: JSON.stringify({ note_id: noteId }),
   });
 }
 
-export function crewaiWrite(
-  topic: string,
-  provider = "openai",
-): Promise<AICrewResponse> {
-  return request("/api/ai/crewai/write", {
+export function aiIngestNote(noteId: string): Promise<AIIngestResponse> {
+  return request("/api/ai/ingest/note", {
     method: "POST",
-    body: JSON.stringify({ topic, provider }),
+    body: JSON.stringify({ note_id: noteId }),
   });
 }
 
-// DSPy
-export function dspyAsk(
-  question: string,
-  folderScope?: string,
-  provider = "openai",
-): Promise<AIAskResponse> {
-  return request("/api/ai/dspy/ask", {
+export function aiIngestAll(): Promise<AIIngestResponse> {
+  return request("/api/ai/ingest/all", { method: "POST" });
+}
+
+export async function aiIngestDocument(
+  file: File,
+  folderId?: string,
+): Promise<AIIngestResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  if (folderId) formData.append("folder_id", folderId);
+
+  const response = await fetch("/api/ai/ingest/document", {
     method: "POST",
-    body: JSON.stringify({ question, folder_scope: folderScope, provider }),
+    body: formData,
+  });
+  if (!response.ok) {
+    throw new Error(`API error ${response.status}: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+export function aiKGStats(): Promise<AIKGStatsResponse> {
+  return request("/api/ai/kg/stats");
+}
+
+export function aiDeleteDocument(docId: string): Promise<{ status: string }> {
+  return request("/api/ai/kg/document", {
+    method: "DELETE",
+    body: JSON.stringify({ doc_id: docId }),
   });
 }
 
-export function dspySummarise(
-  noteId: string,
-  provider = "openai",
-): Promise<Record<string, string>> {
-  return request("/api/ai/dspy/summarise", {
-    method: "POST",
-    body: JSON.stringify({ note_id: noteId, provider }),
-  });
+// ── Settings API ───────────────────────────────────────────────────────────
+
+export interface AISettingsResponse {
+  llm_model: string;
+  embedding_model: string;
+  embedding_dimension: number;
+  vision_model: string;
+  openai_api_key_set: boolean;
 }
 
-export function dspyTopics(
-  noteId: string,
-  provider = "openai",
-): Promise<Record<string, string>> {
-  return request("/api/ai/dspy/topics", {
-    method: "POST",
-    body: JSON.stringify({ note_id: noteId, provider }),
-  });
+export interface AISettingsUpdate {
+  llm_model?: string;
+  embedding_model?: string;
+  embedding_dimension?: number;
+  vision_model?: string;
+  openai_api_key?: string;
 }
 
-// Instructor
-export function instructorTags(
-  noteId: string,
-  provider = "openai",
-): Promise<AIAnalysisResponse> {
-  return request("/api/ai/instructor/tags", {
-    method: "POST",
-    body: JSON.stringify({ note_id: noteId, provider }),
-  });
+export function fetchAISettings(): Promise<AISettingsResponse> {
+  return request("/api/settings");
 }
 
-export function instructorEntities(
-  noteId: string,
-  provider = "openai",
-): Promise<AIAnalysisResponse> {
-  return request("/api/ai/instructor/entities", {
-    method: "POST",
-    body: JSON.stringify({ note_id: noteId, provider }),
-  });
-}
-
-export function instructorSummary(
-  noteId: string,
-  provider = "openai",
-): Promise<AIAnalysisResponse> {
-  return request("/api/ai/instructor/summary", {
-    method: "POST",
-    body: JSON.stringify({ note_id: noteId, provider }),
-  });
-}
-
-// Mem0
-export function mem0AddMemory(
-  content: string,
-  userId = "default",
-): Promise<{ status: string; framework: string }> {
-  return request("/api/ai/mem0/add", {
-    method: "POST",
-    body: JSON.stringify({ content, user_id: userId }),
-  });
-}
-
-export function mem0Search(
-  query: string,
-  userId = "default",
-  limit = 5,
-): Promise<AIMemoryResponse> {
-  return request("/api/ai/mem0/search", {
-    method: "POST",
-    body: JSON.stringify({ query, user_id: userId, limit }),
-  });
-}
-
-export function mem0Chat(
-  message: string,
-  userId = "default",
-  provider = "openai",
-): Promise<{ answer: string; memories_used: unknown[]; framework: string }> {
-  return request("/api/ai/mem0/chat", {
-    method: "POST",
-    body: JSON.stringify({ message, user_id: userId, provider }),
-  });
-}
-
-// PydanticAI
-export function pydanticAiAsk(
-  question: string,
-  folderScope?: string,
-  provider = "openai",
-): Promise<AIAskResponse & { confidence: number; follow_up_questions: string[] }> {
-  return request("/api/ai/pydantic-ai/ask", {
-    method: "POST",
-    body: JSON.stringify({ question, folder_scope: folderScope, provider }),
-  });
-}
-
-export function pydanticAiEnhance(
-  noteId: string,
-  provider = "openai",
-): Promise<AIEnhanceResponse> {
-  return request("/api/ai/pydantic-ai/enhance", {
-    method: "POST",
-    body: JSON.stringify({ note_id: noteId, provider }),
-  });
-}
-
-export function pydanticAiConnections(
-  noteId: string,
-  provider = "openai",
-): Promise<AIConnectionResponse> {
-  return request("/api/ai/pydantic-ai/connections", {
-    method: "POST",
-    body: JSON.stringify({ note_id: noteId, provider }),
+export function updateAISettings(
+  body: AISettingsUpdate,
+): Promise<AISettingsResponse> {
+  return request("/api/settings", {
+    method: "PUT",
+    body: JSON.stringify(body),
   });
 }
