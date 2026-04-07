@@ -6,7 +6,7 @@ retrieval, providing richer answers that leverage entity relationships.
 
 from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -37,10 +37,13 @@ async def chat(body: ChatRequest):
     from app.ingestion_tracker import ensure_all_indexed
 
     await ensure_all_indexed()
-    answer = await query(
-        question=body.message,
-        mode="hybrid",
-    )
+    try:
+        answer = await query(
+            question=body.message,
+            mode="hybrid",
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     return ChatResponse(answer=answer, sources=[])
 
 
@@ -50,7 +53,11 @@ async def chat_stream(body: ChatStreamRequest):
     from app.ai.lightrag_service import query_stream
     from app.ingestion_tracker import ensure_all_indexed
 
-    await ensure_all_indexed()
+    try:
+        await ensure_all_indexed()
+    except Exception:
+        pass  # query_stream will handle errors via SSE events
+
     return StreamingResponse(
         query_stream(
             question=body.message,

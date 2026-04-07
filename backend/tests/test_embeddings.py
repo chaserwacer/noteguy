@@ -17,7 +17,6 @@ if str(_BACKEND_ROOT) not in sys.path:
 from app.embeddings import (
     OllamaEmbeddingProvider,
     OpenAIEmbeddingProvider,
-    FallbackEmbeddingProvider,
     _normalize_provider_name,
     get_embedding_model_name,
     get_embedding_provider,
@@ -50,14 +49,21 @@ class TestNormalizeProviderName:
 
 
 class TestEmbeddingConfigHelpers:
-    def test_get_embedding_model_name_uses_primary_provider(self, monkeypatch):
+    def test_get_embedding_model_name_ollama(self, monkeypatch):
         monkeypatch.setenv("EMBEDDING_PROVIDER", "ollama")
         monkeypatch.setenv("EMBEDDING_OLLAMA_MODEL", "all-minilm")
+        monkeypatch.setattr("app.config._load_user_overrides", lambda: {})
+        # Clear via the live module reference (survives reloads from other tests)
+        import app.config
+        app.config.get_settings.cache_clear()
         assert get_embedding_model_name() == "all-minilm"
 
     def test_get_embedding_model_name_openai(self, monkeypatch):
         monkeypatch.setenv("EMBEDDING_PROVIDER", "openai")
         monkeypatch.setenv("EMBEDDING_OPENAI_MODEL", "text-embedding-3-large")
+        monkeypatch.setattr("app.config._load_user_overrides", lambda: {})
+        import app.config
+        app.config.get_settings.cache_clear()
         assert get_embedding_model_name() == "text-embedding-3-large"
 
 
@@ -251,50 +257,3 @@ class TestOpenAIEmbeddingProvider:
             result = provider.embed_query("hello")
 
         assert result == [0.5, 0.6]
-
-
-# ── Fallback provider ──────────────────────────────────────────────────────
-
-
-class TestFallbackEmbeddingProvider:
-    def test_uses_primary_when_it_succeeds(self):
-        primary = MagicMock()
-        primary.embed.return_value = [[0.1, 0.2]]
-        fallback = MagicMock()
-
-        provider = FallbackEmbeddingProvider(primary=primary, fallback=fallback)
-        result = provider.embed(["test"])
-
-        assert result == [[0.1, 0.2]]
-        primary.embed.assert_called_once()
-        fallback.embed.assert_not_called()
-
-    def test_falls_back_on_primary_failure(self):
-        primary = MagicMock()
-        primary.embed.side_effect = RuntimeError("Ollama down")
-        fallback = MagicMock()
-        fallback.embed.return_value = [[0.3, 0.4]]
-
-        provider = FallbackEmbeddingProvider(primary=primary, fallback=fallback)
-        result = provider.embed(["test"])
-
-        assert result == [[0.3, 0.4]]
-
-    def test_raises_when_no_fallback_and_primary_fails(self):
-        primary = MagicMock()
-        primary.embed.side_effect = RuntimeError("Ollama down")
-
-        provider = FallbackEmbeddingProvider(primary=primary, fallback=None)
-        with pytest.raises(RuntimeError, match="Ollama down"):
-            provider.embed(["test"])
-
-    def test_embed_query_uses_fallback_chain(self):
-        primary = MagicMock()
-        primary.embed.side_effect = RuntimeError("fail")
-        fallback = MagicMock()
-        fallback.embed.return_value = [[0.7, 0.8]]
-
-        provider = FallbackEmbeddingProvider(primary=primary, fallback=fallback)
-        result = provider.embed_query("test")
-
-        assert result == [0.7, 0.8]

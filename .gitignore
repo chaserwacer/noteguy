@@ -59,3 +59,7 @@ coverage/
 
 claude_prompts/
 
+backend/lightrag_data/
+lightrag_data/
+backend/lightrag_data/*
+backend/lightrag_data/graph_chunk_entity_relation.graphml

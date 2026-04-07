@@ -1,7 +1,8 @@
 """Pluggable embedding provider abstraction.
 
 Supports local Ollama embeddings and OpenAI embeddings behind one interface.
-The active provider and fallback behavior are controlled via configuration.
+The active provider is controlled via the ``embedding_provider`` setting.
+There is no fallback — if the chosen provider fails the error is surfaced.
 """
 
 from abc import ABC, abstractmethod
@@ -117,33 +118,6 @@ class OllamaEmbeddingProvider(EmbeddingProvider):
         return self.embed([text])[0]
 
 
-class FallbackEmbeddingProvider(EmbeddingProvider):
-    """Primary provider with optional fallback on failure."""
-
-    def __init__(
-        self,
-        primary: EmbeddingProvider,
-        fallback: EmbeddingProvider | None,
-    ):
-        self._primary = primary
-        self._fallback = fallback
-
-    def embed(self, texts: list[str]) -> list[list[float]]:
-        try:
-            return self._primary.embed(texts)
-        except Exception as exc:
-            if self._fallback is None:
-                raise
-            logger.warning(
-                "Primary embedding provider failed; using fallback provider",
-                exc_info=exc,
-            )
-            return self._fallback.embed(texts)
-
-    def embed_query(self, text: str) -> list[float]:
-        return self.embed([text])[0]
-
-
 def _build_provider(provider_name: str) -> EmbeddingProvider:
     settings = get_settings()
     normalized = _normalize_provider_name(provider_name)
@@ -163,13 +137,7 @@ def _build_provider(provider_name: str) -> EmbeddingProvider:
 
 @lru_cache
 def get_embedding_provider() -> EmbeddingProvider:
-    """Return the singleton embedding provider with optional fallback."""
+    """Return the singleton embedding provider (no fallback)."""
     settings = get_settings()
     primary_name = _normalize_provider_name(settings.embedding_provider)
-    primary = _build_provider(primary_name)
-    fallback = None
-    if settings.embedding_allow_fallback:
-        fallback_name = _normalize_provider_name(settings.embedding_fallback_provider)
-        if fallback_name != primary_name:
-            fallback = _build_provider(fallback_name)
-    return FallbackEmbeddingProvider(primary=primary, fallback=fallback)
+    return _build_provider(primary_name)

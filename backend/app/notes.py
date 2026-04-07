@@ -33,10 +33,10 @@ def _mark_dirty(note_id: str) -> None:
     mark_dirty(note_id)
 
 
-def _bg_remove_chunks(note_id: str) -> None:
-    """Remove all LightRAG data for a deleted note."""
-    from app.ingestion import remove_note_chunks
-    remove_note_chunks(note_id)
+async def _bg_remove_chunks(note_id: str) -> None:
+    """Remove all LightRAG data for a deleted note (async to share event loop)."""
+    from app.ingestion import remove_note_chunks_async
+    await remove_note_chunks_async(note_id)
 
 
 def _bg_git_commit_batched(abs_path_str: str, message: str) -> None:

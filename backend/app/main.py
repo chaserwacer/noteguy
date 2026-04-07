@@ -17,6 +17,7 @@ from app.history import router as history_router
 from app.ingestion import router as ingestion_router
 from app.context import router as context_router
 from app.ai.router import router as ai_router
+from app.settings_api import router as settings_router
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +85,7 @@ app.include_router(history_router)
 app.include_router(ingestion_router)
 app.include_router(context_router)
 app.include_router(ai_router)
+app.include_router(settings_router)
 
 
 @app.get("/health")

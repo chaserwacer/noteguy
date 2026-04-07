@@ -16,6 +16,14 @@ echo "Starting NoteGuy development servers..."
   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ) &
 
+echo "[backend] Waiting for health endpoint..."
+for i in $(seq 1 60); do
+  if curl -fsS "http://127.0.0.1:8000/health" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.5
+done
+
 # Frontend
 (
   cd "$ROOT_DIR/frontend"

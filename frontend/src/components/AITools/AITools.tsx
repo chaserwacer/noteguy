@@ -265,10 +265,8 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
           <div className="space-y-0.5">
             <p className="text-sm font-semibold text-vault-text">NoteGuy AI</p>
             <p className="text-[11px] text-vault-text-secondary">
-              Powered by LightRAG
-              {status?.config.raganything_available && " + RAG-Anything"}
-              {" "}
-              &middot; {status?.config.llm_model ?? "loading..."}
+              {status?.config.llm_provider ?? "..."} &middot;{" "}
+              {status?.config.llm_model ?? "loading..."}
               {kgStats && (
                 <span className="ml-2 text-vault-accent">
                   {kgStats.entities} entities &middot; {kgStats.relations} relations

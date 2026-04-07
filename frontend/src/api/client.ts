@@ -172,7 +172,9 @@ export interface AIStatusResponse {
   version: string;
   capabilities: AICapability[];
   config: {
+    llm_provider: string;
     llm_model: string;
+    embedding_provider: string;
     embedding_model: string;
     embedding_dimension: number;
     query_mode: string;
@@ -305,5 +307,45 @@ export function aiDeleteDocument(docId: string): Promise<{ status: string }> {
   return request("/api/ai/kg/document", {
     method: "DELETE",
     body: JSON.stringify({ doc_id: docId }),
+  });
+}
+
+// ── Settings API ───────────────────────────────────────────────────────────
+
+export interface AISettingsResponse {
+  llm_provider: string;
+  llm_model: string;
+  embedding_provider: string;
+  embedding_model: string;
+  embedding_dimension: number;
+  vision_model: string;
+  openai_api_key_set: boolean;
+  ollama_base_url: string;
+  ollama_model: string;
+}
+
+export interface AISettingsUpdate {
+  llm_provider?: string;
+  llm_model?: string;
+  embedding_provider?: string;
+  embedding_openai_model?: string;
+  embedding_ollama_model?: string;
+  embedding_dimension?: number;
+  vision_model?: string;
+  openai_api_key?: string;
+  ollama_base_url?: string;
+  ollama_model?: string;
+}
+
+export function fetchAISettings(): Promise<AISettingsResponse> {
+  return request("/api/settings");
+}
+
+export function updateAISettings(
+  body: AISettingsUpdate,
+): Promise<AISettingsResponse> {
+  return request("/api/settings", {
+    method: "PUT",
+    body: JSON.stringify(body),
   });
 }

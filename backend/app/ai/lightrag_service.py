@@ -3,6 +3,10 @@
 Provides a singleton async LightRAG instance that builds a knowledge graph
 from note content, supporting hybrid (local + global) queries with entity
 and relationship extraction.
+
+The LLM and embedding providers are determined by the ``llm_provider`` and
+``embedding_provider`` settings.  No fallback is attempted — provider errors
+are surfaced to the caller.
 """
 
 from __future__ import annotations
@@ -13,9 +17,11 @@ import logging
 from pathlib import Path
 from typing import AsyncGenerator, Optional
 
+import httpx
 import numpy as np
+from openai import AsyncOpenAI
 from lightrag import LightRAG, QueryParam
-from lightrag.llm.openai import openai_complete_if_cache, openai_embed
+from lightrag.llm.openai import openai_complete_if_cache
 from lightrag.utils import EmbeddingFunc
 
 from app.config import get_settings
@@ -26,40 +32,200 @@ _rag_instance: LightRAG | None = None
 _rag_lock = asyncio.Lock()
 
 
+def _normalize_embedding_texts(texts: object) -> list[str]:
+    """Normalize embedding inputs to a stable list of strings.
+
+    LightRAG can pass values that are not strictly ``list[str]`` in some
+    query/index paths. Normalizing to strings avoids provider-specific parsing
+    differences that can produce vector count mismatches.
+    """
+    if isinstance(texts, str):
+        return [texts]
+    if isinstance(texts, np.ndarray):
+        texts = texts.tolist()
+    if isinstance(texts, tuple):
+        texts = list(texts)
+    if not isinstance(texts, list):
+        return ["" if texts is None else str(texts)]
+
+    normalized: list[str] = []
+    for item in texts:
+        if item is None:
+            normalized.append("")
+        elif isinstance(item, str):
+            normalized.append(item)
+        elif isinstance(item, (dict, list, tuple, np.ndarray)):
+            normalized.append(json.dumps(item, ensure_ascii=False, default=str))
+        else:
+            normalized.append(str(item))
+    return normalized
+
+
+# ── Provider-aware builders ─────────────────────────────────────────────────
+
+
+async def _ollama_llm_complete(
+    model: str,
+    base_url: str,
+    prompt: str,
+    system_prompt: str | None = None,
+    history_messages: list[dict] | None = None,
+    **kwargs,
+) -> str:
+    """Call the Ollama ``/api/chat`` endpoint directly."""
+    messages: list[dict] = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    for msg in (history_messages or []):
+        messages.append(msg)
+    messages.append({"role": "user", "content": prompt})
+
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        resp = await client.post(
+            f"{base_url.rstrip('/')}/api/chat",
+            json={"model": model, "messages": messages, "stream": False},
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    return data.get("message", {}).get("content", "")
+
+
+async def _ollama_embed(
+    texts: object,
+    model: str,
+    base_url: str,
+    timeout: float = 30.0,
+) -> np.ndarray:
+    """Call the Ollama ``/api/embed`` endpoint and return a numpy array.
+
+    Sends each text individually to guarantee a 1:1 mapping between input
+    texts and output vectors.  Some Ollama models return multiple embeddings
+    per input when batched, which breaks LightRAG's vector count assertion.
+    """
+    normalized_texts = _normalize_embedding_texts(texts)
+    url = f"{base_url.rstrip('/')}/api/embed"
+    embeddings: list[list[float]] = []
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        for text in normalized_texts:
+            resp = await client.post(
+                url,
+                json={"model": model, "input": text},
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            vecs = data["embeddings"]
+            if len(vecs) == 1:
+                embeddings.append(vecs[0])
+            else:
+                # Model returned multiple vectors for one text — average them.
+                embeddings.append(np.mean(vecs, axis=0).tolist())
+    return np.array(embeddings, dtype=np.float32)
+
+
+async def _openai_embed(
+    texts: object,
+    model: str,
+    api_key: str,
+) -> np.ndarray:
+    """Embed texts with OpenAI and enforce 1:1 input-to-vector cardinality."""
+    normalized_texts = _normalize_embedding_texts(texts)
+    if not normalized_texts:
+        return np.array([], dtype=np.float32)
+
+    client = AsyncOpenAI(api_key=api_key)
+    response = await client.embeddings.create(model=model, input=normalized_texts)
+    vectors = [item.embedding for item in response.data]
+
+    if len(vectors) != len(normalized_texts):
+        logger.warning(
+            "OpenAI embedding batch cardinality mismatch (inputs=%d, vectors=%d); retrying one-by-one",
+            len(normalized_texts),
+            len(vectors),
+        )
+        vectors = []
+        for text in normalized_texts:
+            single = await client.embeddings.create(model=model, input=[text])
+            if not single.data:
+                raise RuntimeError("OpenAI embedding returned no vectors for single-input retry")
+            vectors.append(single.data[0].embedding)
+
+    return np.array(vectors, dtype=np.float32)
+
+
 def _build_llm_func():
     """Build the LLM completion function for LightRAG entity extraction and query."""
     settings = get_settings()
+    provider = settings.llm_provider.strip().lower()
 
-    async def llm_func(
-        prompt: str,
-        system_prompt: str | None = None,
-        history_messages: list[dict] | None = None,
-        **kwargs,
-    ) -> str:
-        return await openai_complete_if_cache(
-            settings.llm_model,
-            prompt,
-            system_prompt=system_prompt,
-            history_messages=history_messages or [],
-            api_key=settings.openai_api_key,
+    if provider == "ollama":
+        async def llm_func(
+            prompt: str,
+            system_prompt: str | None = None,
+            history_messages: list[dict] | None = None,
             **kwargs,
-        )
+        ) -> str:
+            return await _ollama_llm_complete(
+                model=settings.ollama_model,
+                base_url=settings.ollama_base_url,
+                prompt=prompt,
+                system_prompt=system_prompt,
+                history_messages=history_messages,
+                **kwargs,
+            )
+        return llm_func
 
-    return llm_func
+    if provider == "openai":
+        async def llm_func(
+            prompt: str,
+            system_prompt: str | None = None,
+            history_messages: list[dict] | None = None,
+            **kwargs,
+        ) -> str:
+            return await openai_complete_if_cache(
+                settings.llm_model,
+                prompt,
+                system_prompt=system_prompt,
+                history_messages=history_messages or [],
+                api_key=settings.openai_api_key,
+                **kwargs,
+            )
+        return llm_func
+
+    raise ValueError(f"Unsupported LLM provider: {provider}")
 
 
 def _build_embedding_func() -> EmbeddingFunc:
     """Build the embedding function for LightRAG vector storage."""
     settings = get_settings()
-    return EmbeddingFunc(
-        embedding_dim=settings.embedding_dimension,
-        max_token_size=8192,
-        func=lambda texts: openai_embed(
-            texts,
-            model=settings.embedding_openai_model,
-            api_key=settings.openai_api_key,
-        ),
-    )
+    provider = settings.embedding_provider.strip().lower()
+
+    if provider == "ollama":
+        return EmbeddingFunc(
+            embedding_dim=settings.embedding_dimension,
+            max_token_size=8192,
+            func=lambda texts: _ollama_embed(
+                texts,
+                model=settings.embedding_ollama_model,
+                base_url=settings.ollama_base_url,
+                timeout=settings.embedding_timeout_seconds,
+            ),
+        )
+
+    if provider == "openai":
+        return EmbeddingFunc(
+            embedding_dim=settings.embedding_dimension,
+            max_token_size=8192,
+            func=lambda texts: _openai_embed(
+                texts,
+                model=settings.embedding_openai_model,
+                api_key=settings.openai_api_key,
+            ),
+        )
+
+    raise ValueError(f"Unsupported embedding provider: {provider}")
+
+
+# ── Singleton management ────────────────────────────────────────────────────
 
 
 async def get_lightrag() -> LightRAG:
@@ -97,6 +263,11 @@ async def shutdown_lightrag() -> None:
         await _rag_instance.finalize_storages()
         _rag_instance = None
         logger.info("LightRAG instance shut down")
+
+
+async def reset_lightrag() -> None:
+    """Shut down and discard the current instance so the next call reinitializes."""
+    await shutdown_lightrag()
 
 
 # ── Document insertion ────────────────────────────────────────────────────────
@@ -186,7 +357,14 @@ async def query(
         conversation_history=conversation_history or [],
     )
 
-    result = await rag.aquery(question, param=param)
+    try:
+        result = await rag.aquery(question, param=param)
+    except Exception as exc:
+        logger.error("LightRAG query failed: %s", exc)
+        raise RuntimeError(f"Query failed: {exc}") from exc
+
+    if result is None:
+        raise RuntimeError("Query returned no results — the knowledge graph may be empty.")
     return result
 
 
@@ -200,7 +378,7 @@ async def query_stream(
     """Stream a query response as SSE events.
 
     Yields:
-        SSE-formatted strings with type: text_delta, source_entities, done
+        SSE-formatted strings with type: text_delta, error, done
     """
     settings = get_settings()
     rag = await get_lightrag()
@@ -213,11 +391,25 @@ async def query_stream(
         conversation_history=conversation_history or [],
     )
 
-    response = await rag.aquery(question, param=param)
+    try:
+        response = await rag.aquery(question, param=param)
+    except Exception as exc:
+        logger.error("LightRAG streaming query failed: %s", exc)
+        yield f"data: {json.dumps({'type': 'error', 'message': str(exc)})}\n\n"
+        return
 
-    async for chunk in response:
-        if chunk:
-            yield f"data: {json.dumps({'type': 'text_delta', 'delta': chunk})}\n\n"
+    if response is None:
+        yield f"data: {json.dumps({'type': 'error', 'message': 'Query returned no results — the knowledge graph may be empty.'})}\n\n"
+        return
+
+    try:
+        async for chunk in response:
+            if chunk:
+                yield f"data: {json.dumps({'type': 'text_delta', 'delta': chunk})}\n\n"
+    except Exception as exc:
+        logger.error("Error during stream iteration: %s", exc)
+        yield f"data: {json.dumps({'type': 'error', 'message': str(exc)})}\n\n"
+        return
 
     yield f"data: {json.dumps({'type': 'done'})}\n\n"
 

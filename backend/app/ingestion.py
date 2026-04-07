@@ -2,10 +2,16 @@
 
 These endpoints are retained for backward compatibility with older clients.
 All indexing now targets the LightRAG knowledge graph.
+
+IMPORTANT: All LightRAG operations are async.  Background tasks MUST be async
+functions so FastAPI runs them in the same event loop as the LightRAG singleton.
+Using ``asyncio.run()`` would create a separate event loop and break LightRAG's
+internal worker queues.
 """
 
 import asyncio
 import io
+import logging
 from typing import Optional
 
 from docx import Document as DocxDocument
@@ -16,12 +22,13 @@ from app.database import get_session
 from app.models import Note
 
 router = APIRouter(prefix="/api", tags=["ingestion"])
+logger = logging.getLogger(__name__)
 
 
-# ── Core ingest / remove ─────────────────────────────────────────────────────
+# ── Core ingest / remove (async) ─────────────────────────────────────────────
 
 
-def ingest_note_sync(note_id: str, session: Session) -> int:
+async def ingest_note_async(note_id: str, session: Session) -> int:
     """Index a single note into LightRAG and return 1 when indexed."""
     note = session.get(Note, note_id)
     if not note:
@@ -32,24 +39,45 @@ def ingest_note_sync(note_id: str, session: Session) -> int:
 
     from app.ai.lightrag_service import insert_note
 
-    asyncio.run(
-        insert_note(
-            note_id=note.id,
-            title=note.title,
-            content=note.content,
-        )
+    await insert_note(
+        note_id=note.id,
+        title=note.title,
+        content=note.content,
     )
     return 1
 
 
-def remove_note_chunks(note_id: str) -> None:
+def ingest_note_sync(note_id: str, session: Session) -> int:
+    """Sync wrapper for tests — creates a new event loop.
+
+    Do NOT call from FastAPI request handlers or background tasks.
+    Use :func:`ingest_note_async` instead.
+    """
+    note = session.get(Note, note_id)
+    if not note or not note.content or not note.content.strip():
+        return 0
+
+    from app.ai.lightrag_service import insert_note
+
+    asyncio.run(
+        insert_note(note_id=note.id, title=note.title, content=note.content)
+    )
+    return 1
+
+
+async def remove_note_chunks_async(note_id: str) -> None:
     """Remove all LightRAG knowledge linked to a note ID."""
     from app.ai.lightrag_service import delete_document
 
-    asyncio.run(delete_document(note_id))
+    await delete_document(note_id)
 
 
-def ingest_all_sync(session: Session) -> int:
+def remove_note_chunks(note_id: str) -> None:
+    """Sync wrapper for backward compat — avoid from async contexts."""
+    asyncio.run(remove_note_chunks_async(note_id))
+
+
+async def ingest_all_async(session: Session) -> int:
     """Re-index every note in the vault into LightRAG."""
     from app.ai.lightrag_service import insert_notes_batch
 
@@ -68,6 +96,22 @@ def ingest_all_sync(session: Session) -> int:
     if not payload:
         return 0
 
+    result = await insert_notes_batch(payload)
+    return int(result.get("indexed", 0))
+
+
+def ingest_all_sync(session: Session) -> int:
+    """Sync wrapper for tests — creates a new event loop."""
+    from app.ai.lightrag_service import insert_notes_batch
+
+    notes = session.exec(select(Note)).all()
+    payload = [
+        {"note_id": n.id, "title": n.title, "content": n.content}
+        for n in notes
+        if n.content and n.content.strip()
+    ]
+    if not payload:
+        return 0
     result = asyncio.run(insert_notes_batch(payload))
     return int(result.get("indexed", 0))
 
@@ -100,25 +144,30 @@ def docx_to_markdown(file_bytes: bytes) -> str:
     return "\n\n".join(lines)
 
 
+# ── Async background tasks ───────────────────────────────────────────────────
+
+
+async def _bg_ingest_note(note_id: str) -> None:
+    """Async background task — runs in the same event loop as LightRAG."""
+    from app.database import engine
+
+    with Session(engine) as session:
+        await ingest_note_async(note_id, session)
+
+
+async def _bg_ingest_all() -> None:
+    """Async background task — runs in the same event loop as LightRAG."""
+    from app.database import engine
+
+    with Session(engine) as session:
+        await ingest_all_async(session)
+
+
 # ── API endpoints ────────────────────────────────────────────────────────────
 
 
-def _bg_ingest_note(note_id: str) -> None:
-    """Background task wrapper — opens its own session."""
-    from app.database import engine
-    with Session(engine) as session:
-        ingest_note_sync(note_id, session)
-
-
-def _bg_ingest_all() -> None:
-    """Background task wrapper — opens its own session."""
-    from app.database import engine
-    with Session(engine) as session:
-        ingest_all_sync(session)
-
-
 @router.post("/ingest/note/{note_id}")
-def ingest_note_endpoint(
+async def ingest_note_endpoint(
     note_id: str,
     background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
@@ -132,7 +181,7 @@ def ingest_note_endpoint(
 
 
 @router.post("/ingest/all")
-def ingest_all_endpoint(background_tasks: BackgroundTasks):
+async def ingest_all_endpoint(background_tasks: BackgroundTasks):
     """Trigger a full vault re-index (runs in background)."""
     background_tasks.add_task(_bg_ingest_all)
     return {"status": "queued"}

@@ -1,9 +1,39 @@
-"""Application configuration loaded from environment variables."""
+"""Application configuration loaded from environment variables.
 
+User-facing settings (AI provider, model, API key) can be overridden at
+runtime via the settings API.  Overrides are persisted in a JSON file
+next to the backend package so they survive restarts.
+"""
+
+import json
 from functools import lru_cache
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
+
+_USER_SETTINGS_PATH = Path(__file__).resolve().parent.parent / "user_settings.json"
+
+
+def _load_user_overrides() -> dict:
+    """Read runtime overrides saved by the settings API."""
+    if _USER_SETTINGS_PATH.exists():
+        try:
+            return json.loads(_USER_SETTINGS_PATH.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return {}
+    return {}
+
+
+def save_user_overrides(overrides: dict) -> None:
+    """Persist runtime overrides and invalidate the cached settings."""
+    existing = _load_user_overrides()
+    existing.update(overrides)
+    _USER_SETTINGS_PATH.write_text(
+        json.dumps(existing, indent=2),
+        encoding="utf-8",
+    )
+    # Bust the settings cache so the next call picks up new values.
+    get_settings.cache_clear()
 
 
 class Settings(BaseSettings):
@@ -19,10 +49,11 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2"
 
-    # Embeddings configuration
+    # LLM provider selection — "openai" or "ollama"
+    llm_provider: str = "openai"
+
+    # Embeddings configuration — provider is "openai" or "ollama"
     embedding_provider: str = "openai"
-    embedding_fallback_provider: str = "ollama"
-    embedding_allow_fallback: bool = True
     embedding_timeout_seconds: float = 8.0
     embedding_ollama_model: str = "all-minilm"
     embedding_openai_model: str = "text-embedding-3-large"
@@ -56,5 +87,9 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """Return a cached singleton of the app settings."""
-    return Settings()
+    """Return a cached singleton of the app settings.
+
+    Runtime overrides from ``user_settings.json`` take highest priority
+    (init kwargs beat env vars in pydantic-settings).
+    """
+    return Settings(**_load_user_overrides())

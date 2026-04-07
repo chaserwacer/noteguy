@@ -13,6 +13,22 @@ $backend = Start-Process -NoNewWindow -PassThru -FilePath "python" `
     -ArgumentList "-m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000" `
     -WorkingDirectory "$RootDir\backend"
 
+# Wait for backend readiness to avoid startup proxy ECONNREFUSED noise in Vite.
+$maxAttempts = 60
+$attempt = 0
+while ($attempt -lt $maxAttempts) {
+    try {
+        Invoke-WebRequest -UseBasicParsing -Uri "http://127.0.0.1:8000/health" -TimeoutSec 1 | Out-Null
+        break
+    } catch {
+        Start-Sleep -Milliseconds 500
+        $attempt++
+    }
+}
+if ($attempt -ge $maxAttempts) {
+    Write-Warning "Backend health check timed out after 30 seconds; starting frontend anyway."
+}
+
 # Frontend
 $frontend = Start-Process -NoNewWindow -PassThru -FilePath "npm" `
     -ArgumentList "run dev" `

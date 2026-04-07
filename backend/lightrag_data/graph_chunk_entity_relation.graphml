@@ -1,2 +1,250 @@
 <?xml version='1.0' encoding='utf-8'?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><graph edgedefault="undirected"></graph></graphml>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d13" for="edge" attr.name="truncate" attr.type="string"/>
+<key id="d12" for="edge" attr.name="created_at" attr.type="long"/>
+<key id="d11" for="edge" attr.name="file_path" attr.type="string"/>
+<key id="d10" for="edge" attr.name="source_id" attr.type="string"/>
+<key id="d9" for="edge" attr.name="keywords" attr.type="string"/>
+<key id="d8" for="edge" attr.name="description" attr.type="string"/>
+<key id="d7" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d6" for="node" attr.name="truncate" attr.type="string"/>
+<key id="d5" for="node" attr.name="created_at" attr.type="long"/>
+<key id="d4" for="node" attr.name="file_path" attr.type="string"/>
+<key id="d3" for="node" attr.name="source_id" attr.type="string"/>
+<key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="entity_type" attr.type="string"/>
+<key id="d0" for="node" attr.name="entity_id" attr.type="string"/>
+<graph edgedefault="undirected"><node id="Rochester Institute Of Technology">
+  <data key="d0">Rochester Institute Of Technology</data>
+  <data key="d1">organization</data>
+  <data key="d2">Rochester Institute of Technology is an educational institution referred to in the context of being attended by the speaker.</data>
+  <data key="d3">chunk-7f7a00006e82813911d39ecd59232b6c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586733</data>
+  <data key="d6"></data>
+</node>
+<node id="RIT">
+  <data key="d0">RIT</data>
+  <data key="d1">organization</data>
+  <data key="d2">RIT is a commonly used acronym for Rochester Institute of Technology, the college referred to by the speaker.</data>
+  <data key="d3">chunk-7f7a00006e82813911d39ecd59232b6c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586733</data>
+  <data key="d6"></data>
+</node>
+<node id="Gym">
+  <data key="d0">Gym</data>
+  <data key="d1">concept</data>
+  <data key="d2">The Gym is a place or concept related to physical exercise and fitness routines.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586737</data>
+  <data key="d6"></data>
+</node>
+<node id="Split">
+  <data key="d0">Split</data>
+  <data key="d1">method</data>
+  <data key="d2">Split is a workout method that involves dividing exercises into different sessions based on muscle groups, such as push, pull, and legs.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586737</data>
+  <data key="d6"></data>
+</node>
+<node id="Push">
+  <data key="d0">Push</data>
+  <data key="d1">concept</data>
+  <data key="d2">Push refers to exercises targeting muscle groups responsible for pushing movements, such as the chest, shoulders, and triceps.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586738</data>
+  <data key="d6"></data>
+</node>
+<node id="Pull">
+  <data key="d0">Pull</data>
+  <data key="d1">concept</data>
+  <data key="d2">Pull refers to exercises targeting muscle groups involved in pulling movements, like the back and biceps.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586738</data>
+  <data key="d6"></data>
+</node>
+<node id="Legs">
+  <data key="d0">Legs</data>
+  <data key="d1">concept</data>
+  <data key="d2">Legs refer to exercises focusing on the lower body muscles, including the quadriceps, hamstrings, and calves.</data>
+  <data key="d3">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586738</data>
+  <data key="d6"></data>
+</node>
+<node id="Chase Balmer">
+  <data key="d0">Chase Balmer</data>
+  <data key="d1">person</data>
+  <data key="d2">Chase Balmer is the individual conducting the wine-tasting journal exercise and responsible for writing the tasting notes.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586911</data>
+  <data key="d6"></data>
+</node>
+<node id="Ancient Peaks Cabernet Sauvignon">
+  <data key="d0">Ancient Peaks Cabernet Sauvignon</data>
+  <data key="d1">product</data>
+  <data key="d2">Ancient Peaks Cabernet Sauvignon is a 2021 wine from Paso Robles, California, made in Santa Margarita Ranch with an alcohol content of 14.3%.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586911</data>
+  <data key="d6"></data>
+</node>
+<node id="Bully Hill Vineyards Chardonnay Riesling Fusion">
+  <data key="d0">Bully Hill Vineyards Chardonnay Riesling Fusion</data>
+  <data key="d1">product</data>
+  <data key="d2">Bully Hill Vineyards Chardonnay Riesling Fusion is a non-vintage white wine from the Finger Lakes, composed of 60% Chardonnay and 40% Riesling, with an alcohol content of 11.5%.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586912</data>
+  <data key="d6"></data>
+</node>
+<node id="Paso Robles">
+  <data key="d0">Paso Robles</data>
+  <data key="d1">location</data>
+  <data key="d2">Paso Robles is the wine region in California where Ancient Peaks Cabernet Sauvignon originates.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586914</data>
+  <data key="d6"></data>
+</node>
+<node id="Santa Margarita Ranch">
+  <data key="d0">Santa Margarita Ranch</data>
+  <data key="d1">location</data>
+  <data key="d2">Santa Margarita Ranch is the specific vineyard location in Paso Robles where Ancient Peaks Cabernet Sauvignon is produced.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586914</data>
+  <data key="d6"></data>
+</node>
+<node id="Finger Lakes">
+  <data key="d0">Finger Lakes</data>
+  <data key="d1">location</data>
+  <data key="d2">Finger Lakes is the region associated with producing the Bully Hill Vineyards Chardonnay Riesling Fusion white wine.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586915</data>
+  <data key="d6"></data>
+</node>
+<node id="Prosciutto">
+  <data key="d0">Prosciutto</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Prosciutto is a type of Italian dry-cured ham used as a pairing with the Ancient Peaks Cabernet Sauvignon.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586915</data>
+  <data key="d6"></data>
+</node>
+<node id="Parmesan">
+  <data key="d0">Parmesan</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Parmesan is a type of cheese used as a pairing with the Ancient Peaks Cabernet Sauvignon, which enhanced the tasting experience.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586917</data>
+  <data key="d6"></data>
+</node>
+<node id="MyCourses Assignment">
+  <data key="d0">MyCourses Assignment</data>
+  <data key="d1">content</data>
+  <data key="d2">MyCourses Assignment is the platform to which the tasting journal and notes are submitted as part of Chase Balmer's exercise requirement.</data>
+  <data key="d3">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1775586920</data>
+  <data key="d6"></data>
+</node>
+<edge source="Gym" target="Split">
+  <data key="d7">1.0</data>
+  <data key="d8">The Gym is a setting where the split method is employed, organizing workouts into different exercise sessions.</data>
+  <data key="d9">exercise organization,routine design</data>
+  <data key="d10">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586742</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Split" target="Push">
+  <data key="d7">1.0</data>
+  <data key="d8">Split is a method that includes push exercises to work on specific muscle groups.</data>
+  <data key="d9">muscle targeting,workout schedule</data>
+  <data key="d10">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586743</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Split" target="Pull">
+  <data key="d7">1.0</data>
+  <data key="d8">Split is a method that includes pull exercises targeting particular muscles.</data>
+  <data key="d9">muscle targeting,workout schedule</data>
+  <data key="d10">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586746</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Split" target="Legs">
+  <data key="d7">1.0</data>
+  <data key="d8">Split is a method that incorporates leg exercises focusing on the leg muscles.</data>
+  <data key="d9">muscle targeting,workout schedule</data>
+  <data key="d10">chunk-1b2da2031f49fb375fd8a0bac84319c0</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586748</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Chase Balmer" target="MyCourses Assignment">
+  <data key="d7">1.0</data>
+  <data key="d8">Chase Balmer is tasked with submitting the wine-tasting notes to the MyCourses Assignment section.</data>
+  <data key="d9">educational requirement,submission process</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586923</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Ancient Peaks Cabernet Sauvignon" target="Paso Robles">
+  <data key="d7">1.0</data>
+  <data key="d8">Ancient Peaks Cabernet Sauvignon is produced in Paso Robles, California.</data>
+  <data key="d9">origin,wine production</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586922</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Ancient Peaks Cabernet Sauvignon" target="Santa Margarita Ranch">
+  <data key="d7">1.0</data>
+  <data key="d8">The Ancient Peaks Cabernet Sauvignon is made in Santa Margarita Ranch within Paso Robles.</data>
+  <data key="d9">vineyard production,wine origination</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586926</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Ancient Peaks Cabernet Sauvignon" target="Prosciutto">
+  <data key="d7">1.0</data>
+  <data key="d8">Ancient Peaks Cabernet Sauvignon was paired with prosciutto, mellowing the wine's acidic bite but not significantly elevating the pairing.</data>
+  <data key="d9">tasting notes,wine pairing</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586928</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Ancient Peaks Cabernet Sauvignon" target="Parmesan">
+  <data key="d7">1.0</data>
+  <data key="d8">Ancient Peaks Cabernet Sauvignon was paired with Parmesan cheese, enhancing both the cheese's flavors and mellowing the wine's acidity.</data>
+  <data key="d9">flavor enhancement,wine pairing</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586929</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bully Hill Vineyards Chardonnay Riesling Fusion" target="Finger Lakes">
+  <data key="d7">1.0</data>
+  <data key="d8">Bully Hill Vineyards Chardonnay Riesling Fusion originates from the Finger Lakes region.</data>
+  <data key="d9">origin,wine production</data>
+  <data key="d10">chunk-378d3ee2b820cf13aa99de27f6bd9878</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1775586922</data>
+  <data key="d13"></data>
+</edge>
+</graph></graphml>

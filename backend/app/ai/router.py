@@ -100,6 +100,7 @@ async def ai_status():
     """Return current AI system capabilities and configuration."""
     from app.ai.raganything_service import is_available as ra_available
     from app.config import get_settings
+    from app.embeddings import get_embedding_model_name
 
     settings = get_settings()
 
@@ -139,8 +140,10 @@ async def ai_status():
             },
         ],
         "config": {
+            "llm_provider": settings.llm_provider,
             "llm_model": settings.llm_model,
-            "embedding_model": settings.embedding_openai_model,
+            "embedding_provider": settings.embedding_provider,
+            "embedding_model": get_embedding_model_name(),
             "embedding_dimension": settings.embedding_dimension,
             "query_mode": settings.lightrag_query_mode,
             "raganything_available": ra_available(),
@@ -159,13 +162,16 @@ async def query_endpoint(body: QueryRequest):
     from app.ingestion_tracker import ensure_all_indexed
 
     await ensure_all_indexed()
-    answer = await query(
-        question=body.question,
-        mode=body.mode,
-        conversation_history=body.conversation_history,
-        response_type=body.response_type,
-        top_k=body.top_k,
-    )
+    try:
+        answer = await query(
+            question=body.question,
+            mode=body.mode,
+            conversation_history=body.conversation_history,
+            response_type=body.response_type,
+            top_k=body.top_k,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     return QueryResponse(answer=answer, mode=body.mode)
 
 
@@ -175,7 +181,11 @@ async def query_stream_endpoint(body: StreamQueryRequest):
     from app.ai.lightrag_service import query_stream
     from app.ingestion_tracker import ensure_all_indexed
 
-    await ensure_all_indexed()
+    try:
+        await ensure_all_indexed()
+    except Exception as exc:
+        logger.error("Pre-query indexing failed: %s", exc)
+
     return StreamingResponse(
         query_stream(
             question=body.question,
@@ -234,9 +244,7 @@ async def ingest_all_endpoint(
         result = await insert_notes_batch(note_dicts)
         logger.info("Vault re-index complete: %s", result)
 
-    import asyncio
-
-    background_tasks.add_task(asyncio.run, _bg_ingest())
+    background_tasks.add_task(_bg_ingest)
     return {"status": "queued", "total_notes": len(note_dicts)}
 
 
@@ -297,6 +305,10 @@ async def ingest_document_endpoint(
         from app.notes import _write_note_file
         _write_note_file(note, session)
 
+        # Always index textual content so DOCX ingestion is resilient even if
+        # optional multimodal parsing fails (e.g., missing LibreOffice).
+        await insert_note(note_id=note.id, title=note.title, content=content)
+
         # If RAG-Anything is available, also process for multimodal entities
         if is_available():
             with tempfile.NamedTemporaryFile(
@@ -308,13 +320,15 @@ async def ingest_document_endpoint(
             async def _bg_process():
                 try:
                     await process_document(tmp_path)
+                except Exception as exc:
+                    logger.error("DOCX multimodal processing failed for %s: %s", file.filename, exc)
                 finally:
-                    os.unlink(tmp_path)
+                    try:
+                        os.unlink(tmp_path)
+                    except OSError:
+                        pass
 
-            import asyncio
-            background_tasks.add_task(asyncio.run, _bg_process())
-        else:
-            result = await insert_note(note_id=note.id, title=note.title, content=content)
+            background_tasks.add_task(_bg_process)
 
         return {"status": "indexed", "note_id": note.id, "title": title}
 
@@ -347,12 +361,15 @@ async def ingest_document_endpoint(
     async def _bg_process_multimodal():
         try:
             await process_document(tmp_path)
+        except Exception as exc:
+            logger.error("Multimodal processing failed for %s: %s", file.filename, exc)
         finally:
-            import os
-            os.unlink(tmp_path)
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
 
-    import asyncio
-    background_tasks.add_task(asyncio.run, _bg_process_multimodal())
+    background_tasks.add_task(_bg_process_multimodal)
 
     return {
         "status": "queued",
@@ -423,11 +440,14 @@ async def analyze_endpoint(body: AnalyzeRequest):
     from app.ingestion_tracker import ensure_all_indexed
 
     await ensure_all_indexed()
-    result = await query_with_context(
-        question=body.question,
-        mode="global",
-        top_k=body.top_k,
-    )
+    try:
+        result = await query_with_context(
+            question=body.question,
+            mode="global",
+            top_k=body.top_k,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     return AnalyzeResponse(
         answer=result["answer"],
         context=result["context"],
