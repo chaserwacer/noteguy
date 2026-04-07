@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect, useRef, type FC } from "react";
 import { useNoteStore } from "@/store/useNoteStore";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   fetchAIStatus,
   aiQuery,
@@ -12,7 +14,6 @@ import {
   aiKGStats,
   type AIStatusResponse,
   type AICapability,
-  type QueryMode,
 } from "@/api/client";
 
 // ── Mode icons ──────────────────────────────────────────────────────────────
@@ -93,7 +94,6 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [queryMode, setQueryMode] = useState<QueryMode>("hybrid");
   const [kgStats, setKgStats] = useState<{ entities: number; relations: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -132,14 +132,14 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
     setError(null);
     setResult(null);
     try {
-      const res = await aiQuery(input.trim(), queryMode);
+      const res = await aiQuery(input.trim());
       setResult(res.answer);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Query failed");
     } finally {
       setLoading(false);
     }
-  }, [input, queryMode]);
+  }, [input]);
 
   const handleAnalyze = useCallback(async () => {
     if (!input.trim()) {
@@ -265,7 +265,6 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
           <div className="space-y-0.5">
             <p className="text-sm font-semibold text-vault-text">NoteGuy AI</p>
             <p className="text-[11px] text-vault-text-secondary">
-              {status?.config.llm_provider ?? "..."} &middot;{" "}
               {status?.config.llm_model ?? "loading..."}
               {kgStats && (
                 <span className="ml-2 text-vault-accent">
@@ -393,19 +392,6 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
                         }
                       }}
                     />
-                    {activeMode === "chat" && (
-                      <select
-                        value={queryMode}
-                        onChange={(e) => setQueryMode(e.target.value as QueryMode)}
-                        className="px-2 py-2 rounded-md bg-vault-bg border border-vault-border text-xs text-vault-text focus:outline-none focus:ring-1 focus:ring-vault-accent"
-                      >
-                        <option value="hybrid">Hybrid</option>
-                        <option value="local">Local</option>
-                        <option value="global">Global</option>
-                        <option value="naive">Naive</option>
-                        <option value="mix">Mix</option>
-                      </select>
-                    )}
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -455,9 +441,15 @@ export default function AITools({ isOpen, onClose }: AIToolsProps) {
               )}
               {result && (
                 <div className="space-y-2">
-                  <pre className="text-xs text-vault-text-secondary whitespace-pre-wrap font-mono bg-vault-bg rounded-md px-4 py-3 overflow-x-auto leading-relaxed">
-                    {result}
-                  </pre>
+                  {result.startsWith("{") || result.startsWith("[") ? (
+                    <pre className="text-xs text-vault-text-secondary whitespace-pre-wrap font-mono bg-vault-bg rounded-md px-4 py-3 overflow-x-auto leading-relaxed">
+                      {result}
+                    </pre>
+                  ) : (
+                    <div className="prose-vault text-sm text-vault-text-secondary bg-vault-bg rounded-md px-4 py-3 overflow-x-auto leading-relaxed">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

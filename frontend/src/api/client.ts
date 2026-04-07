@@ -158,8 +158,6 @@ export function sendChatMessage(
 
 // ── Unified AI API ──────��───────────────────────────────────────────────────
 
-export type QueryMode = "naive" | "local" | "global" | "hybrid" | "mix";
-
 export interface AICapability {
   id: string;
   name: string;
@@ -172,12 +170,9 @@ export interface AIStatusResponse {
   version: string;
   capabilities: AICapability[];
   config: {
-    llm_provider: string;
     llm_model: string;
-    embedding_provider: string;
     embedding_model: string;
     embedding_dimension: number;
-    query_mode: string;
     raganything_available: boolean;
     raganything_parser: string | null;
   };
@@ -221,7 +216,6 @@ export function fetchAIStatus(): Promise<AIStatusResponse> {
 
 export function aiQuery(
   question: string,
-  mode: QueryMode = "hybrid",
   conversationHistory: { role: string; content: string }[] = [],
   responseType = "Multiple Paragraphs",
   topK?: number,
@@ -230,7 +224,7 @@ export function aiQuery(
     method: "POST",
     body: JSON.stringify({
       question,
-      mode,
+      mode: "hybrid",
       conversation_history: conversationHistory,
       response_type: responseType,
       top_k: topK,
@@ -253,13 +247,10 @@ export function aiAnalyze(
   });
 }
 
-export function aiExtract(
-  question: string,
-  mode: QueryMode = "local",
-): Promise<AIExtractResponse> {
+export function aiExtract(question: string): Promise<AIExtractResponse> {
   return request("/api/ai/extract", {
     method: "POST",
-    body: JSON.stringify({ question, mode }),
+    body: JSON.stringify({ question, mode: "local" }),
   });
 }
 
@@ -313,28 +304,19 @@ export function aiDeleteDocument(docId: string): Promise<{ status: string }> {
 // ── Settings API ───────────────────────────────────────────────────────────
 
 export interface AISettingsResponse {
-  llm_provider: string;
   llm_model: string;
-  embedding_provider: string;
   embedding_model: string;
   embedding_dimension: number;
   vision_model: string;
   openai_api_key_set: boolean;
-  ollama_base_url: string;
-  ollama_model: string;
 }
 
 export interface AISettingsUpdate {
-  llm_provider?: string;
   llm_model?: string;
-  embedding_provider?: string;
-  embedding_openai_model?: string;
-  embedding_ollama_model?: string;
+  embedding_model?: string;
   embedding_dimension?: number;
   vision_model?: string;
   openai_api_key?: string;
-  ollama_base_url?: string;
-  ollama_model?: string;
 }
 
 export function fetchAISettings(): Promise<AISettingsResponse> {

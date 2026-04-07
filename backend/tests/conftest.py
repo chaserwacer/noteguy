@@ -25,8 +25,6 @@ def app_modules(monkeypatch: pytest.MonkeyPatch, tmp_path):
 
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path.as_posix()}")
     monkeypatch.setenv("VAULT_PATH", str(vault_path))
-    monkeypatch.setenv("LLM_PROVIDER", "openai")
-    monkeypatch.setenv("EMBEDDING_PROVIDER", "openai")
     monkeypatch.setenv("LIGHTRAG_WORKING_DIR", str(lightrag_dir))
 
     import app.config as config_module
@@ -57,7 +55,6 @@ def app_modules(monkeypatch: pytest.MonkeyPatch, tmp_path):
         importlib.reload(module)
 
     config_module.get_settings.cache_clear()
-    embeddings_module.get_embedding_provider.cache_clear()
     git_service_module._git_service = None
 
     return SimpleNamespace(

@@ -45,24 +45,14 @@ class Settings(BaseSettings):
     backend_port: int = 8000
     vault_path: str = str(Path.home() / "NoteGuy")
 
-    # Ollama local inference
-    ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "llama3.2"
-
-    # LLM provider selection — "openai" or "ollama"
-    llm_provider: str = "openai"
-
-    # Embeddings configuration — provider is "openai" or "ollama"
-    embedding_provider: str = "openai"
-    embedding_timeout_seconds: float = 8.0
-    embedding_ollama_model: str = "all-minilm"
-    embedding_openai_model: str = "text-embedding-3-large"
-    embedding_dimension: int = 3072
-
-    # LLM configuration
+    # LLM configuration (OpenAI)
     llm_model: str = "gpt-4o"
     llm_max_tokens: int = 2048
     vision_model: str = "gpt-4o"
+
+    # Embedding configuration (OpenAI)
+    embedding_model: str = "text-embedding-3-large"
+    embedding_dimension: int = 3072
 
     # LightRAG configuration
     lightrag_working_dir: str = "./lightrag_data"

@@ -4,8 +4,7 @@ Handles parsing and ingestion of PDFs, images, Office documents, and other
 multimodal content. Extends the LightRAG knowledge graph with entities
 extracted from tables, figures, and equations.
 
-The vision / LLM provider is determined by the ``llm_provider`` setting.
-No fallback is attempted — provider errors are surfaced to the caller.
+Uses the OpenAI API for vision and LLM completions.
 """
 
 from __future__ import annotations
@@ -16,7 +15,7 @@ from pathlib import Path
 from typing import Optional
 
 from app.config import get_settings
-from app.ai.lightrag_service import get_lightrag, _ollama_llm_complete
+from app.ai.lightrag_service import get_lightrag
 
 logger = logging.getLogger(__name__)
 
@@ -25,88 +24,63 @@ _rag_anything_lock = asyncio.Lock()
 
 
 async def _build_vision_model_func():
-    """Build the vision model function for multimodal content analysis."""
-    settings = get_settings()
-    provider = settings.llm_provider.strip().lower()
+    """Build the OpenAI vision model function for multimodal content analysis."""
+    from lightrag.llm.openai import openai_complete_if_cache
 
-    if provider == "ollama":
-        async def vision_func(
-            prompt: str,
-            system_prompt: str | None = None,
-            history_messages: list[dict] | None = None,
-            image_data: str | None = None,
-            messages: list | None = None,
-            **kwargs,
-        ) -> str:
-            # Ollama vision models accept images via the /api/chat endpoint
-            # with base64 image data. For text-only, use standard chat.
-            return await _ollama_llm_complete(
-                model=settings.vision_model if (image_data or messages) else settings.ollama_model,
-                base_url=settings.ollama_base_url,
-                prompt=prompt,
+    settings = get_settings()
+
+    async def vision_func(
+        prompt: str,
+        system_prompt: str | None = None,
+        history_messages: list[dict] | None = None,
+        image_data: str | None = None,
+        messages: list | None = None,
+        **kwargs,
+    ) -> str:
+        if messages:
+            return await openai_complete_if_cache(
+                settings.vision_model,
+                "",
                 system_prompt=system_prompt,
-                history_messages=history_messages,
+                history_messages=[],
+                messages=messages,
+                api_key=settings.openai_api_key,
                 **kwargs,
             )
-        return vision_func
-
-    if provider == "openai":
-        from lightrag.llm.openai import openai_complete_if_cache
-
-        async def vision_func(
-            prompt: str,
-            system_prompt: str | None = None,
-            history_messages: list[dict] | None = None,
-            image_data: str | None = None,
-            messages: list | None = None,
-            **kwargs,
-        ) -> str:
-            if messages:
-                return await openai_complete_if_cache(
-                    settings.vision_model,
-                    "",
-                    system_prompt=system_prompt,
-                    history_messages=[],
-                    messages=messages,
-                    api_key=settings.openai_api_key,
-                    **kwargs,
-                )
-            elif image_data:
-                img_messages = [
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompt},
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:image/jpeg;base64,{image_data}"
-                                },
+        elif image_data:
+            img_messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{image_data}"
                             },
-                        ],
-                    }
-                ]
-                return await openai_complete_if_cache(
-                    settings.vision_model,
-                    "",
-                    system_prompt=system_prompt,
-                    history_messages=[],
-                    messages=img_messages,
-                    api_key=settings.openai_api_key,
-                    **kwargs,
-                )
-            else:
-                return await openai_complete_if_cache(
-                    settings.llm_model,
-                    prompt,
-                    system_prompt=system_prompt,
-                    history_messages=history_messages or [],
-                    api_key=settings.openai_api_key,
-                    **kwargs,
-                )
-        return vision_func
-
-    raise ValueError(f"Unsupported LLM provider: {provider}")
+                        },
+                    ],
+                }
+            ]
+            return await openai_complete_if_cache(
+                settings.vision_model,
+                "",
+                system_prompt=system_prompt,
+                history_messages=[],
+                messages=img_messages,
+                api_key=settings.openai_api_key,
+                **kwargs,
+            )
+        else:
+            return await openai_complete_if_cache(
+                settings.llm_model,
+                prompt,
+                system_prompt=system_prompt,
+                history_messages=history_messages or [],
+                api_key=settings.openai_api_key,
+                **kwargs,
+            )
+    return vision_func
 
 
 async def get_raganything():

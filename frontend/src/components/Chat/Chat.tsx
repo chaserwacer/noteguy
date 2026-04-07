@@ -10,8 +10,19 @@ import {
   useMessage,
   type ThreadConfig,
 } from "@assistant-ui/react";
+import type { TextContentPartProps } from "@assistant-ui/react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useNoteStore } from "@/store/useNoteStore";
 import { useNoteGuyRuntime, type SourceNote } from "./useNoteGuyRuntime";
+
+// ── Markdown text renderer for assistant messages ────────────────────────
+
+const MarkdownText: FC<TextContentPartProps> = ({ text }) => (
+  <div className="prose-vault text-sm">
+    <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
+  </div>
+);
 
 // ── Source pills shown below assistant messages ──────────────────────────
 
@@ -195,7 +206,7 @@ function ChatContent({ isExpanded, onExpand, onCollapse, onClose }: ChatContentP
       assistantMessage: {
         allowCopy: true,
         allowReload: true,
-        components: { Footer: SourcePills },
+        components: { Text: MarkdownText, Footer: SourcePills },
       },
       composer: { allowAttachments: false },
       strings: {

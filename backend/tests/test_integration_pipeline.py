@@ -47,8 +47,6 @@ def integration_modules(monkeypatch, tmp_path):
 
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path.as_posix()}")
     monkeypatch.setenv("VAULT_PATH", str(vault_path))
-    monkeypatch.setenv("LLM_PROVIDER", "openai")
-    monkeypatch.setenv("EMBEDDING_PROVIDER", "openai")
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     monkeypatch.setenv("LIGHTRAG_WORKING_DIR", str(lightrag_dir))
 
@@ -78,7 +76,6 @@ def integration_modules(monkeypatch, tmp_path):
         importlib.reload(module)
 
     config_module.get_settings.cache_clear()
-    embeddings_module.get_embedding_provider.cache_clear()
     git_service_module._git_service = None
 
     return SimpleNamespace(

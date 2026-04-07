@@ -9,7 +9,6 @@ Using ``asyncio.run()`` would create a separate event loop and break LightRAG's
 internal worker queues.
 """
 
-import asyncio
 import io
 import logging
 from typing import Optional
@@ -47,34 +46,11 @@ async def ingest_note_async(note_id: str, session: Session) -> int:
     return 1
 
 
-def ingest_note_sync(note_id: str, session: Session) -> int:
-    """Sync wrapper for tests — creates a new event loop.
-
-    Do NOT call from FastAPI request handlers or background tasks.
-    Use :func:`ingest_note_async` instead.
-    """
-    note = session.get(Note, note_id)
-    if not note or not note.content or not note.content.strip():
-        return 0
-
-    from app.ai.lightrag_service import insert_note
-
-    asyncio.run(
-        insert_note(note_id=note.id, title=note.title, content=note.content)
-    )
-    return 1
-
-
 async def remove_note_chunks_async(note_id: str) -> None:
     """Remove all LightRAG knowledge linked to a note ID."""
     from app.ai.lightrag_service import delete_document
 
     await delete_document(note_id)
-
-
-def remove_note_chunks(note_id: str) -> None:
-    """Sync wrapper for backward compat — avoid from async contexts."""
-    asyncio.run(remove_note_chunks_async(note_id))
 
 
 async def ingest_all_async(session: Session) -> int:
@@ -97,22 +73,6 @@ async def ingest_all_async(session: Session) -> int:
         return 0
 
     result = await insert_notes_batch(payload)
-    return int(result.get("indexed", 0))
-
-
-def ingest_all_sync(session: Session) -> int:
-    """Sync wrapper for tests — creates a new event loop."""
-    from app.ai.lightrag_service import insert_notes_batch
-
-    notes = session.exec(select(Note)).all()
-    payload = [
-        {"note_id": n.id, "title": n.title, "content": n.content}
-        for n in notes
-        if n.content and n.content.strip()
-    ]
-    if not payload:
-        return 0
-    result = asyncio.run(insert_notes_batch(payload))
     return int(result.get("indexed", 0))
 
 

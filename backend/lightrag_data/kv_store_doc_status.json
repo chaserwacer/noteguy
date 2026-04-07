@@ -83,5 +83,29 @@
       "processing_start_time": 1775586892,
       "processing_end_time": 1775586931
     }
+  },
+  "f20f8dda75154a4e9d2ea737feca3aaa": {
+    "status": "processed",
+    "chunks_count": 8,
+    "chunks_list": [
+      "chunk-08f3f1c8d96e46fade5e0b44bfa52840",
+      "chunk-f2eb65b8154604ecd58b709ac758de03",
+      "chunk-ca4e8a21b5cc7aa7758c6cb466cdece6",
+      "chunk-8bf37b81d72a72b3c8a73e22a2f838b6",
+      "chunk-ac0e75f96cf1cbcd7ee3984694c2f9ed",
+      "chunk-af38ca1367cf55f446d24669a06d7c24",
+      "chunk-50be575105a383ed5c7c44e084f7f5df",
+      "chunk-718581bd1c05d8265dac9ade3977ec1c"
+    ],
+    "content_summary": "# Wine_Packaging_Methods_Academic_Report\n\n\n\nWine Packaging Methods and Their Impacts\n\nPreservation, Sensory Quality, Economics, and Sustainability\n\nA Comprehensive Academic Review\n\n\n\nPrepared March 2026\n\nGraduate Research Report\n\n\n\n# Table of Content...",
+    "content_length": 43365,
+    "created_at": "2026-04-07T19:03:04.851168+00:00",
+    "updated_at": "2026-04-07T19:09:52.211989+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260407_150304_ccafc94f",
+    "metadata": {
+      "processing_start_time": 1775588584,
+      "processing_end_time": 1775588992
+    }
   }
 }

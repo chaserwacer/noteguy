@@ -4,9 +4,7 @@ Provides a singleton async LightRAG instance that builds a knowledge graph
 from note content, supporting hybrid (local + global) queries with entity
 and relationship extraction.
 
-The LLM and embedding providers are determined by the ``llm_provider`` and
-``embedding_provider`` settings.  No fallback is attempted — provider errors
-are surfaced to the caller.
+Uses the OpenAI API for both LLM completions and embeddings.
 """
 
 from __future__ import annotations
@@ -17,7 +15,6 @@ import logging
 from pathlib import Path
 from typing import AsyncGenerator, Optional
 
-import httpx
 import numpy as np
 from openai import AsyncOpenAI
 from lightrag import LightRAG, QueryParam
@@ -61,65 +58,7 @@ def _normalize_embedding_texts(texts: object) -> list[str]:
     return normalized
 
 
-# ── Provider-aware builders ─────────────────────────────────────────────────
-
-
-async def _ollama_llm_complete(
-    model: str,
-    base_url: str,
-    prompt: str,
-    system_prompt: str | None = None,
-    history_messages: list[dict] | None = None,
-    **kwargs,
-) -> str:
-    """Call the Ollama ``/api/chat`` endpoint directly."""
-    messages: list[dict] = []
-    if system_prompt:
-        messages.append({"role": "system", "content": system_prompt})
-    for msg in (history_messages or []):
-        messages.append(msg)
-    messages.append({"role": "user", "content": prompt})
-
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        resp = await client.post(
-            f"{base_url.rstrip('/')}/api/chat",
-            json={"model": model, "messages": messages, "stream": False},
-        )
-        resp.raise_for_status()
-        data = resp.json()
-    return data.get("message", {}).get("content", "")
-
-
-async def _ollama_embed(
-    texts: object,
-    model: str,
-    base_url: str,
-    timeout: float = 30.0,
-) -> np.ndarray:
-    """Call the Ollama ``/api/embed`` endpoint and return a numpy array.
-
-    Sends each text individually to guarantee a 1:1 mapping between input
-    texts and output vectors.  Some Ollama models return multiple embeddings
-    per input when batched, which breaks LightRAG's vector count assertion.
-    """
-    normalized_texts = _normalize_embedding_texts(texts)
-    url = f"{base_url.rstrip('/')}/api/embed"
-    embeddings: list[list[float]] = []
-    async with httpx.AsyncClient(timeout=timeout) as client:
-        for text in normalized_texts:
-            resp = await client.post(
-                url,
-                json={"model": model, "input": text},
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            vecs = data["embeddings"]
-            if len(vecs) == 1:
-                embeddings.append(vecs[0])
-            else:
-                # Model returned multiple vectors for one text — average them.
-                embeddings.append(np.mean(vecs, axis=0).tolist())
-    return np.array(embeddings, dtype=np.float32)
+# ── OpenAI builders ─────────────────────────────────────────────────────────
 
 
 async def _openai_embed(
@@ -153,76 +92,38 @@ async def _openai_embed(
 
 
 def _build_llm_func():
-    """Build the LLM completion function for LightRAG entity extraction and query."""
+    """Build the OpenAI LLM completion function for LightRAG."""
     settings = get_settings()
-    provider = settings.llm_provider.strip().lower()
 
-    if provider == "ollama":
-        async def llm_func(
-            prompt: str,
-            system_prompt: str | None = None,
-            history_messages: list[dict] | None = None,
+    async def llm_func(
+        prompt: str,
+        system_prompt: str | None = None,
+        history_messages: list[dict] | None = None,
+        **kwargs,
+    ) -> str:
+        return await openai_complete_if_cache(
+            settings.llm_model,
+            prompt,
+            system_prompt=system_prompt,
+            history_messages=history_messages or [],
+            api_key=settings.openai_api_key,
             **kwargs,
-        ) -> str:
-            return await _ollama_llm_complete(
-                model=settings.ollama_model,
-                base_url=settings.ollama_base_url,
-                prompt=prompt,
-                system_prompt=system_prompt,
-                history_messages=history_messages,
-                **kwargs,
-            )
-        return llm_func
-
-    if provider == "openai":
-        async def llm_func(
-            prompt: str,
-            system_prompt: str | None = None,
-            history_messages: list[dict] | None = None,
-            **kwargs,
-        ) -> str:
-            return await openai_complete_if_cache(
-                settings.llm_model,
-                prompt,
-                system_prompt=system_prompt,
-                history_messages=history_messages or [],
-                api_key=settings.openai_api_key,
-                **kwargs,
-            )
-        return llm_func
-
-    raise ValueError(f"Unsupported LLM provider: {provider}")
+        )
+    return llm_func
 
 
 def _build_embedding_func() -> EmbeddingFunc:
-    """Build the embedding function for LightRAG vector storage."""
+    """Build the OpenAI embedding function for LightRAG vector storage."""
     settings = get_settings()
-    provider = settings.embedding_provider.strip().lower()
-
-    if provider == "ollama":
-        return EmbeddingFunc(
-            embedding_dim=settings.embedding_dimension,
-            max_token_size=8192,
-            func=lambda texts: _ollama_embed(
-                texts,
-                model=settings.embedding_ollama_model,
-                base_url=settings.ollama_base_url,
-                timeout=settings.embedding_timeout_seconds,
-            ),
-        )
-
-    if provider == "openai":
-        return EmbeddingFunc(
-            embedding_dim=settings.embedding_dimension,
-            max_token_size=8192,
-            func=lambda texts: _openai_embed(
-                texts,
-                model=settings.embedding_openai_model,
-                api_key=settings.openai_api_key,
-            ),
-        )
-
-    raise ValueError(f"Unsupported embedding provider: {provider}")
+    return EmbeddingFunc(
+        embedding_dim=settings.embedding_dimension,
+        max_token_size=8192,
+        func=lambda texts: _openai_embed(
+            texts,
+            model=settings.embedding_model,
+            api_key=settings.openai_api_key,
+        ),
+    )
 
 
 # ── Singleton management ────────────────────────────────────────────────────

@@ -140,12 +140,9 @@ async def ai_status():
             },
         ],
         "config": {
-            "llm_provider": settings.llm_provider,
             "llm_model": settings.llm_model,
-            "embedding_provider": settings.embedding_provider,
             "embedding_model": get_embedding_model_name(),
             "embedding_dimension": settings.embedding_dimension,
-            "query_mode": settings.lightrag_query_mode,
             "raganything_available": ra_available(),
             "raganything_parser": settings.raganything_parser if ra_available() else None,
         },

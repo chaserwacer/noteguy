@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+import pytest
+from unittest.mock import AsyncMock
 
 from sqlmodel import Session
 
 from app.models import Note
 
 
-def test_ingest_note_sync_calls_lightrag(app_modules, monkeypatch) -> None:
-    """ingest_note_sync should delegate to LightRAG insert_note."""
+@pytest.mark.asyncio
+async def test_ingest_note_async_calls_lightrag(app_modules, monkeypatch) -> None:
+    """ingest_note_async should delegate to LightRAG insert_note."""
     app_modules.database.init_db()
 
     mock_insert = AsyncMock(return_value={"status": "indexed", "doc_id": "test-id"})
@@ -25,7 +27,7 @@ def test_ingest_note_sync_calls_lightrag(app_modules, monkeypatch) -> None:
         session.commit()
         session.refresh(note)
 
-        result = app_modules.ingestion.ingest_note_sync(note.id, session)
+        result = await app_modules.ingestion.ingest_note_async(note.id, session)
 
     assert result == 1
     mock_insert.assert_called_once()
@@ -34,8 +36,9 @@ def test_ingest_note_sync_calls_lightrag(app_modules, monkeypatch) -> None:
     assert call_kwargs[1]["title"] == "Vector test"
 
 
-def test_ingest_note_sync_skips_empty_content(app_modules, monkeypatch) -> None:
-    """ingest_note_sync should return 0 for notes with empty content."""
+@pytest.mark.asyncio
+async def test_ingest_note_async_skips_empty_content(app_modules, monkeypatch) -> None:
+    """ingest_note_async should return 0 for notes with empty content."""
     app_modules.database.init_db()
 
     with Session(app_modules.database.engine) as session:
@@ -44,23 +47,25 @@ def test_ingest_note_sync_skips_empty_content(app_modules, monkeypatch) -> None:
         session.commit()
         session.refresh(note)
 
-        result = app_modules.ingestion.ingest_note_sync(note.id, session)
+        result = await app_modules.ingestion.ingest_note_async(note.id, session)
 
     assert result == 0
 
 
-def test_remove_note_chunks_calls_lightrag_delete(app_modules, monkeypatch) -> None:
-    """remove_note_chunks should delegate to LightRAG delete_document."""
+@pytest.mark.asyncio
+async def test_remove_note_chunks_async_calls_lightrag_delete(app_modules, monkeypatch) -> None:
+    """remove_note_chunks_async should delegate to LightRAG delete_document."""
     mock_delete = AsyncMock(return_value={"status": "deleted", "doc_id": "test-id"})
     monkeypatch.setattr("app.ai.lightrag_service.delete_document", mock_delete)
 
-    app_modules.ingestion.remove_note_chunks("test-id")
+    await app_modules.ingestion.remove_note_chunks_async("test-id")
 
     mock_delete.assert_called_once_with("test-id")
 
 
-def test_ingest_all_sync_batches_notes(app_modules, monkeypatch) -> None:
-    """ingest_all_sync should batch-insert all notes with content."""
+@pytest.mark.asyncio
+async def test_ingest_all_async_batches_notes(app_modules, monkeypatch) -> None:
+    """ingest_all_async should batch-insert all notes with content."""
     app_modules.database.init_db()
 
     mock_batch = AsyncMock(return_value={"indexed": 2, "skipped": 0})
@@ -72,7 +77,7 @@ def test_ingest_all_sync_batches_notes(app_modules, monkeypatch) -> None:
         session.add(Note(title="Empty Note", content=""))
         session.commit()
 
-        result = app_modules.ingestion.ingest_all_sync(session)
+        result = await app_modules.ingestion.ingest_all_async(session)
 
     assert result == 2
     mock_batch.assert_called_once()
