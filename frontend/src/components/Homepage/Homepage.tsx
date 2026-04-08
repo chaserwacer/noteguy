@@ -132,9 +132,10 @@ function PlusIcon({ className = "w-4 h-4" }: { className?: string }) {
 interface HomepageProps {
   onOpenChat: () => void;
   onOpenAITools: () => void;
+  onOpenGraph: () => void;
 }
 
-export default function Homepage({ onOpenChat, onOpenAITools }: HomepageProps) {
+export default function Homepage({ onOpenChat, onOpenAITools, onOpenGraph }: HomepageProps) {
   const notes = useNoteStore((s) => s.notes);
   const folders = useNoteStore((s) => s.folders);
   const setActiveNote = useNoteStore((s) => s.setActiveNote);
@@ -221,7 +222,7 @@ export default function Homepage({ onOpenChat, onOpenAITools }: HomepageProps) {
     { id: "analyze", name: "Analyze", desc: "Cross-document analysis", icon: AnalyzeIcon, action: onOpenAITools },
     { id: "extract", name: "Extract", desc: "Extract entities & relations", icon: ExtractIcon, action: onOpenAITools },
     { id: "ingest", name: "Ingest", desc: "Index notes into knowledge graph", icon: IngestIcon, action: onOpenAITools },
-    { id: "knowledge_graph", name: "Knowledge Graph", desc: "View graph stats & manage", icon: GraphIcon, action: onOpenAITools },
+    { id: "knowledge_graph", name: "Knowledge Graph", desc: "Interactive entity graph view", icon: GraphIcon, action: onOpenGraph },
   ];
 
   return (

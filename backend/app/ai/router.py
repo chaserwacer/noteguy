@@ -454,6 +454,13 @@ async def analyze_endpoint(body: AnalyzeRequest):
 # ── Knowledge graph endpoints ─────────────────────────────────────────────────
 
 
+@router.get("/kg/graph")
+async def kg_graph_endpoint(limit: int = 200):
+    """Export knowledge graph nodes and edges for visualization."""
+    from app.ai.lightrag_service import get_knowledge_graph_data
+    return await get_knowledge_graph_data(limit=limit)
+
+
 @router.get("/kg/stats", response_model=KGStatsResponse)
 async def kg_stats_endpoint():
     """Return knowledge graph statistics."""

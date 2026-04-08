@@ -1,48 +1,68 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNoteStore } from "@/store/useNoteStore";
 import Sidebar from "@/components/Sidebar";
 import Editor from "@/components/Editor";
 import Homepage from "@/components/Homepage";
-import Chat from "@/components/Chat";
-import AITools from "@/components/AITools";
+import AIPanel from "@/components/AIPanel";
 import Settings from "@/components/Settings";
+
+type PanelMode = "chat" | "graph" | "query" | "analyze" | "extract" | "ingest";
 
 export default function Layout() {
   const activeNoteId = useNoteStore((s) => s.activeNoteId);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatExpanded, setChatExpanded] = useState(false);
-  const [aiToolsOpen, setAiToolsOpen] = useState(false);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  const [aiPanelMode, setAiPanelMode] = useState<PanelMode>("chat");
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const openAIPanel = useCallback((mode: PanelMode = "chat") => {
+    setAiPanelMode(mode);
+    setAiPanelOpen(true);
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      // Cmd/Ctrl + Shift + C — toggle chat
+      // Cmd/Ctrl + Shift + C — toggle AI panel (chat mode)
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "C") {
         e.preventDefault();
-        setChatOpen((prev) => !prev);
-        setChatExpanded(false);
+        if (aiPanelOpen && aiPanelMode === "chat") {
+          setAiPanelOpen(false);
+        } else {
+          openAIPanel("chat");
+        }
       }
-      // Cmd/Ctrl + Shift + A — toggle AI tools
+      // Cmd/Ctrl + Shift + A — toggle AI panel (tools mode)
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "A") {
         e.preventDefault();
-        setAiToolsOpen((prev) => !prev);
+        if (aiPanelOpen) {
+          setAiPanelOpen(false);
+        } else {
+          openAIPanel("query");
+        }
+      }
+      // Cmd/Ctrl + Shift + G — toggle AI panel (graph mode)
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "G") {
+        e.preventDefault();
+        if (aiPanelOpen && aiPanelMode === "graph") {
+          setAiPanelOpen(false);
+        } else {
+          openAIPanel("graph");
+        }
       }
       // Cmd/Ctrl + , — open settings
       if ((e.metaKey || e.ctrlKey) && e.key === ",") {
         e.preventDefault();
         setSettingsOpen((prev) => !prev);
       }
-      // Escape to close expanded chat, AI tools, or settings
+      // Escape to close panels
       if (e.key === "Escape") {
         if (settingsOpen) setSettingsOpen(false);
-        else if (aiToolsOpen) setAiToolsOpen(false);
-        else if (chatExpanded) setChatExpanded(false);
+        else if (aiPanelOpen) setAiPanelOpen(false);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [chatExpanded, aiToolsOpen, settingsOpen]);
+  }, [aiPanelOpen, aiPanelMode, settingsOpen, openAIPanel]);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-vault-bg">
@@ -55,28 +75,18 @@ export default function Layout() {
           <Editor />
         ) : (
           <Homepage
-            onOpenChat={() => setChatOpen(true)}
-            onOpenAITools={() => setAiToolsOpen(true)}
+            onOpenChat={() => openAIPanel("chat")}
+            onOpenAITools={() => openAIPanel("query")}
+            onOpenGraph={() => openAIPanel("graph")}
           />
         )}
       </main>
 
-      {/* Chat modal (bottom sheet / fullscreen) */}
-      <Chat
-        isOpen={chatOpen}
-        isExpanded={chatExpanded}
-        onExpand={() => setChatExpanded(true)}
-        onCollapse={() => setChatExpanded(false)}
-        onClose={() => {
-          setChatOpen(false);
-          setChatExpanded(false);
-        }}
-      />
-
-      {/* AI Tools panel (LightRAG + RAG-Anything) */}
-      <AITools
-        isOpen={aiToolsOpen}
-        onClose={() => setAiToolsOpen(false)}
+      {/* Unified AI Panel (Chat + Graph + Tools) */}
+      <AIPanel
+        isOpen={aiPanelOpen}
+        onClose={() => setAiPanelOpen(false)}
+        initialMode={aiPanelMode}
       />
 
       {/* Settings panel */}
@@ -86,7 +96,7 @@ export default function Layout() {
       />
 
       {/* FAB buttons */}
-      {!chatOpen && (
+      {!aiPanelOpen && (
         <div className="fixed bottom-4 right-4 z-30 flex flex-col gap-2">
           {/* Settings button */}
           <button
@@ -101,24 +111,26 @@ export default function Layout() {
             <span className="text-xs font-medium">Settings</span>
           </button>
 
-          {/* AI Tools button */}
+          {/* Knowledge Graph button */}
           <button
-            onClick={() => setAiToolsOpen(true)}
+            onClick={() => openAIPanel("graph")}
             className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-vault-surface border border-vault-border shadow-float text-vault-text-secondary hover:text-vault-text hover:border-vault-border-strong transition-all"
-            title="AI Framework Tools (Ctrl+Shift+A)"
+            title="Knowledge Graph (Ctrl+Shift+G)"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-vault-accent">
-              <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4" />
-              <circle cx="8" cy="8" r="3" />
+              <circle cx="4" cy="4" r="1.5" />
+              <circle cx="12" cy="4" r="1.5" />
+              <circle cx="8" cy="12" r="1.5" />
+              <path d="M5.3 5.2L7 10.5M10.7 5.2L9 10.5M5.5 4h5" />
             </svg>
-            <span className="text-xs font-medium">Tools</span>
+            <span className="text-xs font-medium">Graph</span>
           </button>
 
-          {/* Chat button */}
+          {/* AI Panel button */}
           <button
-            onClick={() => setChatOpen(true)}
+            onClick={() => openAIPanel("chat")}
             className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-vault-surface border border-vault-border shadow-float text-vault-text-secondary hover:text-vault-text hover:border-vault-border-strong transition-all"
-            title="Open AI Chat (Ctrl+Shift+C)"
+            title="AI Panel (Ctrl+Shift+C)"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-vault-accent">
               <path d="M2 3h12v8H5l-3 3V3z" />

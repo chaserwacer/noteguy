@@ -62,3 +62,5 @@ claude_prompts/
 backend/lightrag_data/
 lightrag_data/
 
+user_settings.json
+backend\user_settings.json

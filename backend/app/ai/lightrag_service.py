@@ -392,6 +392,64 @@ async def extract_entities(
     }
 
 
+async def get_knowledge_graph_data(limit: int = 200) -> dict:
+    """Export the knowledge graph as nodes and edges for visualization.
+
+    Returns the top ``limit`` nodes by degree centrality and all edges
+    between them, formatted for a force-directed graph renderer.
+    """
+    rag = await get_lightrag()
+
+    try:
+        graph = rag.chunk_entity_relation_graph
+        if not hasattr(graph, "_graph"):
+            return {"nodes": [], "edges": []}
+
+        g = graph._graph
+
+        all_node_ids = list(g.nodes())
+        if not all_node_ids:
+            return {"nodes": [], "edges": []}
+
+        # Select top nodes by degree when the graph exceeds the limit
+        if len(all_node_ids) <= limit:
+            selected = set(all_node_ids)
+        else:
+            degrees = sorted(g.degree(), key=lambda x: x[1], reverse=True)
+            selected = set(n for n, _ in degrees[:limit])
+
+        degree_map = dict(g.degree())
+
+        nodes = []
+        for nid in selected:
+            attrs = g.nodes[nid]
+            nodes.append({
+                "id": str(nid),
+                "label": str(nid),
+                "type": attrs.get("entity_type", "unknown"),
+                "description": attrs.get("description", ""),
+                "degree": degree_map.get(nid, 0),
+            })
+
+        edges = []
+        edge_id = 0
+        for u, v, data in g.edges(data=True):
+            if u in selected and v in selected:
+                edges.append({
+                    "id": str(edge_id),
+                    "source": str(u),
+                    "target": str(v),
+                    "label": data.get("keywords", data.get("description", "")),
+                    "weight": data.get("weight", 1.0),
+                })
+                edge_id += 1
+
+        return {"nodes": nodes, "edges": edges}
+    except Exception as exc:
+        logger.warning("Could not export KG data: %s", exc)
+        return {"nodes": [], "edges": []}
+
+
 async def delete_document(doc_id: str) -> dict:
     """Delete a document and its entities from the knowledge graph."""
     rag = await get_lightrag()

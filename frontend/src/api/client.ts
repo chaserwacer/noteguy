@@ -294,6 +294,31 @@ export function aiKGStats(): Promise<AIKGStatsResponse> {
   return request("/api/ai/kg/stats");
 }
 
+export interface KGGraphNode {
+  id: string;
+  label: string;
+  type: string;
+  description: string;
+  degree: number;
+}
+
+export interface KGGraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  label: string;
+  weight: number;
+}
+
+export interface KGGraphResponse {
+  nodes: KGGraphNode[];
+  edges: KGGraphEdge[];
+}
+
+export function aiKGGraph(limit = 200): Promise<KGGraphResponse> {
+  return request(`/api/ai/kg/graph?limit=${limit}`);
+}
+
 export function aiDeleteDocument(docId: string): Promise<{ status: string }> {
   return request("/api/ai/kg/document", {
     method: "DELETE",
