@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+import { useNoteStore } from "@/store/useNoteStore";
 import Sidebar from "@/components/Sidebar";
 import Editor from "@/components/Editor";
+import Homepage from "@/components/Homepage";
 import Chat from "@/components/Chat";
 import AITools from "@/components/AITools";
 import Settings from "@/components/Settings";
 
 export default function Layout() {
+  const activeNoteId = useNoteStore((s) => s.activeNoteId);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatExpanded, setChatExpanded] = useState(false);
   const [aiToolsOpen, setAiToolsOpen] = useState(false);
@@ -46,9 +49,16 @@ export default function Layout() {
       {/* Sidebar */}
       <Sidebar />
 
-      {/* Editor fills remaining space */}
+      {/* Main content: Homepage when no note selected, Editor otherwise */}
       <main className="flex-1 min-w-0">
-        <Editor />
+        {activeNoteId ? (
+          <Editor />
+        ) : (
+          <Homepage
+            onOpenChat={() => setChatOpen(true)}
+            onOpenAITools={() => setAiToolsOpen(true)}
+          />
+        )}
       </main>
 
       {/* Chat modal (bottom sheet / fullscreen) */}
