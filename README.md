@@ -1,6 +1,6 @@
 # NoteGuy
 
-NoteGuy is a local-first markdown workspace with LightRAG-powered retrieval, git-backed note history, and optional multimodal processing via RAG-Anything.
+NoteGuy is a markdown workspace with LightRAG-powered retrieval, git-backed note history, and optional multimodal processing via RAG-Anything.
 
 The project is organized as a FastAPI backend, a React frontend, and an optional Tauri desktop shell.
 
