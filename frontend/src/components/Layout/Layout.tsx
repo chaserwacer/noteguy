@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNoteStore } from "@/store/useNoteStore";
+import { useThemeStore } from "@/store/useThemeStore";
 import Sidebar from "@/components/Sidebar";
 import Editor from "@/components/Editor";
 import Homepage from "@/components/Homepage";
@@ -10,6 +11,8 @@ type PanelMode = "chat" | "graph" | "query" | "analyze" | "extract" | "ingest";
 
 export default function Layout() {
   const activeNoteId = useNoteStore((s) => s.activeNoteId);
+  const theme = useThemeStore((s) => s.theme);
+  const toggleTheme = useThemeStore((s) => s.toggleTheme);
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
   const [aiPanelMode, setAiPanelMode] = useState<PanelMode>("chat");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -98,6 +101,25 @@ export default function Layout() {
       {/* FAB buttons */}
       {!aiPanelOpen && (
         <div className="fixed bottom-4 right-4 z-30 flex flex-col gap-2">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-vault-surface border border-vault-border shadow-float text-vault-text-secondary hover:text-vault-text hover:border-vault-border-strong transition-all"
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          >
+            {theme === "dark" ? (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-vault-accent">
+                <circle cx="8" cy="8" r="3" />
+                <path d="M8 1.5v1M8 13.5v1M1.5 8h1M13.5 8h1M3.4 3.4l.7.7M11.9 11.9l.7.7M3.4 12.6l.7-.7M11.9 4.1l.7-.7" />
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-vault-accent">
+                <path d="M13.5 8.5a5.5 5.5 0 01-7.5 5.1A5.5 5.5 0 018.5 2.5a4.5 4.5 0 005 6z" />
+              </svg>
+            )}
+            <span className="text-xs font-medium">{theme === "dark" ? "Light" : "Dark"}</span>
+          </button>
+
           {/* Settings button */}
           <button
             onClick={() => setSettingsOpen(true)}

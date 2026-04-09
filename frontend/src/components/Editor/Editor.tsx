@@ -1,90 +1,60 @@
-import { useEffect, useRef, useCallback, useState } from "react";
-import { EditorState, type Extension } from "@codemirror/state";
-import { EditorView, keymap, placeholder } from "@codemirror/view";
-import { markdown } from "@codemirror/lang-markdown";
-import { defaultKeymap } from "@codemirror/commands";
-import {
-  syntaxHighlighting,
-  HighlightStyle,
-} from "@codemirror/language";
-import { tags } from "@lezer/highlight";
+import { useEffect, useRef, useCallback, useState, type FC } from "react";
 import { useNoteStore } from "@/store/useNoteStore";
 import EditorToolbar from "./EditorToolbar";
 import MarkdownPreview from "./MarkdownPreview";
 import HistoryPanel from "./HistoryPanel";
 
+import { Editor as MilkdownEditor, rootCtx, defaultValueCtx } from "@milkdown/kit/core";
+import { commonmark, toggleStrongCommand, toggleEmphasisCommand, toggleInlineCodeCommand, wrapInHeadingCommand, wrapInBulletListCommand, wrapInOrderedListCommand, wrapInBlockquoteCommand, toggleLinkCommand } from "@milkdown/kit/preset/commonmark";
+import { gfm } from "@milkdown/kit/preset/gfm";
+import { history } from "@milkdown/kit/plugin/history";
+import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
+import { callCommand } from "@milkdown/kit/utils";
+import { Milkdown, MilkdownProvider, useEditor, useInstance } from "@milkdown/react";
+
+import "@milkdown/kit/prose/view/style/prosemirror.css";
+
 const SAVE_DEBOUNCE_MS = 1200;
 
-/* ── Syntax highlight style ──────────────────────────────────────────────── */
-
-const mdHighlight = HighlightStyle.define([
-  { tag: tags.heading1, color: "#e8e4df", fontWeight: "700", fontSize: "1.6em" },
-  { tag: tags.heading2, color: "#e8e4df", fontWeight: "600", fontSize: "1.35em" },
-  { tag: tags.heading3, color: "#e8e4df", fontWeight: "600", fontSize: "1.15em" },
-  { tag: tags.heading4, color: "#e8e4df", fontWeight: "500" },
-  { tag: tags.strong, color: "#e8e4df", fontWeight: "700" },
-  { tag: tags.emphasis, color: "#e8e4df", fontStyle: "italic" },
-  { tag: tags.monospace, color: "#7dae80", fontFamily: "'JetBrains Mono', monospace" },
-  { tag: tags.link, color: "#c4956a", textDecoration: "underline" },
-  { tag: tags.url, color: "#6b6560" },
-  { tag: tags.quote, color: "#a8a29e", fontStyle: "italic" },
-  { tag: tags.processingInstruction, color: "#6b6560" },
-]);
-
-/* ── Editor theme ────────────────────────────────────────────────────────── */
-
-const vaultTheme = EditorView.theme(
-  {
-    "&": {
-      backgroundColor: "#191919",
-      color: "#e8e4df",
-      fontFamily: "'Inter', system-ui, sans-serif",
-      fontSize: "15px",
-      lineHeight: "1.75",
-      height: "100%",
-    },
-    ".cm-content": {
-      padding: "1rem 2rem",
-      caretColor: "#c4956a",
-      maxWidth: "72ch",
-      marginLeft: "auto",
-      marginRight: "auto",
-    },
-    ".cm-cursor": {
-      borderLeftColor: "#c4956a",
-      borderLeftWidth: "2px",
-    },
-    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
-      backgroundColor: "rgba(196, 149, 106, 0.15)",
-    },
-    ".cm-gutters": {
-      display: "none",
-    },
-    ".cm-scroller": {
-      overflow: "auto",
-    },
-    ".cm-placeholder": {
-      color: "#3a3a3a",
-      fontStyle: "italic",
-    },
-    "&.cm-focused": {
-      outline: "none",
-    },
-  },
-  { dark: true },
-);
-
-/* ── Save status type ────────────────────────────────────────────────────── */
-
 type SaveStatus = "idle" | "saving" | "saved";
+type ToolbarCommand = "h1" | "h2" | "h3" | "bold" | "italic" | "code" | "bullet-list" | "ordered-list" | "blockquote" | "link";
 
-/* ── Component ───────────────────────────────────────────────────────────── */
+/* ── Inner editor mounted inside MilkdownProvider ────────────────────────── */
+
+interface InnerEditorProps {
+  initialContent: string;
+  onChange: (markdown: string) => void;
+}
+
+const InnerEditor: FC<InnerEditorProps> = ({ initialContent, onChange }) => {
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  useEditor((root) =>
+    MilkdownEditor.make()
+      .config((ctx) => {
+        ctx.set(rootCtx, root);
+        ctx.set(defaultValueCtx, initialContent);
+        ctx.get(listenerCtx).markdownUpdated((_ctx, md, prevMd) => {
+          if (prevMd == null) return;
+          onChangeRef.current(md);
+        });
+      })
+      .use(commonmark)
+      .use(gfm)
+      .use(history)
+      .use(listener),
+  );
+
+  return <Milkdown />;
+};
+
+/* ── Main Editor component ──────────────────────────────────────────────── */
 
 export default function Editor() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const viewRef = useRef<EditorView | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const titleTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const contentRef = useRef("");
 
   const activeNoteId = useNoteStore((s) => s.activeNoteId);
   const notes = useNoteStore((s) => s.notes);
@@ -98,19 +68,39 @@ export default function Editor() {
   const activeNote = notes.find((n) => n.id === activeNoteId);
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
-  const [showPreview, setShowPreview] = useState(false);
   const [toolbarVisible, setToolbarVisible] = useState(false);
   const [titleDraft, setTitleDraft] = useState(activeNote?.title ?? "");
+  const [wordCount, setWordCount] = useState({ words: 0, chars: 0 });
 
-  /* ── Autosave content ────────────────────────────────────────────────────── */
+  /* Sync title when note changes */
+  useEffect(() => {
+    setTitleDraft(activeNote?.title ?? "");
+  }, [activeNoteId, activeNote?.title]);
+
+  /* Seed word count from loaded note */
+  useEffect(() => {
+    const text = activeNote?.content ?? "";
+    contentRef.current = text;
+    setWordCount({
+      words: text.trim() ? text.trim().split(/\s+/).length : 0,
+      chars: text.length,
+    });
+  }, [activeNoteId, activeNote?.content]);
+
+  /* ── Autosave content ────────────────────────────────────────────────── */
 
   const handleContentChange = useCallback(
-    (content: string) => {
+    (markdown: string) => {
       if (!activeNoteId) return;
+      contentRef.current = markdown;
+      setWordCount({
+        words: markdown.trim() ? markdown.trim().split(/\s+/).length : 0,
+        chars: markdown.length,
+      });
       clearTimeout(saveTimerRef.current);
       setSaveStatus("saving");
       saveTimerRef.current = setTimeout(async () => {
-        await saveNote(activeNoteId, { content });
+        await saveNote(activeNoteId, { content: markdown });
         setSaveStatus("saved");
         setTimeout(() => setSaveStatus("idle"), 1500);
       }, SAVE_DEBOUNCE_MS);
@@ -118,7 +108,7 @@ export default function Editor() {
     [activeNoteId, saveNote],
   );
 
-  /* ── Autosave title ──────────────────────────────────────────────────────── */
+  /* ── Autosave title ──────────────────────────────────────────────────── */
 
   const handleTitleChange = useCallback(
     (title: string) => {
@@ -138,58 +128,14 @@ export default function Editor() {
     [activeNoteId, activeNote?.title, saveNote],
   );
 
-  useEffect(() => {
-    setTitleDraft(activeNote?.title ?? "");
-  }, [activeNoteId, activeNote?.title]);
-
-  /* ── CodeMirror setup ──────────────────────────────────────────────────── */
+  /* ── Cleanup save timers ─────────────────────────────────────────────── */
 
   useEffect(() => {
-    if (!containerRef.current) return;
-
-    const extensions: Extension[] = [
-      keymap.of(defaultKeymap),
-      markdown(),
-      vaultTheme,
-      syntaxHighlighting(mdHighlight),
-      EditorView.lineWrapping,
-      placeholder("Start writing..."),
-      EditorView.updateListener.of((update) => {
-        if (update.docChanged) {
-          handleContentChange(update.state.doc.toString());
-        }
-      }),
-    ];
-
-    const state = EditorState.create({
-      doc: activeNote?.content ?? "",
-      extensions,
-    });
-
-    const view = new EditorView({ state, parent: containerRef.current });
-    viewRef.current = view;
-
     return () => {
       clearTimeout(saveTimerRef.current);
       clearTimeout(titleTimerRef.current);
-      view.destroy();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNoteId]);
-
-  /* ── Force save (Ctrl+S) ──────────────────────────────────────────────── */
-
-  const forceSave = useCallback(() => {
-    if (!activeNoteId || !viewRef.current) return;
-    clearTimeout(saveTimerRef.current);
-    clearTimeout(titleTimerRef.current);
-    setSaveStatus("saving");
-    const content = viewRef.current.state.doc.toString();
-    saveNote(activeNoteId, { content, title: titleDraft }).then(() => {
-      setSaveStatus("saved");
-      setTimeout(() => setSaveStatus("idle"), 1500);
-    });
-  }, [activeNoteId, titleDraft, saveNote]);
 
   /* ── Keyboard shortcuts ──────────────────────────────────────────────── */
 
@@ -197,39 +143,24 @@ export default function Editor() {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "s") {
         e.preventDefault();
-        forceSave();
+        if (!activeNoteId) return;
+        clearTimeout(saveTimerRef.current);
+        clearTimeout(titleTimerRef.current);
+        setSaveStatus("saving");
+        saveNote(activeNoteId, { content: contentRef.current, title: titleDraft }).then(() => {
+          setSaveStatus("saved");
+          setTimeout(() => setSaveStatus("idle"), 1500);
+        });
         return;
       }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-        if (e.key === "p") {
-          e.preventDefault();
-          setShowPreview((v) => !v);
-        } else if (e.key === "h" || e.key === "H") {
-          e.preventDefault();
-          toggleHistoryPanel();
-        }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "h" || e.key === "H")) {
+        e.preventDefault();
+        toggleHistoryPanel();
       }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [toggleHistoryPanel, forceSave]);
-
-  /* ── Toolbar command helper ────────────────────────────────────────────── */
-
-  const insertMarkdown = useCallback((before: string, after: string) => {
-    const view = viewRef.current;
-    if (!view) return;
-    const { from, to } = view.state.selection.main;
-    const selected = view.state.sliceDoc(from, to);
-    view.dispatch({
-      changes: { from, to, insert: `${before}${selected}${after}` },
-      selection: {
-        anchor: from + before.length,
-        head: to + before.length,
-      },
-    });
-    view.focus();
-  }, []);
+  }, [activeNoteId, titleDraft, saveNote, toggleHistoryPanel]);
 
   /* ── Empty state ───────────────────────────────────────────────────────── */
 
@@ -262,7 +193,7 @@ export default function Editor() {
           />
         </div>
 
-        {/* Editor + Preview area */}
+        {/* Editor area */}
         <div className="flex-1 flex min-h-0 relative">
           {/* Toolbar hover zone */}
           <div
@@ -270,28 +201,22 @@ export default function Editor() {
             onMouseEnter={() => setToolbarVisible(true)}
             onMouseLeave={() => setToolbarVisible(false)}
           >
-            <EditorToolbar
+            <MilkdownToolbarBridge
               visible={toolbarVisible}
-              onCommand={insertMarkdown}
-              previewActive={showPreview}
-              onTogglePreview={() => setShowPreview((v) => !v)}
               historyActive={historyPanelOpen}
               onToggleHistory={toggleHistoryPanel}
             />
           </div>
 
-          {/* CodeMirror container */}
-          <div
-            ref={containerRef}
-            className={`flex-1 overflow-auto ${showPreview ? "border-r border-vault-border" : ""}`}
-          />
-
-          {/* Live preview panel */}
-          {showPreview && (
-            <div className="flex-1 overflow-auto">
-              <MarkdownPreview content={activeNote.content} />
-            </div>
-          )}
+          {/* Milkdown WYSIWYG editor */}
+          <div className="flex-1 overflow-auto">
+            <MilkdownProvider key={activeNoteId}>
+              <InnerEditor
+                initialContent={activeNote.content}
+                onChange={handleContentChange}
+              />
+            </MilkdownProvider>
+          </div>
 
           {/* Version preview overlay */}
           {selectedVersionSha && previewContent !== null && (
@@ -316,17 +241,8 @@ export default function Editor() {
         {/* Status bar */}
         <div className="flex items-center justify-between px-4 py-1 border-t border-vault-border text-[11px] text-vault-muted tabular-nums select-none">
           <div className="flex gap-3">
-            {(() => {
-              const text = activeNote.content || "";
-              const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-              const chars = text.length;
-              return (
-                <>
-                  <span>{words} {words === 1 ? "word" : "words"}</span>
-                  <span>{chars} {chars === 1 ? "char" : "chars"}</span>
-                </>
-              );
-            })()}
+            <span>{wordCount.words} {wordCount.words === 1 ? "word" : "words"}</span>
+            <span>{wordCount.chars} {wordCount.chars === 1 ? "char" : "chars"}</span>
           </div>
           <div className="animate-fade-in">
             {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved" : ""}
@@ -339,3 +255,68 @@ export default function Editor() {
     </div>
   );
 }
+
+/* ── Toolbar bridge: reads Milkdown instance, dispatches commands ────────── */
+
+interface ToolbarBridgeProps {
+  visible: boolean;
+  historyActive: boolean;
+  onToggleHistory: () => void;
+}
+
+const MilkdownToolbarBridge: FC<ToolbarBridgeProps> = ({ visible, historyActive, onToggleHistory }) => {
+  const [, getEditor] = useInstance();
+
+  const handleCommand = useCallback(
+    (command: ToolbarCommand) => {
+      const editor = getEditor();
+      if (!editor) return;
+      switch (command) {
+        case "h1":
+          editor.action(callCommand(wrapInHeadingCommand.key, 1));
+          break;
+        case "h2":
+          editor.action(callCommand(wrapInHeadingCommand.key, 2));
+          break;
+        case "h3":
+          editor.action(callCommand(wrapInHeadingCommand.key, 3));
+          break;
+        case "bold":
+          editor.action(callCommand(toggleStrongCommand.key));
+          break;
+        case "italic":
+          editor.action(callCommand(toggleEmphasisCommand.key));
+          break;
+        case "code":
+          editor.action(callCommand(toggleInlineCodeCommand.key));
+          break;
+        case "bullet-list":
+          editor.action(callCommand(wrapInBulletListCommand.key));
+          break;
+        case "ordered-list":
+          editor.action(callCommand(wrapInOrderedListCommand.key));
+          break;
+        case "blockquote":
+          editor.action(callCommand(wrapInBlockquoteCommand.key));
+          break;
+        case "link": {
+          const href = prompt("Enter URL:");
+          if (href) {
+            editor.action(callCommand(toggleLinkCommand.key, { href }));
+          }
+          break;
+        }
+      }
+    },
+    [getEditor],
+  );
+
+  return (
+    <EditorToolbar
+      visible={visible}
+      onCommand={handleCommand}
+      historyActive={historyActive}
+      onToggleHistory={onToggleHistory}
+    />
+  );
+};

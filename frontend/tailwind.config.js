@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       fontFamily: {
@@ -9,19 +10,19 @@ export default {
       },
       colors: {
         vault: {
-          bg: "#191919",
-          surface: "#1e1e1e",
-          "surface-hover": "#252525",
-          border: "#2e2e2e",
-          "border-strong": "#3a3a3a",
-          text: "#e8e4df",
-          "text-secondary": "#a8a29e",
-          muted: "#6b6560",
-          accent: "#c4956a",
-          "accent-hover": "#d4a57a",
-          "accent-subtle": "rgba(196, 149, 106, 0.12)",
-          success: "#7dae80",
-          danger: "#d48585",
+          bg: "var(--vault-bg)",
+          surface: "var(--vault-surface)",
+          "surface-hover": "var(--vault-surface-hover)",
+          border: "var(--vault-border)",
+          "border-strong": "var(--vault-border-strong)",
+          text: "var(--vault-text)",
+          "text-secondary": "var(--vault-text-secondary)",
+          muted: "var(--vault-muted)",
+          accent: "var(--vault-accent)",
+          "accent-hover": "var(--vault-accent-hover)",
+          "accent-subtle": "var(--vault-accent-subtle)",
+          success: "var(--vault-success)",
+          danger: "var(--vault-danger)",
         },
       },
       boxShadow: {

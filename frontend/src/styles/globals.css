@@ -4,6 +4,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme tokens ────────────────────────────────────────────────────────── */
+
+:root {
+  --vault-bg: #faf9f7;
+  --vault-surface: #f2f0ed;
+  --vault-surface-hover: #e8e6e3;
+  --vault-border: #ddd9d4;
+  --vault-border-strong: #ccc7c0;
+  --vault-text: #2c2a27;
+  --vault-text-secondary: #6b6560;
+  --vault-muted: #a8a29e;
+  --vault-accent: #b07d4f;
+  --vault-accent-hover: #9a6b3f;
+  --vault-accent-subtle: rgba(176, 125, 79, 0.10);
+  --vault-success: #5a8a5d;
+  --vault-danger: #c46060;
+}
+
+.dark {
+  --vault-bg: #191919;
+  --vault-surface: #1e1e1e;
+  --vault-surface-hover: #252525;
+  --vault-border: #2e2e2e;
+  --vault-border-strong: #3a3a3a;
+  --vault-text: #e8e4df;
+  --vault-text-secondary: #a8a29e;
+  --vault-muted: #6b6560;
+  --vault-accent: #c4956a;
+  --vault-accent-hover: #d4a57a;
+  --vault-accent-subtle: rgba(196, 149, 106, 0.12);
+  --vault-success: #7dae80;
+  --vault-danger: #d48585;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+
 @layer base {
   * {
     @apply border-vault-border;
@@ -14,7 +50,6 @@
     font-family: "Inter", system-ui, sans-serif;
   }
 
-  /* Scrollbar styling */
   ::-webkit-scrollbar {
     @apply w-1.5;
   }
@@ -40,17 +75,17 @@
   }
 }
 
-/* ── Markdown preview prose styling ────────────────────────────────────── */
+/* ── Prose / Markdown rendering ──────────────────────────────────────────── */
 
 .prose-vault {
-  color: #e8e4df;
+  color: var(--vault-text);
   font-family: "Inter", system-ui, sans-serif;
   font-size: 15px;
   line-height: 1.75;
 }
 
 .prose-vault h1 {
-  color: #e8e4df;
+  color: var(--vault-text);
   font-size: 1.8em;
   font-weight: 700;
   margin: 1.5em 0 0.6em;
@@ -58,7 +93,7 @@
 }
 
 .prose-vault h2 {
-  color: #e8e4df;
+  color: var(--vault-text);
   font-size: 1.4em;
   font-weight: 600;
   margin: 1.3em 0 0.5em;
@@ -66,7 +101,7 @@
 }
 
 .prose-vault h3 {
-  color: #e8e4df;
+  color: var(--vault-text);
   font-size: 1.15em;
   font-weight: 600;
   margin: 1.2em 0 0.4em;
@@ -85,23 +120,23 @@
 }
 
 .prose-vault a {
-  color: #c4956a;
+  color: var(--vault-accent);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .prose-vault code {
-  color: #7dae80;
+  color: var(--vault-success);
   font-family: "JetBrains Mono", monospace;
   font-size: 0.9em;
-  background: #252525;
+  background: var(--vault-surface-hover);
   padding: 0.15em 0.35em;
   border-radius: 4px;
 }
 
 .prose-vault pre {
-  background: #1a1a1a;
-  border: 1px solid #2e2e2e;
+  background: var(--vault-surface);
+  border: 1px solid var(--vault-border);
   border-radius: 8px;
   padding: 1em;
   overflow-x: auto;
@@ -114,9 +149,9 @@
 }
 
 .prose-vault blockquote {
-  border-left: 2px solid #3a3a3a;
+  border-left: 2px solid var(--vault-border-strong);
   padding-left: 1em;
-  color: #a8a29e;
+  color: var(--vault-text-secondary);
   font-style: italic;
   margin: 1em 0;
 }
@@ -141,7 +176,7 @@
 
 .prose-vault hr {
   border: none;
-  border-top: 1px solid #2e2e2e;
+  border-top: 1px solid var(--vault-border);
   margin: 1.5em 0;
 }
 
@@ -153,19 +188,199 @@
 
 .prose-vault th,
 .prose-vault td {
-  border: 1px solid #2e2e2e;
+  border: 1px solid var(--vault-border);
   padding: 0.5em 0.75em;
   text-align: left;
 }
 
 .prose-vault th {
-  background: #252525;
+  background: var(--vault-surface-hover);
   font-weight: 600;
 }
 
 .prose-vault img {
   max-width: 100%;
   border-radius: 8px;
+}
+
+/* ── Milkdown WYSIWYG editor ─────────────────────────────────────────────── */
+
+.milkdown {
+  height: 100%;
+  overflow: auto;
+  background: var(--vault-bg);
+}
+
+.milkdown .editor {
+  padding: 1rem 2rem;
+  max-width: 72ch;
+  margin: 0 auto;
+  outline: none;
+  min-height: 100%;
+  color: var(--vault-text);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  caret-color: var(--vault-accent);
+}
+
+.milkdown .editor:focus {
+  outline: none;
+}
+
+.milkdown .editor ::selection {
+  background-color: var(--vault-accent-subtle);
+}
+
+/* Headings */
+.milkdown .editor h1 {
+  color: var(--vault-text);
+  font-size: 1.8em;
+  font-weight: 700;
+  margin: 1.5em 0 0.6em;
+  line-height: 1.3;
+}
+
+.milkdown .editor h2 {
+  color: var(--vault-text);
+  font-size: 1.4em;
+  font-weight: 600;
+  margin: 1.3em 0 0.5em;
+  line-height: 1.35;
+}
+
+.milkdown .editor h3 {
+  color: var(--vault-text);
+  font-size: 1.15em;
+  font-weight: 600;
+  margin: 1.2em 0 0.4em;
+}
+
+/* Inline formatting */
+.milkdown .editor strong {
+  font-weight: 700;
+}
+
+.milkdown .editor em {
+  font-style: italic;
+}
+
+.milkdown .editor a {
+  color: var(--vault-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: text;
+}
+
+/* Code */
+.milkdown .editor code {
+  color: var(--vault-success);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9em;
+  background: var(--vault-surface-hover);
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+}
+
+.milkdown .editor pre {
+  background: var(--vault-surface);
+  border: 1px solid var(--vault-border);
+  border-radius: 8px;
+  padding: 1em;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.milkdown .editor pre code {
+  background: none;
+  padding: 0;
+  color: var(--vault-text);
+}
+
+/* Blockquotes */
+.milkdown .editor blockquote {
+  border-left: 2px solid var(--vault-border-strong);
+  padding-left: 1em;
+  color: var(--vault-text-secondary);
+  font-style: italic;
+  margin: 1em 0;
+}
+
+/* Lists */
+.milkdown .editor ul,
+.milkdown .editor ol {
+  padding-left: 1.5em;
+  margin: 0.6em 0;
+}
+
+.milkdown .editor li {
+  margin: 0.3em 0;
+}
+
+.milkdown .editor ul {
+  list-style-type: disc;
+}
+
+.milkdown .editor ol {
+  list-style-type: decimal;
+}
+
+/* Horizontal rule */
+.milkdown .editor hr {
+  border: none;
+  border-top: 1px solid var(--vault-border);
+  margin: 1.5em 0;
+}
+
+/* Tables */
+.milkdown .editor table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.milkdown .editor th,
+.milkdown .editor td {
+  border: 1px solid var(--vault-border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.milkdown .editor th {
+  background: var(--vault-surface-hover);
+  font-weight: 600;
+}
+
+/* Images */
+.milkdown .editor img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+/* Paragraphs */
+.milkdown .editor p {
+  margin: 0.8em 0;
+}
+
+/* Placeholder for empty editor */
+.milkdown .editor > p:first-child:last-child:has(br:only-child)::before {
+  content: "Start writing...";
+  color: var(--vault-muted);
+  font-style: italic;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Task list items (GFM) */
+.milkdown .editor li[data-task-list-item] {
+  list-style: none;
+  position: relative;
+  padding-left: 0.5em;
+}
+
+.milkdown .editor li[data-task-list-item] input[type="checkbox"] {
+  margin-right: 0.5em;
+  accent-color: var(--vault-accent);
 }
 
 /* ── Assistant composer contrast/readability ─────────────────────────────── */
@@ -177,13 +392,13 @@
 .aui-composer-root input,
 .aui-composer-root textarea,
 .aui-composer-root [contenteditable="true"] {
-  color: theme("colors.vault.text") !important;
-  background-color: theme("colors.vault.surface-hover") !important;
+  color: var(--vault-text) !important;
+  background-color: var(--vault-surface-hover) !important;
 }
 
 .aui-composer-root input::placeholder,
 .aui-composer-root textarea::placeholder,
 .aui-composer-root [contenteditable="true"]::before {
-  color: theme("colors.vault.text-secondary") !important;
+  color: var(--vault-text-secondary) !important;
   opacity: 1 !important;
 }

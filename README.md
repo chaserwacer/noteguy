@@ -12,23 +12,26 @@ The project is organized as a FastAPI backend, a React frontend, and an optional
 - Git-backed version history with diff and restore
 - File import support for `.md`, `.txt`, and `.docx`
 - Optional multimodal document ingestion (PDF, PPTX, XLSX, images) via RAG-Anything
-- Runtime AI settings panel — choose LLM and embedding providers without restarting
+- Runtime AI settings panel — update OpenAI model names and API key without restarting
 - Deferred ingestion with dirty-note tracking (notes re-indexed on demand or after idle)
 
 ## AI Architecture
 
 NoteGuy uses a single retrieval path centered on LightRAG.
 
-### Provider model
+### Model configuration
 
-LLM and embedding providers are user-configurable at runtime through the Settings panel or the `/api/settings` endpoint. There is no automatic fallback between providers — if the configured provider is unavailable, the error is reported directly to the user and the operation stops.
+The current backend is OpenAI-backed for both LLM and embeddings. Runtime settings are configurable through the Settings panel or the `/api/settings` endpoint.
 
-Settings are persisted to `user_settings.json` and take priority over `.env` values.
+Settings are persisted to `backend/user_settings.json` and take priority over `.env` values.
 
-| Provider | LLM Models | Embedding Models |
+| Setting | Default | Purpose |
 |---|---|---|
-| OpenAI | `gpt-4o` (default), any OpenAI model | `text-embedding-3-large` (default) |
-| Ollama (local) | `llama3.2` (default), any pulled model | `all-minilm` (default), any pulled model |
+| `llm_model` | `gpt-4o` | OpenAI chat/completion model |
+| `embedding_model` | `text-embedding-3-large` | OpenAI embedding model |
+| `embedding_dimension` | `3072` | Embedding vector dimension |
+| `vision_model` | `gpt-4o` | Vision model used by multimodal flows |
+| `openai_api_key` | _(unset)_ | OpenAI API key override |
 
 ### LightRAG ingestion and query
 
@@ -53,6 +56,7 @@ The primary AI API is exposed through `/api/ai/*` and powered by LightRAG.
 | `POST /api/ai/extract` | Entity and relationship extraction |
 | `POST /api/ai/extract/note` | Extract entities from a specific note |
 | `POST /api/ai/analyze` | Cross-document deep analysis (global mode) |
+| `GET /api/ai/kg/graph` | Export graph nodes and edges for visualization |
 | `GET /api/ai/kg/stats` | Knowledge graph statistics |
 | `DELETE /api/ai/kg/document` | Delete document graph data |
 
@@ -62,14 +66,16 @@ The chat route (`/api/chat` and `/api/chat/stream`) is also LightRAG-backed.
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /api/settings` | Fetch current AI provider and model configuration |
-| `PUT /api/settings` | Update providers, models, and keys at runtime (persisted to `user_settings.json`) |
+| `GET /api/settings` | Fetch current AI model configuration and key status |
+| `PUT /api/settings` | Update model fields and API key at runtime (persisted to `backend/user_settings.json`) |
 
-Changing a provider resets the LightRAG and RAG-Anything singletons so the new configuration takes effect immediately.
+Saving settings resets the LightRAG and RAG-Anything singletons so the new configuration takes effect immediately.
 
 ### Optional multimodal processing (RAG-Anything)
 
-When `raganything` is installed, document ingestion can process multimodal content and feed the LightRAG knowledge graph. If unavailable, NoteGuy still supports text workflows (`.md`, `.txt`, `.docx`).
+When `raganything` is installed, `/api/ai/ingest/document` can process multimodal content and feed the LightRAG knowledge graph. If unavailable, NoteGuy still supports text workflows (`.md`, `.txt`, `.docx`).
+
+The legacy upload route `/api/ingest/upload` remains available for backward compatibility and currently supports `.md` and `.docx`.
 
 ## API Surface (High Level)
 
@@ -77,6 +83,7 @@ When `raganything` is installed, document ingestion can process multimodal conte
 |---|---|
 | Notes/Folders | CRUD routes under `/api/notes` and `/api/folders` |
 | History | Git-backed version endpoints under `/api/notes/{id}/...` |
+| Context | `/api/context/{folder_id}` folder-scoping metadata |
 | Chat | `/api/chat`, `/api/chat/stream` |
 | Ingestion | `/api/ingest/note/{id}`, `/api/ingest/all`, `/api/ingest/upload` |
 | AI Tools | `/api/ai/*` (LightRAG + optional RAG-Anything) |
@@ -105,7 +112,7 @@ When `raganything` is installed, document ingestion can process multimodal conte
 3. The ingestion tracker marks the note as dirty for deferred LightRAG indexing.
 4. Git service stages and commits the change for history tracking (batched to avoid input lag).
 5. When the user triggers a chat or AI query, all dirty notes are flushed into the knowledge graph first.
-6. Chat and AI routes query LightRAG and call the user-configured LLM provider.
+6. Chat and AI routes query LightRAG and use the configured OpenAI models.
 7. Streaming responses are sent to the UI through SSE.
 
 ## Technology Stack
@@ -114,8 +121,8 @@ When `raganything` is installed, document ingestion can process multimodal conte
 |---|---|
 | Backend | Python 3.11+, FastAPI, SQLModel, GitPython |
 | Frontend | React 19, TypeScript, Vite, Zustand, Tailwind CSS |
-| Embeddings | OpenAI `text-embedding-3-large` or Ollama `all-minilm` (user-selected, no fallback) |
-| LLM | OpenAI `gpt-4o` or Ollama `llama3.2` (user-selected, no fallback) |
+| Embeddings | OpenAI embeddings (default `text-embedding-3-large`, runtime configurable) |
+| LLM | OpenAI chat models (default `gpt-4o`, runtime configurable) |
 | AI frameworks | LightRAG, RAG-Anything (optional) |
 | Desktop shell | Tauri v2 (optional) |
 
@@ -128,7 +135,7 @@ noteguy/
       ai/             # LightRAG and RAG-Anything services + unified AI router
       config.py       # Pydantic settings with user_settings.json override
       settings_api.py # Runtime settings REST API
-      embeddings.py   # Pluggable embedding providers (OpenAI, Ollama)
+      embeddings.py   # Embedding model resolver
       notes.py        # Note CRUD and file I/O
       chat.py         # Conversational LightRAG interface
       ingestion.py    # Document ingestion pipeline
@@ -215,18 +222,7 @@ Default local URLs:
 cargo tauri dev
 ```
 
-### 5. Optional — Ollama for local models
-
-Install [Ollama](https://ollama.com) and pull models:
-
-```bash
-ollama pull llama3.2        # LLM
-ollama pull all-minilm      # Embeddings
-```
-
-Then switch to Ollama in the Settings panel or set `LLM_PROVIDER=ollama` and `EMBEDDING_PROVIDER=ollama` in `.env`.
-
-### 6. Optional — multimodal document ingestion
+### 5. Optional — multimodal document ingestion
 
 `raganything` is included in backend dependencies. If multimodal parsing dependencies are unavailable in your environment, text-based ingestion still works.
 
@@ -234,7 +230,7 @@ Then switch to Ollama in the Settings panel or set `LLM_PROVIDER=ollama` and `EM
 
 Settings are loaded with the following priority:
 
-1. `user_settings.json` (runtime overrides saved via Settings panel or API)
+1. `backend/user_settings.json` (runtime overrides saved via Settings panel or API)
 2. Environment variables
 3. `.env` file
 4. Defaults
@@ -245,14 +241,7 @@ Reference: `.env.example`.
 
 | Variable | Purpose |
 |---|---|
-| `OPENAI_API_KEY` | Required when using OpenAI as LLM or embedding provider |
-
-### Provider selection
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `LLM_PROVIDER` | `openai` | LLM provider (`openai` or `ollama`) |
-| `EMBEDDING_PROVIDER` | `openai` | Embedding provider (`openai` or `ollama`) |
+| `OPENAI_API_KEY` | Required for chat, analysis, and embedding generation |
 
 ### Models
 
@@ -261,21 +250,17 @@ Reference: `.env.example`.
 | `LLM_MODEL` | `gpt-4o` | Chat/completion model |
 | `LLM_MAX_TOKENS` | `2048` | Maximum tokens per completion |
 | `VISION_MODEL` | `gpt-4o` | Vision model for multimodal analysis |
-| `EMBEDDING_OPENAI_MODEL` | `text-embedding-3-large` | OpenAI embedding model |
-| `EMBEDDING_OLLAMA_MODEL` | `all-minilm` | Ollama embedding model |
+| `EMBEDDING_MODEL` | `text-embedding-3-large` | Embedding model |
 | `EMBEDDING_DIMENSION` | `3072` | Embedding vector dimension |
-| `EMBEDDING_TIMEOUT_SECONDS` | `8` | Timeout for Ollama embedding requests |
 
 ### Infrastructure
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `VAULT_PATH` | `./NoteGuy` | Root folder for markdown note files |
+| `VAULT_PATH` | `~/NoteGuy` | Root folder for markdown note files (overridden to `./NoteGuy` in `.env.example`) |
 | `DATABASE_URL` | `sqlite:///./noteguy.db` | SQLModel connection string |
 | `BACKEND_HOST` | `127.0.0.1` | Server bind address |
 | `BACKEND_PORT` | `8000` | Server port |
-| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL |
-| `OLLAMA_MODEL` | `llama3.2` | Default Ollama LLM model |
 
 ### LightRAG tuning
 
@@ -301,10 +286,10 @@ Reference: `.env.example`.
 
 - **Auth errors on chat or search:** confirm `OPENAI_API_KEY` is set in `.env` or via the Settings panel.
 - **Sparse or stale retrieval results:** re-run `/api/ai/ingest/all` or use the AI Tools panel to rebuild the knowledge graph.
-- **Provider errors:** check that the selected provider is running and reachable. Ollama must be started separately (`ollama serve`). Errors are reported directly — there is no automatic fallback.
+- **Model/API errors:** verify your configured `llm_model`, `embedding_model`, and API key in the Settings panel or `backend/user_settings.json`.
 - **Missing file writes:** confirm `VAULT_PATH` exists and is writable.
 - **Multimodal upload fails:** verify `raganything` and its parser dependencies are installed in your environment.
-- **Settings not taking effect:** the Settings panel persists changes to `user_settings.json` and resets internal caches automatically. If editing `.env` directly, restart the backend.
+- **Settings not taking effect:** the Settings panel persists changes to `backend/user_settings.json` and resets internal caches automatically. If editing `.env` directly, restart the backend.
 
 ## License
 

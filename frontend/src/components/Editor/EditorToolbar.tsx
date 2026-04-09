@@ -1,33 +1,34 @@
+type ToolbarCommand = "h1" | "h2" | "h3" | "bold" | "italic" | "code" | "bullet-list" | "ordered-list" | "blockquote" | "link";
+
 interface ToolbarProps {
   visible: boolean;
-  onCommand: (before: string, after: string) => void;
-  previewActive: boolean;
-  onTogglePreview: () => void;
+  onCommand: (command: ToolbarCommand) => void;
   historyActive: boolean;
   onToggleHistory: () => void;
 }
 
 interface ToolbarButton {
+  command: ToolbarCommand;
   label: string;
   title: string;
-  before: string;
-  after: string;
 }
 
 const buttons: ToolbarButton[] = [
-  { label: "H1", title: "Heading 1", before: "# ", after: "" },
-  { label: "H2", title: "Heading 2", before: "## ", after: "" },
-  { label: "B", title: "Bold", before: "**", after: "**" },
-  { label: "I", title: "Italic", before: "_", after: "_" },
-  { label: "<>", title: "Code", before: "`", after: "`" },
-  { label: "Link", title: "Link", before: "[", after: "](url)" },
+  { command: "h1", label: "H1", title: "Heading 1" },
+  { command: "h2", label: "H2", title: "Heading 2" },
+  { command: "h3", label: "H3", title: "Heading 3" },
+  { command: "bold", label: "B", title: "Bold" },
+  { command: "italic", label: "I", title: "Italic" },
+  { command: "code", label: "<>", title: "Inline Code" },
+  { command: "bullet-list", label: "\u2022", title: "Bullet List" },
+  { command: "ordered-list", label: "1.", title: "Ordered List" },
+  { command: "blockquote", label: "\u201C", title: "Quote" },
+  { command: "link", label: "Link", title: "Insert Link" },
 ];
 
 export default function EditorToolbar({
   visible,
   onCommand,
-  previewActive,
-  onTogglePreview,
   historyActive,
   onToggleHistory,
 }: ToolbarProps) {
@@ -39,11 +40,11 @@ export default function EditorToolbar({
     >
       {buttons.map((btn) => (
         <button
-          key={btn.label}
+          key={btn.command}
           title={btn.title}
           onMouseDown={(e) => {
             e.preventDefault();
-            onCommand(btn.before, btn.after);
+            onCommand(btn.command);
           }}
           className="px-2 py-0.5 text-xs text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-hover rounded transition-colors"
         >
@@ -52,21 +53,6 @@ export default function EditorToolbar({
       ))}
 
       <div className="w-px h-4 bg-vault-border mx-1" />
-
-      <button
-        title="Toggle Preview (Ctrl+Shift+P)"
-        onMouseDown={(e) => {
-          e.preventDefault();
-          onTogglePreview();
-        }}
-        className={`px-2 py-0.5 text-xs rounded transition-colors ${
-          previewActive
-            ? "text-vault-accent bg-vault-accent-subtle"
-            : "text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-hover"
-        }`}
-      >
-        Preview
-      </button>
 
       <button
         title="Toggle History (Ctrl+Shift+H)"
