@@ -66,3 +66,4 @@ user_settings.json
 backend\user_settings.json
 backend/NoteGuy
 .claude/settings.local.json
+backend/raganything_output/
